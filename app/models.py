@@ -26,6 +26,19 @@ class Pitch(Enum):
     F = 6
     G = 7
 
+class SoundType(Enum):
+    earcon = 1
+    dynamic_earcon = 2
+    spearcon = 3
+
+class SoundFamily(Enum):
+    warning = 1
+    notification = 2
+    confirmation = 3
+    status_alert = 4
+    spatial = 5
+    looming = 6
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
@@ -100,8 +113,11 @@ class Description(db.Model):
     __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(1000))
+    attachement = db.Column(db.String(1000))
     duration = db.Column(db.Float)
-    pitch = db.Column(db.Enum(Pitch)) # Make enum
+    pitch = db.Column(db.Enum(Pitch))
+    sound_type = db.Column(db.Enum(SoundType))
+    sound_family = db.Column(db.Enum(SoundFamily))
 
 class Validation(db.Model):
     __searchable__ = ['comment']
