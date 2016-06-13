@@ -1,0 +1,8 @@
+flask/
+db_repository/
+*.pyc
+*.db
+tmp/
+.idea/
+*.sublime-project
+*.sublime-workspace
