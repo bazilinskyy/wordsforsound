@@ -2,6 +2,7 @@
 from hashlib import md5
 from app import db
 from app import app
+from enum import Enum
 
 import sys
 if sys.version_info >= (3, 0):
@@ -15,6 +16,15 @@ tags_sounds_table = db.Table(
     db.Column('sound_id', db.Integer, db.ForeignKey('sound.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
+
+class Pitch(Enum):
+    A = 1
+    B = 2
+    C = 3
+    D = 4
+    E = 5
+    F = 6
+    G = 7
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -60,6 +70,7 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % (self.nickname)
 
+# TODO Do we need to have categories as well?
 class Tag(db.Model):
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
@@ -84,6 +95,18 @@ class Sound(db.Model):
 
     def __repr__(self):
         return '<Tag %r>' % (self.name)
+
+class Description(db.Model):
+    __searchable__ = ['description']
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(1000))
+    duration = db.Column(db.Float)
+    pitch = db.Column(db.Enum(Pitch)) # Make enum
+
+class Validation(db.Model):
+    __searchable__ = ['comment']
+    id = db.Column(db.Integer, primary_key=True)
+    comment = db.Column(db.String(1000))
 
 if enable_search:
     whooshalchemy.whoosh_index(app, Sound)
