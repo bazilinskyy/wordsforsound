@@ -109,6 +109,25 @@ class Sound(db.Model):
     def __repr__(self):
         return '<Tag %r>' % (self.name)
 
+class Asset(db.Model):
+    __searchable__ = ['name']
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+    descriptions = db.relationship('Description', backref='asset',
+                                lazy='dynamic')
+    validations = db.relationship('Validation', backref='asset',
+                                lazy='dynamic')
+    versions = db.relationship('AssetVersion', backref='asset',
+                                lazy='dynamic')
+
+class AssetVersion(db.Model):
+    __searchable__ = ['name']
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+    url = db.Column(db.String(400))
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+
+
 class Description(db.Model):
     __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
@@ -118,11 +137,13 @@ class Description(db.Model):
     pitch = db.Column(db.Enum(Pitch))
     sound_type = db.Column(db.Enum(SoundType))
     sound_family = db.Column(db.Enum(SoundFamily))
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
 
 class Validation(db.Model):
     __searchable__ = ['comment']
     id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.String(1000))
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
 
 if enable_search:
     whooshalchemy.whoosh_index(app, Sound)
