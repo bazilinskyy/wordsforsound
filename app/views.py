@@ -36,17 +36,17 @@ def internal_error(error):
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
 # @login_required
 def index(page=1):
-    form = PostForm()
-    if form.validate_on_submit():
-        post = Post(body=form.post.data, timestamp=datetime.utcnow(),
-                    author=g.user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your post is now live!')
-        return redirect(url_for('index'))
+    # form = PostForm()
+    # if form.validate_on_submit():
+    #     post = Post(body=form.post.data, timestamp=datetime.utcnow(),
+    #                 author=g.user)
+    #     db.session.add(post)
+    #     db.session.commit()
+    #     flash('Your post is now live!')
+    #     return redirect(url_for('index'))
     return render_template('index.html',
-                           title='Home',
-                           form=form)
+                           title='Home')
+                           # form=form)
 
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
