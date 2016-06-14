@@ -45,15 +45,15 @@
             <li {% if request.path=="/delete_sound" %} class="active"{% endif %}><a href="{{ url_for('delete_sound') }}">Delete sound</a></li>
           </ul>
         </li>
-        <li {% if request.path=="/describe" %} class="active"{% endif %}><a href="{{ url_for('describe') }}">Description <span class="sr-only">(current)</span></a></li>
-        <li {% if request.path=="/verify" %} class="active"{% endif %}><a href="{{ url_for('verify') }}">Verification</a></li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Asset <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Asset 1</a></li>
-            <li><a href="#">Asset 2</a></li>
-            <li><a href="#">Asset 3</a></li>
-            <li><a href="#">Asset 4</a></li>
+            <li {% if request.path=="/describe" %} class="active"{% endif %}><a href="{{ url_for('describe') }}">New asset <span class="sr-only">(current)</span></a></li>
+            <li class="dropdown-header">Current projects</li>
+            <li><a href="{{ url_for('verify') }}">Asset 1</a></li>
+            <li><a href="{{ url_for('verify') }}">Asset 2</a></li>
+            <li><a href="{{ url_for('verify') }}">Asset 3</a></li>
+            <li><a href="{{ url_for('verify') }}">Asset 4</a></li>
           </ul>
         </li>
       </ul>
