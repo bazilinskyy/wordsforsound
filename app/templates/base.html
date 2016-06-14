@@ -34,10 +34,15 @@
         <li {% if request.path=="/index" or request.path=="/" %} class="active"{% endif %}><a href="{{ url_for('index') }}">Home</a></li>
         <li {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
-          <ul class="dropdown-menu">
+          <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
+            <li class="dropdown-header">Sounds</li>
             <li {% if request.path=="/tags" %} class="active"{% endif %}><a href="{{ url_for('tags') }}">Tags</a></li>
             <li {% if request.path=="/add_tag" %} class="active"{% endif %}><a href="{{ url_for('add_tag') }}">Add tag</a></li>
             <li {% if request.path=="/delete_tag" %} class="active"{% endif %}><a href="{{ url_for('delete_tag') }}">Delete tag</a></li>
+            <li class="dropdown-header">Tags</li>
+            <li {% if request.path=="/sounds" %} class="active"{% endif %}><a href="{{ url_for('sounds') }}">Sounds</a></li>
+            <li {% if request.path=="/add_sound" %} class="active"{% endif %}><a href="{{ url_for('add_sound') }}">Add sound</a></li>
+            <li {% if request.path=="/delete_sound" %} class="active"{% endif %}><a href="{{ url_for('delete_sound') }}">Delete sound</a></li>
           </ul>
         </li>
         <li {% if request.path=="/describe" %} class="active"{% endif %}><a href="{{ url_for('describe') }}">Description <span class="sr-only">(current)</span></a></li>

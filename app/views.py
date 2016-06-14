@@ -60,6 +60,18 @@ def add_tag():
 def delete_tag():
     return render_template('delete_tag.html')
 
+@app.route('/sounds', methods=['GET', 'POST'])
+def sounds():
+    return render_template('sounds.html')
+
+@app.route('/add_sound', methods=['GET', 'POST'])
+def add_sound():
+    return render_template('add_sound.html')
+
+@app.route('/delete_sound', methods=['GET', 'POST'])
+def delete_sound():
+    return render_template('delete_sound.html')
+
 @app.route('/describe', methods=['GET', 'POST'])
 def describe():
     return render_template('describe.html')

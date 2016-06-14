@@ -127,7 +127,6 @@ class AssetVersion(db.Model):
     url = db.Column(db.String(400))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
 
-
 class Description(db.Model):
     __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
