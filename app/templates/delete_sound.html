@@ -1,9 +1,19 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
 <!-- extend base layout -->
 {% extends "base.html" %}
 
 {% block content %}
 {% include 'flash.html' %}
 
-Coming soon.
+<h1>Delete exisitng sound</h1>
 
+<!-- Description form -->
+<div class="well">
+<form>
+  <fieldset class="form-group">
+    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of sound">
+  </fieldset>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
 {% endblock %}

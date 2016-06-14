@@ -5,6 +5,16 @@
 {% block content %}
 {% include 'flash.html' %}
 
-Index coming soon.
+	<div class="well well-large">
+        <div class="pull-right">
+            <img src="" class="img-polaroid">
+        </div>
 
+		<h1>Current assets</h1>
+
+		{% for asset in assets %}
+	    	 {% include 'asset.html' %}
+		{% endfor %}
+
+    </div>
 {% endblock %}

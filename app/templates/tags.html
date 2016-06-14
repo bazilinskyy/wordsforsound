@@ -1,9 +1,30 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
 <!-- extend base layout -->
 {% extends "base.html" %}
 
 {% block content %}
 {% include 'flash.html' %}
 
-Coming soon.
+<h1>Tags in database</h1>
 
+<!-- Description form -->
+<div class="well">
+<form>
+  <fieldset class="form-group">
+    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your search phrase">
+  </fieldset>
+
+  <fieldset class="form-group">
+    <label for="exampleSelect2">List of tags</label>
+    <select multiple class="form-control" id="exampleSelect2" size="10">
+      <option>Car</option>
+      <option>Metal</option>
+      <option>Warning</option>
+      <option>Happy</option>
+      <option>Spatial</option>
+    </select>
+  </fieldset>
+  <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+</form>
+</div>
 {% endblock %}
