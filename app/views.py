@@ -4,8 +4,8 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import DescriptionForm, NewAssetForm
-from .models import Description, Asset
+from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm
+from .models import Description, Asset, Tag, Sound
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 
@@ -103,7 +103,18 @@ def tags():
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 def add_tag():
+    form = AddTagForm()
+    if form.validate_on_submit():
+        tag = Tag()
+        tag.timestamp = datetime.now()
+        tag.name = form.name.data
+        db.session.add(tag)
+        db.session.commit()    
+        
+        flash('New tag added.')
+        return redirect(url_for('add_tag'))
     return render_template('add_tag.html',
+                            form=form,
                             title='Add tag',)
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
@@ -118,7 +129,21 @@ def sounds():
 
 @app.route('/add_sound', methods=['GET', 'POST'])
 def add_sound():
+    form = AddSoundForm()
+    if form.validate_on_submit():
+        sound = Sound()
+        sound.timestamp = datetime.now()
+        sound.name = form.name.data
+        sound.description = form.description.data
+        sound.sound_type = form.sound_type.data
+        sound.sound_family = form.sound_family.data
+        db.session.add(sound)
+        db.session.commit()    
+        
+        flash('New sound added.')
+        return redirect(url_for('add_sound'))
     return render_template('add_sound.html',
+                            form=form,
                             title='Add sound',)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
@@ -135,6 +160,7 @@ def new_asset():
         asset.name = form.name.data
         db.session.add(asset)
         db.session.commit()    
+        
         description = Description()
         description.description = form.description.data
         description.duration = form.duration.data
@@ -143,7 +169,6 @@ def new_asset():
         description.sound_family = form.sound_family.data
         description.timestamp = datetime.now()
         description.asset_id = asset.id
-
         db.session.add(description)
         db.session.commit()
         

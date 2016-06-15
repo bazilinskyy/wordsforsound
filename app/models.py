@@ -99,17 +99,17 @@ class Tag(db.Model):
 class Sound(db.Model):
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
-    # name = db.Column(db.String(200))
-    # url = db.Column(db.String(400)) #locations
-    # tags = db.relationship('Tag',
-    #                            secondary=tags_sounds_table,
-    #                            backref=db.backref('tags_for_sound', lazy='dynamic'),
-    #                            lazy='dynamic')
-    # timestamp = db.Column(db.DateTime)
-    # user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
+    name = db.Column(db.String(200))
+    url = db.Column(db.String(400)) #locations
+    tags = db.relationship('Tag',
+                               secondary=tags_sounds_table,
+                               backref=db.backref('tags_for_sound', lazy='dynamic'),
+                               lazy='dynamic')
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
 
-    # def __repr__(self):
-    #     return '<Sound %r>' % (self.name)
+    def __repr__(self):
+        return '<Sound %r>' % (self.name)
 
 class Asset(db.Model):
     __searchable__ = ['name']
@@ -134,6 +134,7 @@ class AssetVersion(db.Model):
     name = db.Column(db.String(200))
     url = db.Column(db.String(400))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    timestamp = db.Column(db.DateTime)
 
 class Description(db.Model):
     __searchable__ = ['description']
@@ -158,6 +159,7 @@ class Validation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.String(1000))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    timestamp = db.Column(db.DateTime)
 
 # if enable_search:
 #     whooshalchemy.whoosh_index(app, Sound)

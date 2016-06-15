@@ -9,35 +9,40 @@
 
 <!-- Description form -->
 <div class="well">
-<form>
+<form action="" method="post" name="add_sound">
+  {{ form.hidden_tag() }}
   <fieldset class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of sound">
+    {{ form.name(class_='form-control', placeholder='Name of tag') }}
+    {% for error in form.name.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+    {% endfor %}
   </fieldset>
   <fieldset class="form-group">
-    <label class="radio-inline">
-      <input type="radio" name="optradio">Earcon
-    </label>
-    <label class="radio-inline">
-      <input type="radio" name="optradio">Dynamic earcon
-    </label>
-    <label class="radio-inline">
-      <input type="radio" name="optradio">Spearcon
-    </label>
+
+    {{ form.sound_type(class_='radio-inline') }}
+    {% for error in form.sound_type.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+    {% endfor %}
+
   </fieldset>
   <fieldset class="form-group">
-    <label for="exampleSelect2">Family</label>
-    <select multiple class="form-control" id="exampleSelect2">
-      <option>Warning</option>
-      <option>Notification</option>
-      <option>Confirmation</option>
-      <option>Status alert</option>
-      <option>Spatial</option>
-    </select>
+    <label for="sound_family">Family</label>
+
+    {{ form.sound_family(class_='form-control') }}
+    {% for error in form.sound_family.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+    {% endfor %}
+
   </fieldset>
   <fieldset class="form-group">
-    <label for="exampleTextarea">Description</label>
-    <textarea class="form-control" id="exampleTextarea" rows="3">Warning message from Mercedes E-class. Brings sense of happiness, joy. Sound a bit metallic</textarea>
-  </fieldset>
+        <label for="exampleTextarea">Description</label>
+
+        {{ form.description(class_='form-control') }}
+        {% for error in form.description.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
   <fieldset class="form-group">
     <label for="exampleTextarea">Tags</label>
     <textarea class="form-control" id="exampleTextarea" rows="2">warning, mercedes, happy, joy, metal</textarea>
