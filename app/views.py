@@ -38,16 +38,31 @@ def internal_error(error):
 def index(page=1):
     assets = [  # fake array of posts
         { 
-            'name': "Asset 1" 
+            'name': "Asset 1",
+            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'active': 1,
+            'iteration': 5
         },
         { 
-            'name': "Asset 2" 
+            'name': "Asset 2",
+            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'active': 2,
+            'iteration': 2
         },
         { 
-            'name': "Asset 3" 
+            'name': "Asset 3",
+            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'iteration': 21
         },
         { 
-            'name': "Asset 4" 
+            'name': "Asset 4",
+            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'active': 1,
+            'iteration': 7
         },
     ]
     return render_template('index.html',

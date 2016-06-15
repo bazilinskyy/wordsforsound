@@ -35,11 +35,11 @@
         <li {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
           <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
-            <li class="dropdown-header">Sounds</li>
+            <li class="dropdown-header">Tags</li>
             <li {% if request.path=="/tags" %} class="active"{% endif %}><a href="{{ url_for('tags') }}">Tags</a></li>
             <li {% if request.path=="/add_tag" %} class="active"{% endif %}><a href="{{ url_for('add_tag') }}">Add tag</a></li>
             <li {% if request.path=="/delete_tag" %} class="active"{% endif %}><a href="{{ url_for('delete_tag') }}">Delete tag</a></li>
-            <li class="dropdown-header">Tags</li>
+            <li class="dropdown-header">Sounds</li>
             <li {% if request.path=="/sounds" %} class="active"{% endif %}><a href="{{ url_for('sounds') }}">Sounds</a></li>
             <li {% if request.path=="/add_sound" %} class="active"{% endif %}><a href="{{ url_for('add_sound') }}">Add sound</a></li>
             <li {% if request.path=="/delete_sound" %} class="active"{% endif %}><a href="{{ url_for('delete_sound') }}">Delete sound</a></li>
@@ -54,6 +54,11 @@
             <li><a href="{{ url_for('verify') }}">Asset 2</a></li>
             <li><a href="{{ url_for('verify') }}">Asset 3</a></li>
             <li><a href="{{ url_for('verify') }}">Asset 4</a></li>
+            <li><a href="{{ url_for('verify') }}">View all</a></li>
+            <li class="dropdown-header">Past projects</li>
+            <li><a href="{{ url_for('verify') }}">Asset 5</a></li>
+            <li><a href="{{ url_for('verify') }}">Asset 6</a></li>
+            <li><a href="{{ url_for('verify') }}">View all</a></li>
           </ul>
         </li>
       </ul>
