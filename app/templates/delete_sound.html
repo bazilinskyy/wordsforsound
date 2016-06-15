@@ -9,11 +9,15 @@
 
 <!-- Description form -->
 <div class="well">
-<form>
+<form action="" method="post" name="delete_sound">
+{{ form.hidden_tag() }}
   <fieldset class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of sound">
+    {{ form.name(class_='form-control', placeholder='Name of sound') }}
+    {% for error in form.name.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+    {% endfor %}
   </fieldset>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-block btn-danger">Delete</button>
 </form>
 </div>
 {% endblock %}

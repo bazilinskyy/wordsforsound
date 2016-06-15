@@ -4,7 +4,7 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm
+from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm
 from .models import Description, Asset, Tag, Sound
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
@@ -119,7 +119,19 @@ def add_tag():
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 def delete_tag():
+    form = DeleteSoundForm()
+    if form.validate_on_submit():
+        tag = Tag.query.filter_by(name=form.name.data).first()
+        if tag == None:
+            flash('Tag ' +  form.name.data + ' does not exist.')
+            return redirect(url_for('delete_tag'))
+        db.session.delete(tag)
+        db.session.commit()  
+        
+        flash('Tag ' +  form.name.data + ' was deleted.')
+        return redirect(url_for('delete_tag'))
     return render_template('delete_tag.html',
+                            form=form,
                             title='Delete tag',)
 
 @app.route('/sounds', methods=['GET', 'POST'])
@@ -148,7 +160,19 @@ def add_sound():
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
 def delete_sound():
+    form = DeleteSoundForm()
+    if form.validate_on_submit():
+        sound = Sound.query.filter_by(name=form.name.data).first()
+        if sound == None:
+            flash('Sound ' +  form.name.data + ' does not exist.')
+            return redirect(url_for('delete_sound'))
+        db.session.delete(sound)
+        db.session.commit()  
+        
+        flash('Sound ' +  form.name.data + ' was deleted.')
+        return redirect(url_for('delete_sound'))
     return render_template('delete_sound.html',
+                            form=form,
                             title='Delete sound',)
 
 @app.route('/new_asset', methods=['GET', 'POST'])

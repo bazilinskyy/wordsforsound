@@ -31,6 +31,12 @@ class NewAssetForm(Form):
 class AddTagForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 
+class DeleteTagForm(Form):
+	name = StringField('name', validators=[DataRequired()])
+
+class DeleteSoundForm(Form):
+	name = StringField('name', validators=[DataRequired()])
+
 class AddSoundForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 	description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
