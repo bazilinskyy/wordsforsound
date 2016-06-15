@@ -45,6 +45,8 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
+    # role
+    # password
 
     @staticmethod
     def make_unique_nickname(nickname):
@@ -98,7 +100,7 @@ class Sound(db.Model):
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
-    url = db.Column(db.String(400))
+    url = db.Column(db.String(400)) #locations
     tags = db.relationship('Tag',
                                secondary=tags_sounds_table,
                                backref=db.backref('tags_for_sound', lazy='dynamic'),

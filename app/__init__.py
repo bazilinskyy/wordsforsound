@@ -39,6 +39,6 @@ if not app.debug:
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.info('microblog startup')
+    app.logger.info('sound design tool')
 
 from app import views, models

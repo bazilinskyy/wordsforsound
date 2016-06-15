@@ -8,47 +8,66 @@
 <h1>Description of sound asset</h1>
 
 <!-- Description form -->
-<div class="well">
 <form>
-  <fieldset class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of asset">
-  </fieldset>
-  <fieldset class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration">
-  </fieldset>
-  <fieldset class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch">
-  </fieldset>
-  <fieldset class="form-group">
-    <label class="radio-inline">
-      <input type="radio" name="optradio">Earcon
-    </label>
-    <label class="radio-inline">
-      <input type="radio" name="optradio">Dynamic earcon
-    </label>
-    <label class="radio-inline">
-      <input type="radio" name="optradio">Spearcon
-    </label>
-  </fieldset>
-  <fieldset class="form-group">
-    <label for="exampleSelect2">Family</label>
-    <select multiple class="form-control" id="exampleSelect2">
-      <option>Warning</option>
-      <option>Notification</option>
-      <option>Confirmation</option>
-      <option>Status alert</option>
-      <option>Spatial</option>
-    </select>
-  </fieldset>
-  <fieldset class="form-group">
-    <label for="exampleTextarea">Description</label>
-    <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea>
-  </fieldset>
-  <fieldset class="form-group">
-    <label for="exampleInputFile">Supplementary attachment</label>
-    <input type="file" class="form-control-file" id="exampleInputFile">
-  </fieldset>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Basic description</h3>
+    </div>
+    <div class="panel-body">
+      <fieldset class="form-group">
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of asset">
+      </fieldset>
+      <fieldset class="form-group">
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration">
+      </fieldset>
+      <fieldset class="form-group">
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch">
+      </fieldset>
+      <fieldset class="form-group">
+        <label class="radio-inline">
+          <input type="radio" name="optradio">Earcon
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="optradio">Dynamic earcon
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="optradio">Spearcon
+        </label>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="exampleSelect2">Family</label>
+        <select multiple class="form-control" id="exampleSelect2">
+          <option>Warning</option>
+          <option>Notification</option>
+          <option>Confirmation</option>
+          <option>Status alert</option>
+          <option>Spatial</option>
+        </select>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="exampleTextarea">Description</label>
+        <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="exampleInputFile">Supplementary attachment</label>
+        <input type="file" class="form-control-file" id="exampleInputFile">
+      </fieldset>
+    </div>
+  </div>
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1">Advanced description</a>
+        </h3>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <div class="panel-body">Coming soon</div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center"> 
+    <button type="submit" class="btn btn-block btn-primary">Submit</button>
+  </div>
 </form>
-</div>
 {% endblock %}

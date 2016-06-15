@@ -36,13 +36,13 @@ def internal_error(error):
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
 # @login_required
 def index(page=1):
-    assets = [  # fake array of posts
+    assets_action = [  # fake array of assets
         { 
             'name': "Asset 1",
             'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
             'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
             'active': 1,
-            'iteration': 5
+            'iteration': 500
         },
         { 
             'name': "Asset 2",
@@ -52,12 +52,6 @@ def index(page=1):
             'iteration': 2
         },
         { 
-            'name': "Asset 3",
-            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'iteration': 21
-        },
-        { 
             'name': "Asset 4",
             'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
             'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
@@ -65,9 +59,41 @@ def index(page=1):
             'iteration': 7
         },
     ]
+    assets_otherhands = [  # fake array of assets
+        { 
+            'name': "Asset 5",
+            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'active': 0,
+            'iteration': 5
+        },
+        { 
+            'name': "Asset 3",
+            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'active': 0,
+            'iteration': 2
+        },
+        { 
+            'name': "Asset 6",
+            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'active': 0,
+            'iteration': 21
+        },
+        { 
+            'name': "Asset 7",
+            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+            'active': 0,
+            'iteration': 7
+        },
+    ]
+
     return render_template('index.html',
                            title='Home',
-                           assets=assets)
+                           assets_action=assets_action,
+                           assets_otherhands=assets_otherhands)
 
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
@@ -75,32 +101,43 @@ def tags():
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 def add_tag():
-    return render_template('add_tag.html')
+    return render_template('add_tag.html',
+                            title='Add tag',)
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 def delete_tag():
-    return render_template('delete_tag.html')
+    return render_template('delete_tag.html',
+                            title='Delete tag',)
 
 @app.route('/sounds', methods=['GET', 'POST'])
 def sounds():
-    return render_template('sounds.html')
+    return render_template('sounds.html',
+                            title='Sounds',)
 
 @app.route('/add_sound', methods=['GET', 'POST'])
 def add_sound():
-    return render_template('add_sound.html')
+    return render_template('add_sound.html',
+                            title='Add sound',)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
 def delete_sound():
-    return render_template('delete_sound.html')
+    return render_template('delete_sound.html',
+                            title='Delete sound',)
 
 @app.route('/describe', methods=['GET', 'POST'])
 def describe():
-    return render_template('describe.html')
+    return render_template('describe.html',
+                            title='Describe asset',)
 
 @app.route('/verify', methods=['GET', 'POST'])
 def verify():
-    return render_template('verify.html')
+    return render_template('verify.html',
+                            title='Verify iteration',)
 
+@app.route('/iterate', methods=['GET', 'POST'])
+def iterate():
+    return render_template('iterate.html',
+                            title='Iterate asset',)
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
