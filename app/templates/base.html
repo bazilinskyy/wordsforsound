@@ -25,7 +25,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">wordsforsound</a>
+      <a class="navbar-brand" href="{{ url_for('index') }}">wordsforsound</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -48,17 +48,17 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Asset <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li {% if request.path=="/describe" %} class="active"{% endif %}><a href="{{ url_for('describe') }}">New asset <span class="sr-only">(current)</span></a></li>
+            <li {% if request.path=="/describe" %} class="active"{% endif %}><a href="{{ url_for('new_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
             <li class="dropdown-header">Current projects</li>
-            <li><a href="{{ url_for('verify') }}">Asset 1</a></li>
-            <li><a href="{{ url_for('verify') }}">Asset 2</a></li>
-            <li><a href="{{ url_for('verify') }}">Asset 3</a></li>
-            <li><a href="{{ url_for('verify') }}">Asset 4</a></li>
-            <li><a href="{{ url_for('verify') }}">View all</a></li>
+            <li><a href="{{ url_for('verification') }}">Asset 1</a></li>
+            <li><a href="{{ url_for('verification') }}">Asset 2</a></li>
+            <li><a href="{{ url_for('verification') }}">Asset 3</a></li>
+            <li><a href="{{ url_for('verification') }}">Asset 4</a></li>
+            <li><a href="{{ url_for('verification') }}">View all</a></li>
             <li class="dropdown-header">Past projects</li>
-            <li><a href="{{ url_for('verify') }}">Asset 5</a></li>
-            <li><a href="{{ url_for('verify') }}">Asset 6</a></li>
-            <li><a href="{{ url_for('verify') }}">View all</a></li>
+            <li><a href="{{ url_for('verification') }}">Asset 5</a></li>
+            <li><a href="{{ url_for('verification') }}">Asset 6</a></li>
+            <li><a href="{{ url_for('verification') }}">View all</a></li>
           </ul>
         </li>
       </ul>

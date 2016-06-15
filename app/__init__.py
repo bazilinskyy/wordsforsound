@@ -25,20 +25,20 @@ if not app.debug:
         credentials = (MAIL_USERNAME, MAIL_PASSWORD)
     mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT),
                                'no-reply@' + MAIL_SERVER, ADMINS,
-                               'microblog failure', credentials)
+                               'wordsforsound failure', credentials)
     mail_handler.setLevel(logging.ERROR)
     app.logger.addHandler(mail_handler)
 
 if not app.debug:
     import logging
     from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler('tmp/microblog.log', 'a',
+    file_handler = RotatingFileHandler('tmp/wordsforsound.log', 'a',
                                        1 * 1024 * 1024, 10)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
-    app.logger.info('sound design tool')
+    app.logger.info('wordsforsound')
 
 from app import views, models

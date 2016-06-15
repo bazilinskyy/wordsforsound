@@ -16,9 +16,9 @@
         <td width="100px">
             <p>
             	{% if asset.active==1 %} 
-            		<a type="button" class="btn btn-primary btn-block" href="{{ url_for('verify') }}">Verify</a>
+            		<a type="button" class="btn btn-primary btn-block" href="{{ url_for('verification') }}">Verify</a>
             	{% elif asset.active==2 %}
-            		<a type="button" class="btn btn-success btn-block" href="{{ url_for('iterate') }}">Iterate</a>
+            		<a type="button" class="btn btn-success btn-block" href="{{ url_for('iteratation') }}">Iterate</a>
             	{% else %}
             		<button type="button" class="btn btn-default btn-block" disabled="disabled">In work</button>
             	{% endif %}

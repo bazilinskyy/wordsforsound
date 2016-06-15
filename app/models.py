@@ -5,11 +5,11 @@ from app import app
 from enum import Enum
 
 import sys
-if sys.version_info >= (3, 0):
-    enable_search = False
-else:
-    enable_search = True
-    import flask.ext.whooshalchemy as whooshalchemy
+# if sys.version_info >= (3, 0):
+#     enable_search = False
+# else:
+#     enable_search = True
+#     import flask.ext.whooshalchemy as whooshalchemy
 
 tags_sounds_table = db.Table(
     'tags_for_sound',
@@ -99,17 +99,17 @@ class Tag(db.Model):
 class Sound(db.Model):
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200))
-    url = db.Column(db.String(400)) #locations
-    tags = db.relationship('Tag',
-                               secondary=tags_sounds_table,
-                               backref=db.backref('tags_for_sound', lazy='dynamic'),
-                               lazy='dynamic')
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
+    # name = db.Column(db.String(200))
+    # url = db.Column(db.String(400)) #locations
+    # tags = db.relationship('Tag',
+    #                            secondary=tags_sounds_table,
+    #                            backref=db.backref('tags_for_sound', lazy='dynamic'),
+    #                            lazy='dynamic')
+    # timestamp = db.Column(db.DateTime)
+    # user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
 
-    def __repr__(self):
-        return '<Tag %r>' % (self.name)
+    # def __repr__(self):
+    #     return '<Sound %r>' % (self.name)
 
 class Asset(db.Model):
     __searchable__ = ['name']
@@ -121,6 +121,12 @@ class Asset(db.Model):
                                 lazy='dynamic')
     versions = db.relationship('AssetVersion', backref='asset',
                                 lazy='dynamic')
+    timestamp = db.Column(db.DateTime)
+
+    @property
+    def unique_name(self):
+        return name + '-' + timestamp
+
 
 class AssetVersion(db.Model):
     __searchable__ = ['name']
@@ -134,11 +140,18 @@ class Description(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(1000))
     attachement = db.Column(db.String(1000))
-    duration = db.Column(db.Float)
-    pitch = db.Column(db.Enum(Pitch))
-    sound_type = db.Column(db.Enum(SoundType))
-    sound_family = db.Column(db.Enum(SoundFamily))
+    duration = db.Column(db.String(20))
+    timestamp = db.Column(db.DateTime)
+    # pitch = db.Column(db.Enum(Pitch))
+    pitch = db.Column(db.String(20))
+    # sound_type = db.Column(db.Enum(SoundType))
+    sound_type = db.Column(db.String(20))
+    # sound_family = db.Column(db.Enum(SoundFamily))
+    sound_family = db.Column(db.String(20))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+
+    def __repr__(self):
+        return '<Description %r>' % (self.description[0:50])
 
 class Validation(db.Model):
     __searchable__ = ['comment']
@@ -146,5 +159,5 @@ class Validation(db.Model):
     comment = db.Column(db.String(1000))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
 
-if enable_search:
-    whooshalchemy.whoosh_index(app, Sound)
+# if enable_search:
+#     whooshalchemy.whoosh_index(app, Sound)

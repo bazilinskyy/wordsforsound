@@ -5,7 +5,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Description of sound asset {{ asset.name }}</h1>
+<h1>Description of new sound asset</h1>
 
 <!-- Description form -->
 <form action="" method="post" name="description">
@@ -15,6 +15,13 @@
       <h3 class="panel-title">Basic description</h3>
     </div>
     <div class="panel-body">
+      <fieldset class="form-group">
+        <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of asset"> -->
+        {{ form.name(class_='form-control', placeholder='Name of asset') }}
+        {% for error in form.name.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+      </fieldset>
       <fieldset class="form-group">
         <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
         {{ form.duration(class_='form-control', placeholder='Duration') }}

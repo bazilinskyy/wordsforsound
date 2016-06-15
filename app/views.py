@@ -4,8 +4,8 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import LoginForm, SearchForm, DescribeForm
-from .models import User, Sound, Tag
+from .forms import DescriptionForm, NewAssetForm
+from .models import Description, Asset
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 
@@ -90,6 +90,8 @@ def index(page=1):
         },
     ]
 
+    assets_action = Asset.query.all()
+
     return render_template('index.html',
                            title='Home',
                            assets_action=assets_action,
@@ -124,18 +126,88 @@ def delete_sound():
     return render_template('delete_sound.html',
                             title='Delete sound',)
 
-@app.route('/describe', methods=['GET', 'POST'])
-def describe():
-    return render_template('describe.html',
-                            title='Describe asset',)
+@app.route('/new_asset', methods=['GET', 'POST'])
+def new_asset():
+    form = NewAssetForm()
+    if form.validate_on_submit():
+        asset = Asset()
+        asset.timestamp = datetime.now()
+        asset.name = form.name.data
+        db.session.add(asset)
+        db.session.commit()    
+        description = Description()
+        description.description = form.description.data
+        description.duration = form.duration.data
+        description.pitch = form.pitch.data
+        description.sound_type = form.sound_type.data
+        description.sound_family = form.sound_family.data
+        description.timestamp = datetime.now()
+        description.asset_id = asset.id
 
-@app.route('/verify', methods=['GET', 'POST'])
-def verify():
+        db.session.add(description)
+        db.session.commit()
+        
+        flash('New asset description created.')
+        return redirect(url_for('index'))
+    return render_template('new_asset.html',
+                            form=form,
+                            title='Describe asset')
+
+# @app.route('/description/edit', methods=['GET', 'POST'])
+# @app.route('/description/edit/<int:description_id>', methods=['GET', 'POST'])
+@app.route('/description', methods=['GET', 'POST'])
+def description():
+    asset_id = request.args.get('asset_id')
+    if asset_id is None:
+        flash('Asset not specified.')
+        return redirect(url_for('index'))
+    asset = Asset.query.filter_by(id=asset_id).first()
+    if asset is None:
+        flash('Asset not found.')
+        return redirect(url_for('index'))
+    # if g.user not in project.owners:
+    #     flash('You do not have permissions to create milestones for this project.')
+    #     return redirect(url_for('index'))
+    # description = None
+    # if description_id:
+    #     description = Description.query.filter_by(id=description_id).first()
+
+    form = DescriptionForm()
+    if form.validate_on_submit():
+        # get asset similar to project_id 
+        description = Description()
+        description.description = form.description.data
+        description.duration = form.duration.data
+        description.pitch = form.pitch.data
+        description.sound_type = form.sound_type.data
+        description.sound_family = form.sound_family.data
+        description.timestamp = datetime.now()
+        description.asset_id = asset.id
+
+        db.session.add(description)
+        db.session.commit()
+        
+        flash('Description created.')
+        return redirect(url_for('index'))
+    # elif request.method != "POST":
+    #     if description is not None:
+    #         form.name.data = description.name
+    #         form.duration.data = description.duration
+    #         form.pitch.data = description.pitch
+    #         form.sound_type = description.sound_type
+    #         form.sound_family = description.sound_family
+    return render_template('describe.html',
+                            form=form,
+                            asset=asset,
+                            title='Describe asset')
+
+@app.route('/verification', methods=['GET', 'POST'])
+def verification():
     return render_template('verify.html',
                             title='Verify iteration',)
 
-@app.route('/iterate', methods=['GET', 'POST'])
-def iterate():
+@app.route('/iteratation', methods=['GET', 'POST'])
+def iteratation():
     return render_template('iterate.html',
                             title='Iterate asset',)
 
