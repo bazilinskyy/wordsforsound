@@ -9,22 +9,18 @@
 
 <!-- Description form -->
 <div class="well">
-<form>
+<!-- <form>
   <fieldset class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your search phrase">
+    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Start typing your tag here">
   </fieldset>
+</form> -->
 
-  <fieldset class="form-group">
-    <label for="exampleSelect2">List of tags</label>
-    <select multiple class="form-control" id="exampleSelect2" size="10">
-      <option>Car</option>
-      <option>Metal</option>
-      <option>Warning</option>
-      <option>Happy</option>
-      <option>Spatial</option>
-    </select>
-  </fieldset>
-  <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
-</form>
+<div class="list-group">
+    {% for tag in tags %}
+      <a href="{{ url_for('tag') }}/{{ tag.id }}" class="list-group-item">First item</a>
+    {% endfor %}
+</div>
+
+
 </div>
 {% endblock %}

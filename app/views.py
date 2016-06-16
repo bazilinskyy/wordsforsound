@@ -99,7 +99,18 @@ def index(page=1):
 
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
-    return render_template('tags.html')
+    tags = Tag.query.all()
+    return render_template('tags.html',
+                            tags=tags)
+@app.route('/tag')
+@app.route('/tag/<int:tag_id>/')
+def tag(tag_id):
+    tag = Tag.query.filter_by(id=tag_id).first()
+    if tag is None:
+        flash(gettext('Tag not found.'))
+        return redirect(url_for('index'))
+    return render_template('tag.html',
+                           tag=tag)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 def add_tag():
