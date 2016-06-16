@@ -7,7 +7,7 @@ from app import app, db, lm, oid
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm
 from .models import Description, Asset, Tag, Sound
 from .emails import follower_notification
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU
 
 @lm.user_loader
 def load_user(id):
@@ -21,6 +21,11 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
         g.search_form = SearchForm()
+
+# For horizontal menu
+class HorizontalMenu():
+    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
+    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -95,13 +100,17 @@ def index(page=1):
     return render_template('index.html',
                            title='Home',
                            assets_action=assets_action,
-                           assets_otherhands=assets_otherhands)
+                           assets_otherhands=assets_otherhands,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
     tags = Tag.query.all()
     return render_template('tags.html',
-                            tags=tags)
+                            tags=tags,
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
 def tag(tag_id):
@@ -110,7 +119,9 @@ def tag(tag_id):
         flash(gettext('Tag not found.'))
         return redirect(url_for('index'))
     return render_template('tag.html',
-                           tag=tag)
+                           tag=tag,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 def add_tag():
@@ -126,7 +137,9 @@ def add_tag():
         return redirect(url_for('add_tag'))
     return render_template('add_tag.html',
                             form=form,
-                            title='Add tag',)
+                            title='Add tag',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 def delete_tag():
@@ -143,13 +156,17 @@ def delete_tag():
         return redirect(url_for('delete_tag'))
     return render_template('delete_tag.html',
                             form=form,
-                            title='Delete tag',)
+                            title='Delete tag',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/sounds', methods=['GET', 'POST'])
 def sounds():
     sounds = Sound.query.all()
     return render_template('sounds.html',
-                            sounds=sounds)
+                            sounds=sounds,
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 @app.route('/sound')
 @app.route('/sound/<int:sound_id>/')
 def sound(sound_id):
@@ -158,7 +175,55 @@ def sound(sound_id):
         flash(gettext('Sound not found.'))
         return redirect(url_for('index'))
     return render_template('sound.html',
-                           sound=sound)
+                           sound=sound,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
+
+@app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
+def assets(assets_type):
+    if assets_type == 'ongoing':
+        assets = Asset.query.filter_by(finished=False).all()
+    elif assets_type == 'finished':
+        assets = Asset.query.filter_by(finished=True).all()
+    else:
+        assets = Asset.query.all()
+    return render_template('assets.html',
+                            assets=assets,
+                            assets_type=assets_type,
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
+@app.route('/asset')
+@app.route('/asset/<int:asset_id>/')
+def asset(asset_id):
+    asset = Asset.query.filter_by(id=asset_id).first()
+    if asset is None:
+        flash(gettext('Asset not found.'))
+        return redirect(url_for('index'))
+    return render_template('asset.html',
+                           asset=asset,
+                           type=type,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
+
+@app.route('/descriptions', methods=['GET', 'POST'])
+def descriptions():
+    descriptions = Asset.query.all()
+    return render_template('descriptions.html',
+                            descriptions=descriptions,
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
+
+@app.route('/description')
+@app.route('/description/<int:asset_id>/')
+def description(description_id):
+    description = Description.query.filter_by(id=description_id).first()
+    if description is None:
+        flash(gettext('description not found.'))
+        return redirect(url_for('index'))
+    return render_template('description.html',
+                           description=description,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/add_sound', methods=['GET', 'POST'])
 def add_sound():
@@ -177,7 +242,9 @@ def add_sound():
         return redirect(url_for('add_sound'))
     return render_template('add_sound.html',
                             form=form,
-                            title='Add sound',)
+                            title='Add sound',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
 def delete_sound():
@@ -194,15 +261,18 @@ def delete_sound():
         return redirect(url_for('delete_sound'))
     return render_template('delete_sound.html',
                             form=form,
-                            title='Delete sound',)
+                            title='Delete sound',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
-@app.route('/new_asset', methods=['GET', 'POST'])
-def new_asset():
+@app.route('/add_asset', methods=['GET', 'POST'])
+def add_asset():
     form = NewAssetForm()
     if form.validate_on_submit():
         asset = Asset()
         asset.timestamp = datetime.now()
         asset.name = form.name.data
+        asset.finished = False
         db.session.add(asset)
         db.session.commit()    
         
@@ -219,14 +289,16 @@ def new_asset():
         
         flash('New asset description created.')
         return redirect(url_for('index'))
-    return render_template('new_asset.html',
+    return render_template('add_asset.html',
                             form=form,
-                            title='Describe asset')
+                            title='Describe asset',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
 # @app.route('/description/edit', methods=['GET', 'POST'])
 # @app.route('/description/edit/<int:description_id>', methods=['GET', 'POST'])
-@app.route('/description', methods=['GET', 'POST'])
-def description():
+@app.route('/describe', methods=['GET', 'POST'])
+def describe():
     asset_id = request.args.get('asset_id')
     if asset_id is None:
         flash('Asset not specified.')
@@ -269,17 +341,23 @@ def description():
     return render_template('describe.html',
                             form=form,
                             asset=asset,
-                            title='Describe asset')
+                            title='Describe asset',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
-@app.route('/verification', methods=['GET', 'POST'])
-def verification():
+@app.route('/verify', methods=['GET', 'POST'])
+def verify():
     return render_template('verify.html',
-                            title='Verify iteration',)
+                            title='Verify iteration',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/iteratation', methods=['GET', 'POST'])
 def iteratation():
     return render_template('iterate.html',
-                            title='Iterate asset',)
+                            title='Iterate asset',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -293,7 +371,9 @@ def login():
     return render_template('login.html',
                            title='Sign In',
                            form=form,
-                           providers=app.config['OPENID_PROVIDERS'])
+                           providers=app.config['OPENID_PROVIDERS'],
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
 
 
 @oid.after_login
@@ -338,5 +418,6 @@ def user(nickname, page=1):
     posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
     return render_template('user.html',
                            user=user,
-                           posts=posts)
-
+                           posts=posts,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)

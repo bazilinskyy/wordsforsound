@@ -1,3 +1,4 @@
+# By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,3 +30,7 @@ ADMINS = ['you@example.com']
 # pagination
 POSTS_PER_PAGE = 3
 MAX_SEARCH_RESULTS = 50
+
+# horizontal menu
+ONGOING_PROJECTS_MENU = 5
+FINISHED_PROJECTS_MENU= 5

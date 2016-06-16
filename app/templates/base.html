@@ -48,17 +48,17 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Asset <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li {% if request.path=="/describe" %} class="active"{% endif %}><a href="{{ url_for('new_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
-            <li class="dropdown-header">Current projects</li>
-            <li><a href="{{ url_for('verification') }}">Asset 1</a></li>
-            <li><a href="{{ url_for('verification') }}">Asset 2</a></li>
-            <li><a href="{{ url_for('verification') }}">Asset 3</a></li>
-            <li><a href="{{ url_for('verification') }}">Asset 4</a></li>
-            <li><a href="{{ url_for('verification') }}">View all</a></li>
-            <li class="dropdown-header">Past projects</li>
-            <li><a href="{{ url_for('verification') }}">Asset 5</a></li>
-            <li><a href="{{ url_for('verification') }}">Asset 6</a></li>
-            <li><a href="{{ url_for('verification') }}">View all</a></li>
+            <li {% if request.path=="/add_asset" %} class="active"{% endif %}><a href="{{ url_for('add_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
+            <li class="dropdown-header">Ongoing projects</li>
+            {% for asset in assets_ongoing %}
+                <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
+            {% endfor %}
+            <li><a href="{{ url_for('assets', assets_type='ongoing') }}">View all</a></li>
+            <li class="dropdown-header">Finished projects</li>
+            {% for asset in assets_finished %}
+                <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
+            {% endfor %}
+            <li><a href="{{ url_for('assets', assets_type='finished') }}">View all</a></li>
           </ul>
         </li>
       </ul>

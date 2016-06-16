@@ -1,0 +1,28 @@
+<table class="table table-hover">
+    <tr>
+        <td width="70px">
+        	<a href=""><img src="{{ asset.avatar }}" alt="Current user avatar" title="{{ asset.avatar }}"/></a>
+        </td>
+        <td width="70px">
+            {# <p>{% if asset.active==1 or asset.active==2 %} <strong> {% endif %} {{ asset.name }}{% if asset.active==1 %} </strong> {% endif %}</p> #}
+            <p>{{ asset.name }}</p>
+        </td>
+        <td>
+            <p>{{ asset.description }}</p>
+        </td>
+        <td width="80px">
+            <p>Ver. {{ asset.iteration }}</p>
+        </td>
+        <td width="100px">
+            <p>
+            	{% if asset.active==1 %} 
+            		<a type="button" class="btn btn-primary btn-block" href="{{ url_for('verification') }}">Verify</a>
+            	{% elif asset.active==2 %}
+            		<a type="button" class="btn btn-success btn-block" href="{{ url_for('iteratation') }}">Iterate</a>
+            	{% else %}
+            		<button type="button" class="btn btn-default btn-block" disabled="disabled">In work</button>
+            	{% endif %}
+            </p>
+        </td>
+    </tr>
+</table>

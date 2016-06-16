@@ -1,0 +1,34 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+
+{% if assets_type == 'ongoing' %}
+  <h1>Ongoing projects</h1>
+{% elif assets_type == 'finished' %}
+  <h1>Finished projects</h1>
+{% else %}
+  <h1>All projects</h1>
+{% endif %}
+
+{{ type }}
+
+
+<!-- Description form -->
+<div class="well">
+  <!-- <form>
+    <fieldset class="form-group">
+      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your search phrase">
+    </fieldset>
+  </form> -->
+
+  <div class="list-group">
+    {% for asset in assets %}
+      <a href="{{ url_for('asset') }}/{{ asset.id }}" class="list-group-item">{{ asset.name }}</a>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

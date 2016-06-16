@@ -115,6 +115,7 @@ class Asset(db.Model):
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
+    finished  = db.Column(db.Boolean)
     descriptions = db.relationship('Description', backref='asset',
                                 lazy='dynamic')
     validations = db.relationship('Validation', backref='asset',

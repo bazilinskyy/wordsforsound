@@ -1,0 +1,25 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+
+<h1>Sounds in database</h1>
+
+<!-- Description form -->
+<div class="well">
+  <!-- <form>
+    <fieldset class="form-group">
+      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your search phrase">
+    </fieldset>
+  </form> -->
+
+  <div class="list-group">
+    {% for description in descriptions %}
+      <a href="{{ url_for('description') }}/{{ description.id }}" class="list-group-item">{{ description.name }}</a>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
