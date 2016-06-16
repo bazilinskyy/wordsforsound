@@ -8,7 +8,7 @@
 <h1>Description of sound asset {{ asset.name }}</h1>
 
 <!-- Description form -->
-<form action="" method="post" name="description">
+<form action="" method="post" name="describe">
   {{ form.hidden_tag() }}
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -64,7 +64,7 @@
       <fieldset class="form-group">
         <label for="exampleTextarea">Description</label>
         <!-- <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea> -->
-        {{ form.description(class_='form-control') }}
+        {{ form.description(class_='form-control', rows='6') }}
         {% for error in form.description.errors %}
             <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}

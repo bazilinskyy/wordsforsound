@@ -37,7 +37,7 @@
   <fieldset class="form-group">
         <label for="exampleTextarea">Description</label>
 
-        {{ form.description(class_='form-control') }}
+        {{ form.description(class_='form-control', rows='6') }}
         {% for error in form.description.errors %}
             <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}

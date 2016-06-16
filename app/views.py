@@ -4,8 +4,8 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm
-from .models import Description, Asset, Tag, Sound, AssetStatus
+from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm
+from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU
 
@@ -24,8 +24,13 @@ def before_request():
 
 # For horizontal menu
 class HorizontalMenu():
-    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
-    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
+    # assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
+    # assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
+
+    # THIS LISTS NEED TO BE USED WHENER MIGRATING DB
+    assets_ongoing = []
+    assets_finished = []
+
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -41,60 +46,6 @@ def internal_error(error):
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
 # @login_required
 def index(page=1):
-    # assets_action = [  # fake array of assets
-    #     { 
-    #         'name': "Asset 1",
-    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-    #         'active': 1,
-    #         'iteration': 500
-    #     },
-    #     { 
-    #         'name': "Asset 2",
-    #         'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
-    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-    #         'active': 2,
-    #         'iteration': 2
-    #     },
-    #     { 
-    #         'name': "Asset 4",
-    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-    #         'active': 1,
-    #         'iteration': 7
-    #     },
-    # ]
-    # assets_otherhands = [  # fake array of assets
-    #     { 
-    #         'name': "Asset 5",
-    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-    #         'active': 0,
-    #         'iteration': 5
-    #     },
-    #     { 
-    #         'name': "Asset 3",
-    #         'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
-    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-    #         'active': 0,
-    #         'iteration': 2
-    #     },
-    #     { 
-    #         'name': "Asset 6",
-    #         'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
-    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-    #         'active': 0,
-    #         'iteration': 21
-    #     },
-    #     { 
-    #         'name': "Asset 7",
-    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-    #         'active': 0,
-    #         'iteration': 7
-    #     },
-    # ]
-
     # TODO Move to "in my hands" and "in other hands" with addition of accounts
     assets_description = Asset.query.filter_by(status=1).all() # TODO Add pagination
     assets_iteration = Asset.query.filter_by(status=2).all() # TODO Add pagination
@@ -203,7 +154,7 @@ def assets(assets_type):
 def asset(asset_id):
     asset = Asset.query.filter_by(id=asset_id).first()
     if asset is None:
-        flash(gettext('Asset not found.'))
+        flash('Asset not found.')
         return redirect(url_for('index'))
     return render_template('asset.html',
                            asset=asset,
@@ -301,6 +252,8 @@ def add_asset():
         asset.name = form.name.data
         asset.finished = False
         asset.status = AssetStatus.iteration.value
+        asset.iteration_number = 0
+        asset.description = form.description.data
         db.session.add(asset)
         db.session.commit()    
         
@@ -323,14 +276,9 @@ def add_asset():
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
-# @app.route('/description/edit', methods=['GET', 'POST'])
-# @app.route('/description/edit/<int:description_id>', methods=['GET', 'POST'])
 @app.route('/describe', methods=['GET', 'POST'])
-def describe():
-    asset_id = request.args.get('asset_id')
-    if asset_id is None:
-        flash('Asset not specified.')
-        return redirect(url_for('index'))
+@app.route('/describe/<int:asset_id>/', methods=['GET', 'POST'])
+def describe(asset_id):
     asset = Asset.query.filter_by(id=asset_id).first()
     if asset is None:
         flash('Asset not found.')
@@ -354,18 +302,21 @@ def describe():
         description.timestamp = datetime.now()
         description.asset_id = asset.id
 
+        asset.description = form.description.data
+
         db.session.add(description)
         db.session.commit()
         
         flash('Description created.')
         return redirect(url_for('index'))
-    # elif request.method != "POST":
-    #     if description is not None:
-    #         form.name.data = description.name
-    #         form.duration.data = description.duration
-    #         form.pitch.data = description.pitch
-    #         form.sound_type = description.sound_type
-    #         form.sound_family = description.sound_family
+    elif request.method != "POST":
+        if asset.descriptions.count() > 0 is not None:
+            description = asset.descriptions.first()
+            form.description.data = description.description
+            form.duration.data = description.duration
+            form.pitch.data = description.pitch
+            form.sound_type.data = description.sound_type
+            form.sound_family.data = description.sound_family
     return render_template('describe.html',
                             form=form,
                             asset=asset,
@@ -374,15 +325,89 @@ def describe():
                             assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/verify', methods=['GET', 'POST'])
-def verify():
+@app.route('/verify/<int:asset_id>/', methods=['GET', 'POST'])
+def verify(asset_id):
+    asset = Asset.query.filter_by(id=asset_id).first()
+    if asset is None:
+        flash('Asset not found.')
+        return redirect(url_for('index'))
+    # if g.user not in project.owners:
+    #     flash('You do not have permissions to create milestones for this project.')
+    #     return redirect(url_for('index'))
+    # description = None
+    # if description_id:
+    #     description = Description.query.filter_by(id=description_id).first()
+
+    form = VerificationForm()
+    if form.validate_on_submit():
+        # get asset similar to project_id 
+        verification = Verification()
+        verification.description = form.description.data
+        verification.timestamp = datetime.now()
+        verification.asset_id = asset.id
+
+        asset.description = form.description.data
+        asset.status = AssetStatus.description.value
+
+        db.session.add(verification)
+        db.session.commit()
+        
+        flash('Verification created.')
+        return redirect(url_for('index'))
+    # elif request.method != "POST":
+    #     if verification is not None:
+    #         form.name.data = verification.name
+    #         form.duration.data = verification.duration
+    #         form.pitch.data = verification.pitch
+    #         form.sound_type = verification.sound_type
+    #         form.sound_family = verification.sound_family
     return render_template('verify.html',
-                            title='Verify iteration',
+                            form=form,
+                            asset=asset,
+                            title='Verify asset',
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/iterate', methods=['GET', 'POST'])
-def iterate():
+@app.route('/iterate/<int:asset_id>/', methods=['GET', 'POST'])
+def iterate(asset_id):
+    asset = Asset.query.filter_by(id=asset_id).first()
+    if asset is None:
+        flash('Asset not found.')
+        return redirect(url_for('index'))
+    # if g.user not in project.owners:
+    #     flash('You do not have permissions to create milestones for this project.')
+    #     return redirect(url_for('index'))
+    # description = None
+    # if description_id:
+    #     description = Description.query.filter_by(id=description_id).first()
+
+    form = IterationForm()
+    if form.validate_on_submit():
+        iteration = Iteration()
+        iteration.description = form.description.data
+        iteration.timestamp = datetime.now()
+        iteration.asset_id = asset.id
+
+        asset.iteration_number = asset.iteration_number+1
+        asset.description = form.description.data
+        asset.status = AssetStatus.verification.value
+
+        db.session.add(iteration)
+        db.session.commit()
+        
+        flash('Iteration created.')
+        return redirect(url_for('index'))
+    # elif request.method != "POST":
+    #     if description is not None:
+    #         form.name.data = description.name
+    #         form.duration.data = description.duration
+    #         form.pitch.data = description.pitch
+    #         form.sound_type = description.sound_type
+    #         form.sound_family = description.sound_family
     return render_template('iterate.html',
+                            form=form,
+                            asset=asset,
                             title='Iterate asset',
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)

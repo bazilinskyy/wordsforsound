@@ -122,11 +122,13 @@ class Asset(db.Model):
     name = db.Column(db.String(200))
     finished  = db.Column(db.Boolean)
     status = db.Column(db.Integer)
+    iteration_number = db.Column(db.Integer)
+    description = db.Column(db.String(1000))
     descriptions = db.relationship('Description', backref='asset',
                                 lazy='dynamic')
-    validations = db.relationship('Validation', backref='asset',
+    verifications = db.relationship('Verification', backref='asset',
                                 lazy='dynamic')
-    versions = db.relationship('AssetVersion', backref='asset',
+    iterations = db.relationship('Iteration', backref='asset',
                                 lazy='dynamic')
     timestamp = db.Column(db.DateTime)
 
@@ -134,13 +136,6 @@ class Asset(db.Model):
     def unique_name(self):
         return name + '-' + timestamp
 
-
-class AssetVersion(db.Model):
-    __searchable__ = ['name']
-    id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String(400))
-    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
-    timestamp = db.Column(db.DateTime)
 
 class Description(db.Model):
     __searchable__ = ['description']
@@ -160,10 +155,18 @@ class Description(db.Model):
     def __repr__(self):
         return '<Description %r>' % (self.description[0:50])
 
-class Validation(db.Model):
-    __searchable__ = ['comment']
+class Verification(db.Model):
+    __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
-    comment = db.Column(db.String(1000))
+    description = db.Column(db.String(1000))
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    timestamp = db.Column(db.DateTime)
+
+class Iteration(db.Model):
+    __searchable__ = ['description']
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(1000))
+    url = db.Column(db.String(400))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     timestamp = db.Column(db.DateTime)
 

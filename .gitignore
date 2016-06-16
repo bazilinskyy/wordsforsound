@@ -6,3 +6,4 @@ tmp/
 .idea/
 *.sublime-project
 *.sublime-workspace
+tests/

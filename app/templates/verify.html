@@ -1,9 +1,49 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
 <!-- extend base layout -->
 {% extends "base.html" %}
 
 {% block content %}
 {% include 'flash.html' %}
 
-Coming soon.
+<h1>Verification for asset {{ asset.name }}</h1>
 
+<!-- Description form -->
+<form action="" method="post" name="iterate">
+  {{ form.hidden_tag() }}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Attachement and basic description</h3>
+    </div>
+    <div class="panel-body">
+      <fieldset class="form-group">
+        <label for="exampleTextarea">Description</label>
+        <!-- <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea> -->
+        {{ form.description(class_='form-control', rows='6') }}
+        {% for error in form.description.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="exampleInputFile">Attachment</label>
+        <input type="file" class="form-control-file" id="exampleInputFile">
+      </fieldset>
+    </div>
+  </div>
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1">Advanced description</a>
+        </h3>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <div class="panel-body">Coming soon</div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center">
+    <button type="submit" class="btn btn-block btn-primary">Submit</button>
+  </div>
+</form>
 {% endblock %}
