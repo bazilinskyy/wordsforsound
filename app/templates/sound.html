@@ -1,0 +1,17 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+
+<h1>Sound {{ sound.name }}</h1>
+
+<!-- Description form -->
+<div class="well">
+
+{{ sound.id }} - {{ sound.name }} - {{ sound.description }} - {{ sound.sound_type }} - {{ sound.sound_family }}
+
+
+</div>
+{% endblock %}

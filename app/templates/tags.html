@@ -9,17 +9,17 @@
 
 <!-- Description form -->
 <div class="well">
-<!-- <form>
-  <fieldset class="form-group">
-    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Start typing your tag here">
-  </fieldset>
-</form> -->
+	<!-- <form>
+	  <fieldset class="form-group">
+	    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Start typing your tag here">
+	  </fieldset>
+	</form> -->
 
-<div class="list-group">
-    {% for tag in tags %}
-      <a href="{{ url_for('tag') }}/{{ tag.id }}" class="list-group-item">First item</a>
-    {% endfor %}
-</div>
+	<div class="list-group">
+	    {% for tag in tags %}
+	      <a href="{{ url_for('tag') }}/{{ tag.id }}" class="list-group-item">{{ tag.name }}</a>
+	    {% endfor %}
+	</div>
 
 
 </div>

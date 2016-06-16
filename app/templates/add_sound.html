@@ -12,7 +12,7 @@
 <form action="" method="post" name="add_sound">
   {{ form.hidden_tag() }}
   <fieldset class="form-group">
-    {{ form.name(class_='form-control', placeholder='Name of tag') }}
+    {{ form.name(class_='form-control', placeholder='Name of sound') }}
     {% for error in form.name.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
     {% endfor %}

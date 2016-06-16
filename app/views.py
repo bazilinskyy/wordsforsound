@@ -147,8 +147,18 @@ def delete_tag():
 
 @app.route('/sounds', methods=['GET', 'POST'])
 def sounds():
+    sounds = Sound.query.all()
     return render_template('sounds.html',
-                            title='Sounds',)
+                            sounds=sounds)
+@app.route('/sound')
+@app.route('/sound/<int:sound_id>/')
+def sound(sound_id):
+    sound = Sound.query.filter_by(id=sound_id).first()
+    if sound is None:
+        flash(gettext('Sound not found.'))
+        return redirect(url_for('index'))
+    return render_template('sound.html',
+                           sound=sound)
 
 @app.route('/add_sound', methods=['GET', 'POST'])
 def add_sound():
