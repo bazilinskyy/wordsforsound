@@ -6,7 +6,7 @@
 {% include 'flash.html' %}
 
 
-		<!-- TODO paginate -->
+		{# <!-- TODO paginate -->
 		<div class="panel panel-success">
 			<div class="panel-heading">Action required</div>
 		  	<div class="panel-body">
@@ -24,6 +24,37 @@
 			    	 {% include 'asset_short.html' %}
 				{% endfor %}
 			</div>
+		</div> #}
+
+
+
+		<div class="panel panel-primary">
+			<div class="panel-heading">Description</div>
+		  	<div class="panel-body">
+				{% for asset in assets_description %}
+			    	 {% include 'asset_short.html' %}
+				{% endfor %}
+			</div>
 		</div>
+
+		<!-- TODO paginate -->
+		<div class="panel panel-warning">
+			<div class="panel-heading">Iteration</div>
+		  	<div class="panel-body">
+				{% for asset in assets_iteration %}
+			    	 {% include 'asset_short.html' %}
+				{% endfor %}
+			</div>
+		</div> 
+
+		<!-- TODO paginate -->
+		<div class="panel panel-success">
+			<div class="panel-heading">Verification</div>
+		  	<div class="panel-body">
+				{% for asset in assets_verification %}
+			    	 {% include 'asset_short.html' %}
+				{% endfor %}
+			</div>
+		</div> 
 
 {% endblock %}

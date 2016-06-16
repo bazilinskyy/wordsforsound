@@ -5,7 +5,7 @@ from flask.ext.login import login_user, logout_user, current_user, \
 from datetime import datetime
 from app import app, db, lm, oid
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm
-from .models import Description, Asset, Tag, Sound
+from .models import Description, Asset, Tag, Sound, AssetStatus
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU
 
@@ -41,66 +41,72 @@ def internal_error(error):
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
 # @login_required
 def index(page=1):
-    assets_action = [  # fake array of assets
-        { 
-            'name': "Asset 1",
-            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'active': 1,
-            'iteration': 500
-        },
-        { 
-            'name': "Asset 2",
-            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'active': 2,
-            'iteration': 2
-        },
-        { 
-            'name': "Asset 4",
-            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'active': 1,
-            'iteration': 7
-        },
-    ]
-    assets_otherhands = [  # fake array of assets
-        { 
-            'name': "Asset 5",
-            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'active': 0,
-            'iteration': 5
-        },
-        { 
-            'name': "Asset 3",
-            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'active': 0,
-            'iteration': 2
-        },
-        { 
-            'name': "Asset 6",
-            'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'active': 0,
-            'iteration': 21
-        },
-        { 
-            'name': "Asset 7",
-            'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
-            'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
-            'active': 0,
-            'iteration': 7
-        },
-    ]
+    # assets_action = [  # fake array of assets
+    #     { 
+    #         'name': "Asset 1",
+    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+    #         'active': 1,
+    #         'iteration': 500
+    #     },
+    #     { 
+    #         'name': "Asset 2",
+    #         'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
+    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+    #         'active': 2,
+    #         'iteration': 2
+    #     },
+    #     { 
+    #         'name': "Asset 4",
+    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+    #         'active': 1,
+    #         'iteration': 7
+    #     },
+    # ]
+    # assets_otherhands = [  # fake array of assets
+    #     { 
+    #         'name': "Asset 5",
+    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+    #         'active': 0,
+    #         'iteration': 5
+    #     },
+    #     { 
+    #         'name': "Asset 3",
+    #         'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
+    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+    #         'active': 0,
+    #         'iteration': 2
+    #     },
+    #     { 
+    #         'name': "Asset 6",
+    #         'avatar': "http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon",
+    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+    #         'active': 0,
+    #         'iteration': 21
+    #     },
+    #     { 
+    #         'name': "Asset 7",
+    #         'avatar': "http://gravatar.com/avatar/b50f24a5349355a5ce3845f2d1e1cf7e?s=60&d=identicon",
+    #         'description': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et',
+    #         'active': 0,
+    #         'iteration': 7
+    #     },
+    # ]
 
-    assets_action = Asset.query.all()
+    # TODO Move to "in my hands" and "in other hands" with addition of accounts
+    assets_description = Asset.query.filter_by(status=1).all() # TODO Add pagination
+    assets_iteration = Asset.query.filter_by(status=2).all() # TODO Add pagination
+    assets_verification = Asset.query.filter_by(status=3).all() # TODO Add pagination
 
     return render_template('index.html',
                            title='Home',
-                           assets_action=assets_action,
-                           assets_otherhands=assets_otherhands,
+                           # assets_action=assets_action,
+                           # assets_otherhands=assets_otherhands,
+                           assets_description = assets_description,
+                           assets_iteration = assets_iteration,
+                           assets_verification = assets_verification,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished)
 
@@ -207,14 +213,14 @@ def asset(asset_id):
 
 @app.route('/descriptions', methods=['GET', 'POST'])
 def descriptions():
-    descriptions = Asset.query.all()
+    descriptions = Description.query.all()
     return render_template('descriptions.html',
                             descriptions=descriptions,
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
 @app.route('/description')
-@app.route('/description/<int:asset_id>/')
+@app.route('/description/<int:description_id>/')
 def description(description_id):
     description = Description.query.filter_by(id=description_id).first()
     if description is None:
@@ -222,6 +228,26 @@ def description(description_id):
         return redirect(url_for('index'))
     return render_template('description.html',
                            description=description,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
+
+@app.route('/iterations', methods=['GET', 'POST'])
+def iterations():
+    iterations = Iteration.query.all()
+    return render_template('iterations.html',
+                            iterations=iterations,
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
+
+@app.route('/iteration')
+@app.route('/iteration/<int:iteration_id>/')
+def iteration(description_id):
+    iteration = Tteration.query.filter_by(id=iteration_id).first()
+    if iteration is None:
+        flash(gettext('Itteration not found.'))
+        return redirect(url_for('index'))
+    return render_template('iteration.html',
+                           iteration=iteration,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished)
 
@@ -265,6 +291,7 @@ def delete_sound():
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
+# Create new project or asset with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_asset', methods=['GET', 'POST'])
 def add_asset():
     form = NewAssetForm()
@@ -273,6 +300,7 @@ def add_asset():
         asset.timestamp = datetime.now()
         asset.name = form.name.data
         asset.finished = False
+        asset.status = AssetStatus.iteration.value
         db.session.add(asset)
         db.session.commit()    
         
@@ -352,8 +380,8 @@ def verify():
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
-@app.route('/iteratation', methods=['GET', 'POST'])
-def iteratation():
+@app.route('/iterate', methods=['GET', 'POST'])
+def iterate():
     return render_template('iterate.html',
                             title='Iterate asset',
                             assets_ongoing = HorizontalMenu.assets_ongoing,

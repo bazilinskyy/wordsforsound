@@ -39,6 +39,11 @@ class SoundFamily(Enum):
     spatial = 5
     looming = 6
 
+class AssetStatus(Enum):
+    description = 1
+    iteration = 2
+    verification = 3
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
@@ -116,6 +121,7 @@ class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     finished  = db.Column(db.Boolean)
+    status = db.Column(db.Integer)
     descriptions = db.relationship('Description', backref='asset',
                                 lazy='dynamic')
     validations = db.relationship('Validation', backref='asset',
@@ -132,7 +138,6 @@ class Asset(db.Model):
 class AssetVersion(db.Model):
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200))
     url = db.Column(db.String(400))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     timestamp = db.Column(db.DateTime)

@@ -10,8 +10,12 @@
 <!-- Description form -->
 <div class="well">
 
-{{ asset.id }} - {{ asset.name }}
+Id: {{ asset.id }}
+Name: {{ asset.name }}
+Status: {{ asset.status }}
+Finished: {{ asset.finished }}
 
+Descriptions:
 <div class="list-group">
     {% for description in asset.descriptions %}
       <a href="{{ url_for('description') }}/{{ description.id }}" class="list-group-item">{{ description.id }}</a>

@@ -15,10 +15,12 @@
         </td>
         <td width="100px">
             <p>
-            	{% if asset.active==1 %} 
-            		<a type="button" class="btn btn-primary btn-block" href="{{ url_for('verification') }}">Verify</a>
-            	{% elif asset.active==2 %}
-            		<a type="button" class="btn btn-success btn-block" href="{{ url_for('iteratation') }}">Iterate</a>
+                {% if asset.status==1 %} 
+                    <a type="button" class="btn btn-primary btn-block" href="{{ url_for('describe') }}">Describe</a>
+            	{% elif asset.status==2 %} 
+            		<a type="button" class="btn btn-warning btn-block" href="{{ url_for('iterate') }}">Iterate</a>
+            	{% elif asset.active==3 %}
+            		<a type="button" class="btn btn-success btn-block" href="{{ url_for('verify') }}">Verify</a>
             	{% else %}
             		<button type="button" class="btn btn-default btn-block" disabled="disabled">In work</button>
             	{% endif %}
