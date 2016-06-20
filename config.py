@@ -35,3 +35,7 @@ MAX_SEARCH_RESULTS = 50
 # horizontal menu
 ONGOING_PROJECTS_MENU = 5
 FINISHED_PROJECTS_MENU= 5
+
+# uploading sounds
+SOUND_UPLOAD_FOLDER = 'sound_uploads/'
+SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac']

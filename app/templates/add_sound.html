@@ -9,7 +9,7 @@
 
 <!-- Description form -->
 <div class="well">
-<form action="" method="post" name="add_sound">
+<form action="" method="post" name="add_sound" enctype="multipart/form-data">
   {{ form.hidden_tag() }}
   <fieldset class="form-group">
     {{ form.name(class_='form-control', placeholder='Name of sound') }}
@@ -48,8 +48,13 @@
     <textarea class="form-control" id="exampleTextarea" rows="2">warning, mercedes, happy, joy, metal</textarea>
   </fieldset>
   <fieldset class="form-group">
-    <label for="exampleInputFile">Upload file</label>
-    <input type="file" class="form-control-file" id="exampleInputFile">
+    <label for="upload_file">Upload file</label>
+
+        {{ form.upload_file(class_='form-control') }}
+        {% for error in form.upload_file.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
   </fieldset>
   <button type="submit" class="btn btn-block btn-success">Add</button>
 </form>

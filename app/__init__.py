@@ -10,6 +10,7 @@ from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, \
 
 app = Flask(__name__)
 app.config.from_object('config')
+app.config['MAX_CONTENT_LENGTH'] = 512 * 1024 * 1024
 db = SQLAlchemy(app)
 lm = LoginManager()
 lm.init_app(app)

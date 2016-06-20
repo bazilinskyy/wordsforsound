@@ -7,7 +7,10 @@ from app import app, db, lm, oid
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification
 from .emails import follower_notification
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, SOUND_UPLOAD_FOLDER
+from werkzeug import secure_filename
+from flask_wtf.file import FileField
+import os
 
 @lm.user_loader
 def load_user(id):
@@ -212,14 +215,22 @@ def add_sound():
         sound.description = form.description.data
         sound.sound_type = form.sound_type.data
         sound.sound_family = form.sound_family.data
+
+        # Upload file
+        filename = secure_filename(form.upload_file.data.filename)
+        form.upload_file.data.save(SOUND_UPLOAD_FOLDER + filename)
+        sound.filename = filename
+
         db.session.add(sound)
         db.session.commit()    
         
         flash('New sound added.')
         return redirect(url_for('add_sound'))
+    filename = None
     return render_template('add_sound.html',
                             form=form,
                             title='Add sound',
+                            filename=filename,
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
@@ -231,6 +242,7 @@ def delete_sound():
         if sound == None:
             flash('Sound ' +  form.name.data + ' does not exist.')
             return redirect(url_for('delete_sound'))
+    	os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
         db.session.delete(sound)
         db.session.commit()  
         
