@@ -11,6 +11,7 @@ from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FI
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
+import time
 
 @lm.user_loader
 def load_user(id):
@@ -87,6 +88,15 @@ def tag(tag_id):
 def add_tag():
     form = AddTagForm()
     if form.validate_on_submit():
+        # check if tag woth the same name exists
+        tag = Tag.query.filter_by(name=form.name.data).first()
+        if tag is not None:
+            flash('This tag already exists.')
+            return render_template('add_tag.html',
+                            form=form,
+                            title='Add tag',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
         tag = Tag()
         tag.timestamp = datetime.now()
         tag.name = form.name.data
@@ -241,6 +251,15 @@ def verification(verification_id):
 def add_sound():
     form = AddSoundForm()
     if form.validate_on_submit():
+        # check if sound woth the same name exists
+        sound = Sound.query.filter_by(name=form.name.data).first()
+        if sound is not None:
+            flash('Sound with the same name already exists.')
+            return render_template('add_sound.html',
+                            form=form,
+                            title='Add sound',
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
         sound = Sound()
         sound.timestamp = datetime.now()
         sound.name = form.name.data
@@ -250,6 +269,9 @@ def add_sound():
 
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
+        if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
+            current_milli_time = lambda: int(round(time.time() * 1000))
+            filename = str(current_milli_time()) + filename
         form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
         sound.filename = filename
 
@@ -301,6 +323,9 @@ def add_asset():
         
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
+        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+            current_milli_time = lambda: int(round(time.time() * 1000))
+            filename = str(current_milli_time()) + filename
         form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
         asset.filename = filename
 
@@ -356,6 +381,9 @@ def describe(asset_id):
 
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
+        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+            current_milli_time = lambda: int(round(time.time() * 1000))
+            filename = str(current_milli_time()) + filename
         form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
         description.filename = filename
 
@@ -403,6 +431,9 @@ def verify(asset_id):
 
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
+        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+            current_milli_time = lambda: int(round(time.time() * 1000))
+            filename = str(current_milli_time()) + filename
         form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
         verification.filename = filename
 
@@ -451,6 +482,9 @@ def iterate(asset_id):
 
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
+        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+            current_milli_time = lambda: int(round(time.time() * 1000))
+            filename = str(current_milli_time()) + filename
         form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
         iteration.filename = filename
 
