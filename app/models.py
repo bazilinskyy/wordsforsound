@@ -107,6 +107,7 @@ class Sound(db.Model):
     name = db.Column(db.String(200))
     url = db.Column(db.String(400)) #location
     filename = db.Column(db.String(200))
+    description = db.Column(db.String(1000))
     tags = db.relationship('Tag',
                                secondary=tags_sounds_table,
                                backref=db.backref('tags_for_sound', lazy='dynamic'),

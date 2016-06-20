@@ -135,6 +135,8 @@ def sound(sound_id):
         flash(gettext('Sound not found.'))
         return redirect(url_for('index'))
     sound_location = SOUND_UPLOAD_FOLDER
+    if sound.description == '':
+    	sound.description = 'N/A'
     return render_template('sound.html',
                            sound=sound,
                            sound_location=sound_location,
@@ -220,7 +222,7 @@ def add_sound():
 
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
-        form.upload_file.data.save(SOUND_UPLOAD_FOLDER + filename)
+        form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
         sound.filename = filename
 
         db.session.add(sound)
