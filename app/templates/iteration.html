@@ -5,14 +5,14 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Description {{ description.id }}</h1>
+<h1>Iteration {{ iteration.id }}</h1>
 
 <!-- Description form -->
 <div class="well">
 
-{{ description.id }} - {{ description.description }}
+{{ iteration.id }} - {{ iteration.description }}
 
-<p><a href="/{{ attachment_location }}{{ description.filename }}">Supplementary attachment</a></p>
+<p><a href="/{{ attachment_location }}{{ iteration.filename }}">Supplementary attachment</a></p>
 
 </div>
 {% endblock %}

@@ -126,6 +126,7 @@ class Asset(db.Model):
     status = db.Column(db.Integer)
     iteration_number = db.Column(db.Integer)
     description = db.Column(db.String(1000))
+    filename = db.Column(db.String(200))
     descriptions = db.relationship('Description', backref='asset',
                                 lazy='dynamic')
     verifications = db.relationship('Verification', backref='asset',
@@ -153,6 +154,7 @@ class Description(db.Model):
     # sound_family = db.Column(db.Enum(SoundFamily))
     sound_family = db.Column(db.String(20))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    filename = db.Column(db.String(200))
 
     def __repr__(self):
         return '<Description %r>' % (self.description[0:50])
@@ -163,12 +165,13 @@ class Verification(db.Model):
     description = db.Column(db.String(1000))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     timestamp = db.Column(db.DateTime)
+    filename = db.Column(db.String(200))
 
 class Iteration(db.Model):
     __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(1000))
-    url = db.Column(db.String(400))
+    filename = db.Column(db.String(200))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     timestamp = db.Column(db.DateTime)
 

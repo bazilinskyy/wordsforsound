@@ -7,7 +7,7 @@ from app import app, db, lm, oid
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification
 from .emails import follower_notification
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, SOUND_UPLOAD_FOLDER
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -27,12 +27,12 @@ def before_request():
 
 # For horizontal menu
 class HorizontalMenu():
-    # assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
-    # assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
+    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
+    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
 
     # THIS LISTS NEED TO BE USED WHENER MIGRATING DB
-    assets_ongoing = []
-    assets_finished = []
+    # assets_ongoing = []
+    # assets_finished = []
 
 
 @app.errorhandler(404)
@@ -163,9 +163,11 @@ def asset(asset_id):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
+    attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('asset.html',
                            asset=asset,
                            type=type,
+                           attachment_location = attachment_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished)
 
@@ -177,15 +179,17 @@ def descriptions():
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
-@app.route('/description')
-@app.route('/description/<int:description_id>/')
+@app.route('/description', methods=['GET', 'POST'])
+@app.route('/description/<int:description_id>/', methods=['GET', 'POST'])
 def description(description_id):
     description = Description.query.filter_by(id=description_id).first()
     if description is None:
-        flash(gettext('description not found.'))
+        flash('Description not found.')
         return redirect(url_for('index'))
+    attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('description.html',
                            description=description,
+                           attachment_location=attachment_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished)
 
@@ -197,15 +201,39 @@ def iterations():
                             assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished)
 
-@app.route('/iteration')
-@app.route('/iteration/<int:iteration_id>/')
-def iteration(description_id):
-    iteration = Tteration.query.filter_by(id=iteration_id).first()
+@app.route('/iteration', methods=['GET', 'POST'])
+@app.route('/iteration/<int:iteration_id>/', methods=['GET', 'POST'])
+def iteration(iteration_id):
+    iteration = Iteration.query.filter_by(id=iteration_id).first()
     if iteration is None:
         flash(gettext('Itteration not found.'))
         return redirect(url_for('index'))
+    attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('iteration.html',
                            iteration=iteration,
+                           attachment_location=attachment_location,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished)
+
+@app.route('/verifications', methods=['GET', 'POST'])
+def verifications():
+    verifications = Verification.query.all()
+    return render_template('verifications.html',
+                            verifications=verifications,
+                            assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished)
+
+@app.route('/verification', methods=['GET', 'POST'])
+@app.route('/verification/<int:verification_id>/', methods=['GET', 'POST'])
+def verification(verification_id):
+    verification = Verification.query.filter_by(id=verification_id).first()
+    if verification is None:
+        flash('Verification not found.')
+        return redirect(url_for('index'))
+    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    return render_template('verification.html',
+                           verification=verification,
+                           attachment_location=attachment_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished)
 
@@ -270,6 +298,12 @@ def add_asset():
         asset.status = AssetStatus.iteration.value
         asset.iteration_number = 0
         asset.description = form.description.data
+        
+        # Upload file
+        filename = secure_filename(form.upload_file.data.filename)
+        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+        asset.filename = filename
+
         db.session.add(asset)
         db.session.commit()    
         
@@ -320,6 +354,11 @@ def describe(asset_id):
 
         asset.description = form.description.data
 
+        # Upload file
+        filename = secure_filename(form.upload_file.data.filename)
+        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+        description.filename = filename
+
         db.session.add(description)
         db.session.commit()
         
@@ -361,6 +400,11 @@ def verify(asset_id):
         verification.description = form.description.data
         verification.timestamp = datetime.now()
         verification.asset_id = asset.id
+
+        # Upload file
+        filename = secure_filename(form.upload_file.data.filename)
+        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+        verification.filename = filename
 
         asset.description = form.description.data
         asset.status = AssetStatus.description.value
@@ -404,6 +448,11 @@ def iterate(asset_id):
         iteration.description = form.description.data
         iteration.timestamp = datetime.now()
         iteration.asset_id = asset.id
+
+        # Upload file
+        filename = secure_filename(form.upload_file.data.filename)
+        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+        iteration.filename = filename
 
         asset.iteration_number = asset.iteration_number+1
         asset.description = form.description.data

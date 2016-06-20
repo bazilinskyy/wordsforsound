@@ -5,7 +5,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Descriptions</h1>
+<h1>Verifications in database</h1>
 
 <!-- Description form -->
 <div class="well">
@@ -16,8 +16,8 @@
   </form> -->
 
   <div class="list-group">
-    {% for description in descriptions %}
-      <a href="{{ url_for('description') }}/{{ description.id }}" class="list-group-item">{{ description.name }}</a>
+    {% for verification in verifications %}
+      <a href="{{ url_for('verification') }}/{{ verification.id }}" class="list-group-item">{{ verification.name }}</a>
     {% endfor %}
   </div>
 

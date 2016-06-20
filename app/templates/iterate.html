@@ -8,7 +8,7 @@
 <h1>Iteration for asset {{ asset.name }}</h1>
 
 <!-- Description form -->
-<form action="" method="post" name="iterate">
+<form action="" method="post" name="iterate" enctype="multipart/form-data">
   {{ form.hidden_tag() }}
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -25,9 +25,14 @@
 
       </fieldset>
       <fieldset class="form-group">
-        <label for="exampleInputFile">Attachment</label>
-        <input type="file" class="form-control-file" id="exampleInputFile">
-      </fieldset>
+          <label for="upload_file">Supplementary attachment</label>
+
+              {{ form.upload_file(class_='form-control') }}
+              {% for error in form.upload_file.errors %}
+                  <span class="help-inline">[{{ error }}]</span><br>
+              {% endfor %}
+
+        </fieldset>
     </div>
   </div>
   <div class="panel-group">
