@@ -134,8 +134,10 @@ def sound(sound_id):
     if sound is None:
         flash(gettext('Sound not found.'))
         return redirect(url_for('index'))
+    sound_location = SOUND_UPLOAD_FOLDER
     return render_template('sound.html',
                            sound=sound,
+                           sound_location=sound_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished)
 
