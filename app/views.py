@@ -4,10 +4,10 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm
-from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification
+from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm, NewProjectForm
+from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project
 from .emails import follower_notification
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -29,13 +29,16 @@ def before_request():
 
 # For horizontal menu
 class HorizontalMenu():
-    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
-    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
+    # assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_ASSETS_MENU).all()
+    # assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_ASSETS_MENU).all()
+    # projects_ongoing = Project.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
+    # projects_finished = Project.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
 
     # THIS LISTS NEED TO BE USED WHENER MIGRATING DB
-    # assets_ongoing = []
-    # assets_finished = []
-
+    assets_ongoing = []
+    assets_finished = []
+    projects_ongoing = []
+    projects_finished = []
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -64,15 +67,19 @@ def index(page=1):
                            assets_iteration = assets_iteration,
                            assets_verification = assets_verification,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
     tags = Tag.query.all()
     return render_template('tags.html',
                             tags=tags,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
 def tag(tag_id):
@@ -83,7 +90,9 @@ def tag(tag_id):
     return render_template('tag.html',
                            tag=tag,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 def add_tag():
@@ -96,8 +105,10 @@ def add_tag():
             return render_template('add_tag.html',
                             form=form,
                             title='Add tag',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
         tag = Tag()
         tag.timestamp = datetime.now()
         tag.name = form.name.data
@@ -120,8 +131,10 @@ def add_tag():
     return render_template('add_tag.html',
                             form=form,
                             title='Add tag',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 def delete_tag():
@@ -139,16 +152,20 @@ def delete_tag():
     return render_template('delete_tag.html',
                             form=form,
                             title='Delete tag',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/sounds', methods=['GET', 'POST'])
 def sounds():
     sounds = Sound.query.all()
     return render_template('sounds.html',
                             sounds=sounds,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 @app.route('/sound')
 @app.route('/sound/<int:sound_id>/')
 def sound(sound_id):
@@ -163,7 +180,9 @@ def sound(sound_id):
                            sound=sound,
                            sound_location=sound_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
 def assets(assets_type):
@@ -176,8 +195,10 @@ def assets(assets_type):
     return render_template('assets.html',
                             assets=assets,
                             assets_type=assets_type,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 @app.route('/asset')
 @app.route('/asset/<int:asset_id>/')
 def asset(asset_id):
@@ -188,18 +209,21 @@ def asset(asset_id):
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('asset.html',
                            asset=asset,
-                           type=type,
                            attachment_location = attachment_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/descriptions', methods=['GET', 'POST'])
 def descriptions():
     descriptions = Description.query.all()
     return render_template('descriptions.html',
                             descriptions=descriptions,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/description', methods=['GET', 'POST'])
 @app.route('/description/<int:description_id>/', methods=['GET', 'POST'])
@@ -213,15 +237,19 @@ def description(description_id):
                            description=description,
                            attachment_location=attachment_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/iterations', methods=['GET', 'POST'])
 def iterations():
     iterations = Iteration.query.all()
     return render_template('iterations.html',
                             iterations=iterations,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished,)
 
 @app.route('/iteration', methods=['GET', 'POST'])
 @app.route('/iteration/<int:iteration_id>/', methods=['GET', 'POST'])
@@ -235,15 +263,19 @@ def iteration(iteration_id):
                            iteration=iteration,
                            attachment_location=attachment_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/verifications', methods=['GET', 'POST'])
 def verifications():
     verifications = Verification.query.all()
     return render_template('verifications.html',
                             verifications=verifications,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/verification', methods=['GET', 'POST'])
 @app.route('/verification/<int:verification_id>/', methods=['GET', 'POST'])
@@ -257,7 +289,9 @@ def verification(verification_id):
                            verification=verification,
                            attachment_location=attachment_location,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/add_sound', methods=['GET', 'POST'])
 def add_sound():
@@ -270,8 +304,10 @@ def add_sound():
             return render_template('add_sound.html',
                             form=form,
                             title='Add sound',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
         sound = Sound()
         sound.timestamp = datetime.now()
         sound.name = form.name.data
@@ -297,8 +333,10 @@ def add_sound():
                             form=form,
                             title='Add sound',
                             filename=filename,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
 def delete_sound():
@@ -317,10 +355,12 @@ def delete_sound():
     return render_template('delete_sound.html',
                             form=form,
                             title='Delete sound',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
-# Create new project or asset with status = iteration. Creation process also includes the first description stage.
+# Create new asset with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_asset', methods=['GET', 'POST'])
 def add_asset():
     form = NewAssetForm()
@@ -360,9 +400,11 @@ def add_asset():
         return redirect(url_for('index'))
     return render_template('add_asset.html',
                             form=form,
-                            title='Describe asset',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+                            title='Add asset',
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/describe', methods=['GET', 'POST'])
 @app.route('/describe/<int:asset_id>/', methods=['GET', 'POST'])
@@ -419,8 +461,10 @@ def describe(asset_id):
                             form=form,
                             asset=asset,
                             title='Describe asset',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/verify', methods=['GET', 'POST'])
 @app.route('/verify/<int:asset_id>/', methods=['GET', 'POST'])
@@ -480,8 +524,10 @@ def verify(asset_id):
                             form=form,
                             asset=asset,
                             title='Verify asset',
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/iterate', methods=['GET', 'POST'])
 @app.route('/iterate/<int:asset_id>/', methods=['GET', 'POST'])
@@ -533,8 +579,73 @@ def iterate(asset_id):
                             form=form,
                             asset=asset,
                             title='Iterate asset',
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
+
+# Create new project with status = iteration. Creation process also includes the first description stage.
+@app.route('/add_project', methods=['GET', 'POST'])
+def add_project():
+    form = NewProjectForm()
+    if form.validate_on_submit():
+        project = Project()
+        project.timestamp = datetime.now()
+        project.name = form.name.data
+        project.description = form.description.data
+        
+        # Upload file
+        if form.upload_file.data.filename:
+            filename = secure_filename(form.upload_file.data.filename)
+            if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                current_milli_time = lambda: int(round(time.time() * 1000))
+                filename = str(current_milli_time()) + filename
+            form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+            project.filename = filename
+
+        db.session.add(project)
+        db.session.commit()    
+        
+        flash('New project created.')
+        return redirect(url_for('index'))
+    return render_template('add_project.html',
+                            form=form,
+                            title='Add project',
+							assets_ongoing = HorizontalMenu.assets_ongoing,
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
+
+@app.route('/projects/<string:projects_type>', methods=['GET', 'POST'])
+def projects(projects_type):
+    if projects_type == 'ongoing':
+        projects = Project.query.filter_by(finished=False).all()
+    elif projects_type == 'finished':
+        projects = Project.query.filter_by(finished=True).all()
+    else:
+        projects = Project.query.all()
+    return render_template('projects.html',
+                            projects=projects,
+                            projects_type=projects_type,
                             assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished)
+                            assets_finished = HorizontalMenu.assets_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
+@app.route('/project')
+@app.route('/project/<int:project_id>/')
+def project(project_id):
+    project = Project.query.filter_by(id=project_id).first()
+    if project is None:
+        flash('Project not found.')
+        return redirect(url_for('index'))
+    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    return render_template('project.html',
+                           project=project,
+                           attachment_location = attachment_location,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -550,8 +661,9 @@ def login():
                            form=form,
                            providers=app.config['OPENID_PROVIDERS'],
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
-
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
 
 @oid.after_login
 def after_login(resp):
@@ -597,4 +709,6 @@ def user(nickname, page=1):
                            user=user,
                            posts=posts,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished)
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)

@@ -1,0 +1,27 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+
+<h1>Project {{ project.name }}</h1>
+
+<!-- Description form -->
+<div class="well">
+
+Id: {{ project.id }}
+Name: {{ project.name }}
+
+Descriptions:
+<div class="list-group">
+    {% for description in project.descriptions %}
+      <a href="{{ url_for('description') }}/{{ description.id }}" class="list-group-item">{{ description.id }}</a>
+    {% endfor %}
+  </div>
+
+<a href="/{{ attachment_location }}{{ project.filename }}">Supplementary attachment</a>
+
+
+</div>
+{% endblock %}

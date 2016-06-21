@@ -23,6 +23,13 @@
         {% endfor %}
       </fieldset>
       <fieldset class="form-group">
+        <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of asset"> -->
+        {{ form.project(class_='form-control', placeholder='Project of asset') }}
+        {% for error in form.project.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+      </fieldset>
+      <fieldset class="form-group">
         <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
         {{ form.duration(class_='form-control', placeholder='Duration') }}
         {% for error in form.duration.errors %}

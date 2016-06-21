@@ -29,39 +29,64 @@
       <a class="navbar-brand" href="{{ url_for('index') }}">wordsforsound</a>
     </div>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li {% if request.path=="/index" or request.path=="/" %} class="active"{% endif %}><a href="{{ url_for('index') }}">Home</a></li>
+        
         <li {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Database <span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tags <span class="caret"></span></a>
           <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
-            <li class="dropdown-header">Tags</li>
             <li {% if request.path=="/tags" %} class="active"{% endif %}><a href="{{ url_for('tags') }}">Tags</a></li>
             <li {% if request.path=="/add_tag" %} class="active"{% endif %}><a href="{{ url_for('add_tag') }}">Add tag</a></li>
             <li {% if request.path=="/delete_tag" %} class="active"{% endif %}><a href="{{ url_for('delete_tag') }}">Delete tag</a></li>
-            <li class="dropdown-header">Sounds</li>
+          </ul>
+        </li>
+
+        <li {% if request.path=="/sounds" or request.path=="/add_sound" or request.path=="/delete_sound"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sounds <span class="caret"></span></a>
+          <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
             <li {% if request.path=="/sounds" %} class="active"{% endif %}><a href="{{ url_for('sounds') }}">Sounds</a></li>
             <li {% if request.path=="/add_sound" %} class="active"{% endif %}><a href="{{ url_for('add_sound') }}">Add sound</a></li>
             <li {% if request.path=="/delete_sound" %} class="active"{% endif %}><a href="{{ url_for('delete_sound') }}">Delete sound</a></li>
           </ul>
         </li>
-        <li class="dropdown">
+
+        <li {% if request.path=="/projects" or request.path=="/add_project" or request.path=="/delete_project"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li {% if request.path=="/add_project" %} class="active"{% endif %}><a href="{{ url_for('add_project') }}">New project <span class="sr-only">(current)</span></a></li>
+            <li class="dropdown-header">Ongoing projects</li>
+            {% for project in projects_ongoing %}
+                <li><a href="{{ url_for('project') }}/{{ project.id }}">{{ project.name }}</a></li>
+            {% endfor %}
+            <li><a href="{{ url_for('projects', projects_type='ongoing') }}">View all</a></li>
+            <li class="dropdown-header">Finished projects</li>
+            {% for project in projects_finished %}
+                <li><a href="{{ url_for('project') }}/{{ project.id }}">{{ project.name }}</a></li>
+            {% endfor %}
+            <li><a href="{{ url_for('projects', projects_type='finished') }}">View all</a></li>
+          </ul>
+        </li>
+
+        <li {% if request.path=="/assets" or request.path=="/add_asset" or request.path=="/delete_asset"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Assets <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li {% if request.path=="/add_asset" %} class="active"{% endif %}><a href="{{ url_for('add_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
-            <li class="dropdown-header">Ongoing projects</li>
+            <li class="dropdown-header">Ongoing assets</li>
             {% for asset in assets_ongoing %}
                 <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
             {% endfor %}
             <li><a href="{{ url_for('assets', assets_type='ongoing') }}">View all</a></li>
-            <li class="dropdown-header">Finished projects</li>
+            <li class="dropdown-header">Finished assets</li>
             {% for asset in assets_finished %}
                 <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
             {% endfor %}
             <li><a href="{{ url_for('assets', assets_type='finished') }}">View all</a></li>
           </ul>
         </li>
+
+        <a tole="button" class="btn btn-default navbar-btn" style="margin-left: 3px" href="{{ url_for('add_asset') }}">New asset</a>
+
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->

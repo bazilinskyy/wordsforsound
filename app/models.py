@@ -128,6 +128,7 @@ class Asset(db.Model):
     iteration_number = db.Column(db.Integer)
     description = db.Column(db.String(1000))
     filename = db.Column(db.String(200))
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     descriptions = db.relationship('Description', backref='asset',
                                 lazy='dynamic')
     verifications = db.relationship('Verification', backref='asset',
@@ -175,6 +176,21 @@ class Iteration(db.Model):
     filename = db.Column(db.String(200))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     timestamp = db.Column(db.DateTime)
+
+class Project(db.Model):
+    __searchable__ = ['name']
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+    finished  = db.Column(db.Boolean)
+    description = db.Column(db.String(1000))
+    filename = db.Column(db.String(200))
+    assets = db.relationship('Asset', backref='project',
+                                lazy='dynamic')
+    timestamp = db.Column(db.DateTime)
+
+    @property
+    def unique_name(self):
+        return name + '-' + timestamp
 
 # if enable_search:
 #     whooshalchemy.whoosh_index(app, Sound)

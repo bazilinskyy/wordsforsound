@@ -1,0 +1,50 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+
+<h1>New project</h1>
+
+<!-- Description form -->
+<form action="" method="post" name="add_project" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Basic description</h3>
+    </div>
+    <div class="panel-body">
+      <fieldset class="form-group">
+        <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of project"> -->
+        {{ form.name(class_='form-control', placeholder='Name of project') }}
+        {% for error in form.name.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+      </fieldset>
+      
+      <fieldset class="form-group">
+        <label for="exampleTextarea">Description</label>
+        <!-- <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea> -->
+        {{ form.description(class_='form-control', rows='6') }}
+        {% for error in form.description.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+      <fieldset class="form-group">
+          <label for="upload_file">Supplementary attachment</label>
+
+              {{ form.upload_file(class_='form-control') }}
+              {% for error in form.upload_file.errors %}
+                  <span class="help-inline">[{{ error }}]</span><br>
+              {% endfor %}
+
+        </fieldset>
+    </div>
+  </div>
+  <div class="text-center">
+    <button type="submit" class="btn btn-block btn-primary">Submit</button>
+  </div>
+</form>
+{% endblock %}
