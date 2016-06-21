@@ -7,5 +7,3 @@ tmp/
 *.sublime-project
 *.sublime-workspace
 tests/
-app/static/sound_uploads/*
-app/static/attachment_uploads/*

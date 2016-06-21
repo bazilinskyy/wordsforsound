@@ -1,7 +1,6 @@
 <!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
 <!-- extend base layout -->
 {% extends "base.html" %}
-
 {% block content %}
 {% include 'flash.html' %}
 
@@ -14,6 +13,7 @@
 
 <strong>Description</strong> {{ sound.description }}
 
+<script src="/static/js/wavesurfer.min.js"></script>
 <div id="waveform"></div>
 
 <script>
