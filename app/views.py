@@ -7,11 +7,12 @@ from app import app, db, lm, oid
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification
 from .emails import follower_notification
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
 import time
+import json
 
 @lm.user_loader
 def load_user(id):
@@ -101,7 +102,18 @@ def add_tag():
         tag.timestamp = datetime.now()
         tag.name = form.name.data
         db.session.add(tag)
-        db.session.commit()    
+        db.session.commit()
+
+        # for autofill for tags
+        tags = Tag.query.all()
+        tags_json = []
+        if tags is not None:
+	        for tag in tags:
+		        tag_id = tag.id
+		        tag_name = tag.name
+		        tags_json.append({'value': tag_id, 'text' : tag_name})
+	  	with open('app/' + TAGS_FILE, 'w') as outfile:
+			json.dump(tags_json, outfile)  
         
         flash('New tag added.')
         return redirect(url_for('add_tag'))
@@ -276,7 +288,7 @@ def add_sound():
         sound.filename = filename
 
         db.session.add(sound)
-        db.session.commit()    
+        db.session.commit()
         
         flash('New sound added.')
         return redirect(url_for('add_sound'))

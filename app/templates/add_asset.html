@@ -78,9 +78,14 @@
 
       </fieldset>
       <fieldset class="form-group">
-        <label for="exampleInputFile">Supplementary attachment</label>
-        <input type="file" class="form-control-file" id="exampleInputFile">
-      </fieldset>
+          <label for="upload_file">Supplementary attachment</label>
+
+              {{ form.upload_file(class_='form-control') }}
+              {% for error in form.upload_file.errors %}
+                  <span class="help-inline">[{{ error }}]</span><br>
+              {% endfor %}
+
+        </fieldset>
     </div>
   </div>
   <div class="panel-group">

@@ -43,5 +43,5 @@ SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac']
 # uploading attachments
 ATACHMENT_UPLOAD_FOLDER = 'static/attachment_uploads/'
 
-# db migration
-MIGRATION_IN_PROGRESS = False
+# json files for tags
+TAGS_FILE = '/static/tags.json'
