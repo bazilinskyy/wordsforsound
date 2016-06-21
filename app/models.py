@@ -43,6 +43,7 @@ class AssetStatus(Enum):
     description = 1
     iteration = 2
     verification = 3
+    finished = 4
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

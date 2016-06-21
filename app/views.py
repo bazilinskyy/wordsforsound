@@ -334,12 +334,13 @@ def add_asset():
         asset.description = form.description.data
         
         # Upload file
-        filename = secure_filename(form.upload_file.data.filename)
-        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-            current_milli_time = lambda: int(round(time.time() * 1000))
-            filename = str(current_milli_time()) + filename
-        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-        asset.filename = filename
+        if form.upload_file.data.filename:
+	        filename = secure_filename(form.upload_file.data.filename)
+	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+	            current_milli_time = lambda: int(round(time.time() * 1000))
+	            filename = str(current_milli_time()) + filename
+	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+	        asset.filename = filename
 
         db.session.add(asset)
         db.session.commit()    
@@ -390,14 +391,16 @@ def describe(asset_id):
         description.asset_id = asset.id
 
         asset.description = form.description.data
+        asset.status = AssetStatus.iteration.value
 
         # Upload file
-        filename = secure_filename(form.upload_file.data.filename)
-        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-            current_milli_time = lambda: int(round(time.time() * 1000))
-            filename = str(current_milli_time()) + filename
-        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-        description.filename = filename
+        if form.upload_file.data:
+	        filename = secure_filename(form.upload_file.data.filename)
+	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+	            current_milli_time = lambda: int(round(time.time() * 1000))
+	            filename = str(current_milli_time()) + filename
+	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+	        description.filename = filename
 
         db.session.add(description)
         db.session.commit()
@@ -442,20 +445,29 @@ def verify(asset_id):
         verification.asset_id = asset.id
 
         # Upload file
-        filename = secure_filename(form.upload_file.data.filename)
-        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-            current_milli_time = lambda: int(round(time.time() * 1000))
-            filename = str(current_milli_time()) + filename
-        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-        verification.filename = filename
+        if form.upload_file.data:
+	        filename = secure_filename(form.upload_file.data.filename)
+	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+	            current_milli_time = lambda: int(round(time.time() * 1000))
+	            filename = str(current_milli_time()) + filename
+	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+	        verification.filename = filename
 
         asset.description = form.description.data
-        asset.status = AssetStatus.description.value
+        if request.method == 'POST':
+	        if request.form['submit'] == 'iterate':
+	            asset.status = AssetStatus.description.value
+	            flash('Verification created.')
+	        elif request.form['submit'] == 'finalise':
+	            asset.status = AssetStatus.finished.value
+	            asset.finished = True
+	            flash('Asset was marked as finalised.')
+	        else:
+	            pass # unknown
 
         db.session.add(verification)
         db.session.commit()
-        
-        flash('Verification created.')
+       
         return redirect(url_for('index'))
     # elif request.method != "POST":
     #     if verification is not None:
@@ -493,12 +505,13 @@ def iterate(asset_id):
         iteration.asset_id = asset.id
 
         # Upload file
-        filename = secure_filename(form.upload_file.data.filename)
-        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-            current_milli_time = lambda: int(round(time.time() * 1000))
-            filename = str(current_milli_time()) + filename
-        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-        iteration.filename = filename
+        if form.upload_file.data:
+	        filename = secure_filename(form.upload_file.data.filename)
+	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+	            current_milli_time = lambda: int(round(time.time() * 1000))
+	            filename = str(current_milli_time()) + filename
+	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+	        iteration.filename = filename
 
         asset.iteration_number = asset.iteration_number+1
         asset.description = form.description.data
