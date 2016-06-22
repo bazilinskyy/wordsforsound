@@ -1,0 +1,96 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+
+<h1>Edit existing sound</h1>
+
+<!-- Description form -->
+<div class="well">
+  <form action="" method="post" name="add_sound" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      {{ form.name(class_='form-control', placeholder='Name of sound') }}
+      {% for error in form.name.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+      {% endfor %}
+    </fieldset>
+    <fieldset class="form-group">
+
+      {{ form.sound_type(class_='radio-inline') }}
+      {% for error in form.sound_type.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+      {% endfor %}
+
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="sound_family">Family</label>
+
+      {{ form.sound_family(class_='form-control') }}
+      {% for error in form.sound_family.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+      {% endfor %}
+
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="exampleTextarea">Description</label>
+
+      {{ form.description(class_='form-control', rows='6') }}
+      {% for error in form.description.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+      {% endfor %}
+
+    </fieldset>
+
+    <link href="/static/css/bootstrap-tagsinput.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-tagsinput-additional.css" rel="stylesheet">
+    <script src="/static/js/bootstrap-tagsinput.min.js"></script>
+    <script src="/static/js/typeahead.bundle.js"></script>
+
+    <fieldset class="form-group">
+
+      {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
+      {% for error in form.tags.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+      {% endfor %}
+
+    </fieldset>
+
+    <script>
+      var tags = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        prefetch: '/static/tags.json'
+      });
+      tags.initialize();
+
+      var elt = $('#tags');
+      elt.tagsinput({
+        itemValue: 'value',
+        itemText: 'text',
+        typeaheadjs: {
+          name: 'tags',
+          displayKey: 'text',
+          source: tags.ttAdapter()
+        }
+      });
+      {% for tag in sound.tags %}
+          elt.tagsinput('add', { "value": {{ tag.id }}, "text": "{{ tag.name }}"});
+      {% endfor %}
+    </script>
+
+ {#   <fieldset class="form-group">
+      <label for="upload_file">Upload file</label>
+
+      {{ form.upload_file(class_='form-control') }}
+      {% for error in form.upload_file.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+      {% endfor %}
+
+    </fieldset> #}
+    <button type="submit" class="btn btn-block btn-success">Edit</button>
+  </form>
+</div>
+{% endblock %}

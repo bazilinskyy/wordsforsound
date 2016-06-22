@@ -67,3 +67,11 @@ class AddSoundForm(Form):
 	upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
 	tags = StringField('tags')
 	# upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(audio, 'Sounds only!')])
+
+class SoundEditForm(Form):
+	name = StringField('name', validators=[DataRequired()])
+	description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
+	sound_type = RadioField('sound_type', choices=[('1', 'Earcon'),('2', 'Dynamic earcon'),('3', 'Spearcon')], default='1', validators=[DataRequired()])
+	sound_family = SelectField('sound_family', choices=[('1','Warning'),('2','Notification'),('3','Confirmation'),('4','Status alert')])
+	upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
+	tags = StringField('tags')

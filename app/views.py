@@ -4,7 +4,7 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm, NewProjectForm
+from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm, NewProjectForm, SoundEditForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
@@ -13,6 +13,11 @@ from flask_wtf.file import FileField
 import os
 import time
 import json
+
+def redirect_url(default='index'):
+    return request.args.get('next') or \
+           request.referrer or \
+           url_for(default)
 
 @lm.user_loader
 def load_user(id):
@@ -166,19 +171,71 @@ def sounds():
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
-@app.route('/sound')
-@app.route('/sound/<int:sound_id>/')
+
+@app.route('/sound', methods=['GET', 'POST'])
+@app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
 def sound(sound_id):
     sound = Sound.query.filter_by(id=sound_id).first()
     if sound is None:
         flash(gettext('Sound not found.'))
         return redirect(url_for('index'))
+
     sound_location = SOUND_UPLOAD_FOLDER
     if sound.description == '':
     	sound.description = 'N/A'
+
     return render_template('sound.html',
                            sound=sound,
                            sound_location=sound_location,
+                           assets_ongoing = HorizontalMenu.assets_ongoing,
+                           assets_finished = HorizontalMenu.assets_finished,
+                           projects_ongoing = HorizontalMenu.projects_ongoing,
+                           projects_finished = HorizontalMenu.projects_finished)
+
+@app.route('/sound/edit', methods=['GET', 'POST'])
+@app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
+def sound_edit(sound_id):
+    sound = Sound.query.filter_by(id=sound_id).first()
+    form = SoundEditForm()
+
+    if form.validate_on_submit():
+        # check if sound woth the same name exists
+        sound = Sound.query.filter_by(id=sound_id).first()
+        sound.timestamp = datetime.now()
+        sound.name = form.name.data
+        sound.description = form.description.data
+        sound.sound_type = form.sound_type.data
+        sound.sound_family = form.sound_family.data
+
+        # add tags
+        sound.ags = []
+        for tag in form.tags.data:
+            if tag != ',':
+                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
+
+        # Upload file
+        filename = secure_filename(form.upload_file.data.filename)
+        if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
+            current_milli_time = lambda: int(round(time.time() * 1000))
+            filename = str(current_milli_time()) + filename
+        form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
+        sound.filename = filename
+
+        db.session.commit()
+        
+        flash('Sound was edited.')
+        return redirect(url_for('index'))
+
+    elif request.method != "POST":
+        if sound is not None:
+            form.name.data = sound.name
+            form.description.data = sound.description
+            form.sound_type.data = sound.sound_type
+            form.sound_family.data = sound.sound_family
+
+    return render_template('edit_sound.html',
+                           form=form,
+                           sound=sound,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished,
                            projects_ongoing = HorizontalMenu.projects_ongoing,
@@ -319,7 +376,6 @@ def add_sound():
         for tag in form.tags.data:
             if tag != ',':
                 sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
-                print "tag " + tag
 
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
@@ -388,12 +444,6 @@ def add_asset():
 	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
 	        asset.filename = filename
 
-        # Add tags
-        for tag in form.tags.data:
-            if tag != ',':
-                asset.tags.append(Tag.query.filter_by(id=int(tag)).first())
-                print "tag " + tag
-
         db.session.add(asset)
         db.session.commit()    
         
@@ -405,6 +455,12 @@ def add_asset():
         description.sound_family = form.sound_family.data
         description.timestamp = datetime.now()
         description.asset_id = asset.id
+
+        # Add tags
+        for tag in form.tags.data:
+            if tag != ',':
+                description.tags.append(Tag.query.filter_by(id=int(tag)).first())
+
         db.session.add(description)
         db.session.commit()
         
