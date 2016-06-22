@@ -12,6 +12,7 @@
 <h4>ID <span class="label label-default">{{ sound.id }}</span> Name <span class="label label-default">{{ sound.name }}</span> Type <span class="label label-default">{{ sound.sound_type }}</span> Family <span class="label label-default">{{ sound.sound_family }}</span></h4>
 
 <strong>Description</strong> {{ sound.description }}
+<strong>Tags</strong> {{ sound.tags.all() }}
 
 <script src="/static/js/wavesurfer.min.js"></script>
 <div id="waveform"></div>

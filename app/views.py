@@ -315,6 +315,12 @@ def add_sound():
         sound.sound_type = form.sound_type.data
         sound.sound_family = form.sound_family.data
 
+        # add tags
+        for tag in form.tags.data:
+            if tag != ',':
+                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                print "tag " + tag
+
         # Upload file
         filename = secure_filename(form.upload_file.data.filename)
         if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
@@ -381,6 +387,12 @@ def add_asset():
 	            filename = str(current_milli_time()) + filename
 	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
 	        asset.filename = filename
+
+        # Add tags
+        for tag in form.tags.data:
+            if tag != ',':
+                asset.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                print "tag " + tag
 
         db.session.add(asset)
         db.session.commit()    

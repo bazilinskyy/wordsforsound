@@ -22,8 +22,9 @@ Descriptions:
     {% endfor %}
   </div>
 
-<a href="/{{ attachment_location }}{{ asset.filename }}">Supplementary attachment</a>
+Tags: {{ asset.tags.all() }}
 
+<a href="/{{ attachment_location }}{{ asset.filename }}">Supplementary attachment</a>
 
 </div>
 {% endblock %}

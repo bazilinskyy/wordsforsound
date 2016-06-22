@@ -98,6 +98,7 @@ class Tag(db.Model):
     name = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
 
     def __repr__(self):
         return '<Tag %r>' % (self.name)
@@ -115,6 +116,7 @@ class Sound(db.Model):
                                lazy='dynamic')
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
+    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
 
     def __repr__(self):
         return '<Sound %r>' % (self.name)
@@ -127,6 +129,10 @@ class Asset(db.Model):
     status = db.Column(db.Integer)
     iteration_number = db.Column(db.Integer)
     description = db.Column(db.String(1000))
+    tags = db.relationship('Tag', backref='asset',
+                                lazy='dynamic')
+    sounds = db.relationship('Sound', backref='asset',
+                                lazy='dynamic')
     filename = db.Column(db.String(200))
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     descriptions = db.relationship('Description', backref='asset',
