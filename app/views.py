@@ -36,6 +36,10 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
         g.search_form = SearchForm()
+        g.assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_ASSETS_MENU).all()
+        g.assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_ASSETS_MENU).all()
+        g.projects_ongoing = Project.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
+        g.projects_finished = Project.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
 
 @app.after_request
 def after_request(response):
@@ -55,19 +59,6 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
-
-# For horizontal menu
-class HorizontalMenu():
-    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_ASSETS_MENU).all()
-    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_ASSETS_MENU).all()
-    projects_ongoing = Project.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
-    projects_finished = Project.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
-
-    # THIS LISTS NEED TO BE USED WHENER MIGRATING DB
-    # assets_ongoing = []
-    # assets_finished = []
-    # projects_ongoing = []
-    # projects_finished = []
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
@@ -234,22 +225,14 @@ def index(page=1):
                            # assets_otherhands=assets_otherhands,
                            assets_description = assets_description,
                            assets_iteration = assets_iteration,
-                           assets_verification = assets_verification,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           assets_verification = assets_verification)
 
 @app.route('/tags', methods=['GET', 'POST'])
 @login_required
 def tags():
     tags = Tag.query.all()
     return render_template('tags.html',
-                            tags=tags,
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            tags=tags)
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
 @login_required
@@ -259,11 +242,7 @@ def tag(tag_id):
         flash('Tag not found.')
         return redirect(url_for('index'))
     return render_template('tag.html',
-                           tag=tag,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           tag=tag)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 @login_required
@@ -276,11 +255,7 @@ def add_tag():
             flash('This tag already exists.')
             return render_template('add_tag.html',
                             form=form,
-                            title='Add tag',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Add tag')
         tag = Tag()
         tag.timestamp = datetime.now()
         tag.name = form.name.data
@@ -302,11 +277,7 @@ def add_tag():
         return redirect(url_for('add_tag'))
     return render_template('add_tag.html',
                             form=form,
-                            title='Add tag',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Add tag')
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 @login_required
@@ -324,22 +295,14 @@ def delete_tag():
         return redirect(url_for('delete_tag'))
     return render_template('delete_tag.html',
                             form=form,
-                            title='Delete tag',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Delete tag')
 
 @app.route('/sounds', methods=['GET', 'POST'])
 @login_required
 def sounds():
     sounds = Sound.query.all()
     return render_template('sounds.html',
-                            sounds=sounds,
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            sounds=sounds)
 
 @app.route('/sound', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
@@ -356,11 +319,7 @@ def sound(sound_id):
 
     return render_template('sound.html',
                            sound=sound,
-                           sound_location=sound_location,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           sound_location=sound_location)
 
 @app.route('/sound/edit', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
@@ -408,11 +367,7 @@ def sound_edit(sound_id):
 
     return render_template('edit_sound.html',
                            form=form,
-                           sound=sound,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           sound=sound)
 
 @app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
 @login_required
@@ -425,11 +380,7 @@ def assets(assets_type):
         assets = Asset.query.all()
     return render_template('assets.html',
                             assets=assets,
-                            assets_type=assets_type,
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            assets_type=assets_type)
 @app.route('/asset')
 @app.route('/asset/<int:asset_id>/')
 @login_required
@@ -441,11 +392,7 @@ def asset(asset_id):
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('asset.html',
                            asset=asset,
-                           attachment_location = attachment_location,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           attachment_location = attachment_location)
 
 
 @app.route('/project/edit', methods=['GET', 'POST'])
@@ -508,11 +455,7 @@ def edit_project(project_id):
 def descriptions():
     descriptions = Description.query.all()
     return render_template('descriptions.html',
-                            descriptions=descriptions,
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            descriptions=descriptions)
 
 @app.route('/description', methods=['GET', 'POST'])
 @app.route('/description/<int:description_id>/', methods=['GET', 'POST'])
@@ -525,11 +468,7 @@ def description(description_id):
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('description.html',
                            description=description,
-                           attachment_location=attachment_location,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           attachment_location=attachment_location)
 
 @app.route('/iterations', methods=['GET', 'POST'])
 @login_required
@@ -553,22 +492,14 @@ def iteration(iteration_id):
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('iteration.html',
                            iteration=iteration,
-                           attachment_location=attachment_location,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           attachment_location=attachment_location)
 
 @app.route('/verifications', methods=['GET', 'POST'])
 @login_required
 def verifications():
     verifications = Verification.query.all()
     return render_template('verifications.html',
-                            verifications=verifications,
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            verifications=verifications)
 
 @app.route('/verification', methods=['GET', 'POST'])
 @app.route('/verification/<int:verification_id>/', methods=['GET', 'POST'])
@@ -581,11 +512,7 @@ def verification(verification_id):
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('verification.html',
                            verification=verification,
-                           attachment_location=attachment_location,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           attachment_location=attachment_location)
 
 @app.route('/add_sound', methods=['GET', 'POST'])
 @login_required
@@ -598,11 +525,7 @@ def add_sound():
             flash('Sound with the same name already exists.')
             return render_template('add_sound.html',
                             form=form,
-                            title='Add sound',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Add sound')
         sound = Sound()
         sound.timestamp = datetime.now()
         sound.name = form.name.data
@@ -633,11 +556,7 @@ def add_sound():
     return render_template('add_sound.html',
                             form=form,
                             title='Add sound',
-                            filename=filename,
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            filename=filename)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
 @login_required
@@ -657,11 +576,7 @@ def delete_sound():
         return redirect(url_for('delete_sound'))
     return render_template('delete_sound.html',
                             form=form,
-                            title='Delete sound',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Delete sound')
 
 # Create new asset with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_asset', methods=['GET', 'POST'])
@@ -711,11 +626,7 @@ def add_asset():
         return redirect(url_for('index'))
     return render_template('add_asset.html',
                             form=form,
-                            title='Add asset',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Add asset')
 
 @app.route('/describe', methods=['GET', 'POST'])
 @app.route('/describe/<int:asset_id>/', methods=['GET', 'POST'])
@@ -772,11 +683,7 @@ def describe(asset_id):
     return render_template('describe.html',
                             form=form,
                             asset=asset,
-                            title='Describe asset',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Describe asset')
 
 @app.route('/verify', methods=['GET', 'POST'])
 @app.route('/verify/<int:asset_id>/', methods=['GET', 'POST'])
@@ -836,11 +743,7 @@ def verify(asset_id):
     return render_template('verify.html',
                             form=form,
                             asset=asset,
-                            title='Verify asset',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Verify asset')
 
 @app.route('/iterate', methods=['GET', 'POST'])
 @app.route('/iterate/<int:asset_id>/', methods=['GET', 'POST'])
@@ -892,11 +795,7 @@ def iterate(asset_id):
     return render_template('iterate.html',
                             form=form,
                             asset=asset,
-                            title='Iterate asset',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Iterate asset')
 
 # Create new project with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_project', methods=['GET', 'POST'])
@@ -926,11 +825,7 @@ def add_project():
         return redirect(url_for('index'))
     return render_template('add_project.html',
                             form=form,
-                            title='Add project',
-							              assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            title='Add project')
 
 @app.route('/projects/<string:projects_type>', methods=['GET', 'POST'])
 @login_required
@@ -959,8 +854,11 @@ def project(project_id):
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('project.html',
                            project=project,
-                           attachment_location = attachment_location,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
+                           attachment_location = attachment_location)
+
+@app.route('/search', methods=['POST'])
+@login_required
+def search():
+    if not g.search_form.validate_on_submit():
+        return redirect(url_for('index'))
+    return redirect(url_for('search_results', query=g.search_form.search.data))

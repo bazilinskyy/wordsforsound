@@ -19,14 +19,14 @@
         <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of asset"> -->
         {{ form.name(class_='form-control', placeholder='Name of asset') }}
         {% for error in form.name.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
       </fieldset>
       <fieldset class="form-group">
         <label for="project">Project</label>
         {{ form.project(class_='form-control') }}
         {% for error in form.project.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
@@ -34,101 +34,94 @@
         <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
         {{ form.duration(class_='form-control', placeholder='Duration') }}
         {% for error in form.duration.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
       </fieldset>
       <fieldset class="form-group">
         <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch"> -->
         {{ form.pitch(class_='form-control', placeholder='Pitch') }}
         {% for error in form.pitch.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
       </fieldset>
       <fieldset class="form-group">
-        <!-- <label class="radio-inline">
-          <input type="radio" name="optradio">Earcon
-        </label>
-        <label class="radio-inline">
-          <input type="radio" name="optradio">Dynamic earcon
-        </label>
-        <label class="radio-inline">
-          <input type="radio" name="optradio">Spearcon
-        </label> -->
 
-        {{ form.sound_type(class_='radio-inline') }}
+        {% for radio_item in form.sound_type %}
+        <label class="radio-inline">
+          {{ radio_item }} {{ radio_item.label }}
+        </label>
+        {% endfor %}
         {% for error in form.sound_type.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
       <fieldset class="form-group">
         <label for="sound_family">Family</label>
-<!--         <select multiple class="form-control" id="exampleSelect2">
-          <option>Warning</option>
-          <option>Notification</option>
-          <option>Confirmation</option>
-          <option>Status alert</option>
-          <option>Spatial</option>
-        </select> -->
         {{ form.sound_family(class_='form-control') }}
         {% for error in form.sound_family.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
+
       <fieldset class="form-group">
         <label for="exampleTextarea">Description</label>
         <!-- <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea> -->
         {{ form.description(class_='form-control', rows='6') }}
         {% for error in form.description.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
 
-    <link href="/static/css/bootstrap-tagsinput.css" rel="stylesheet">
-    <link href="/static/css/bootstrap-tagsinput-additional.css" rel="stylesheet">
-    <script src="/static/js/bootstrap-tagsinput.min.js"></script>
-    <script src="/static/js/typeahead.bundle.js"></script>
-
-    <fieldset class="form-group">
-
-      {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
-      {% for error in form.tags.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
-      {% endfor %}
-
-    </fieldset>
-
-    <script>
-      var tags = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: '/static/tags.json'
-      });
-      tags.initialize();
-
-      var elt = $('#tags');
-      elt.tagsinput({
-        itemValue: 'value',
-        itemText: 'text',
-        typeaheadjs: {
-          name: 'tags',
-          displayKey: 'text',
-          source: tags.ttAdapter()
-        }
-      });
-    </script>
+      <link href="/static/css/bootstrap-tagsinput.css" rel="stylesheet">
+      <link href="/static/css/bootstrap-tagsinput-additional.css" rel="stylesheet">
+      <script src="/static/js/bootstrap-tagsinput.min.js"></script>
+      <script src="/static/js/typeahead.bundle.js"></script>
 
       <fieldset class="form-group">
-          <label for="upload_file">Supplementary attachment</label>
 
-              {{ form.upload_file(class_='form-control') }}
-              {% for error in form.upload_file.errors %}
-                  <span class="help-inline">[{{ error }}]</span><br>
-              {% endfor %}
+        {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
+        {% for error in form.tags.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
 
-        </fieldset>
+      </fieldset>
+
+      <script>
+        var tags = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          prefetch: '/static/tags.json'
+        });
+        tags.initialize();
+
+        var elt = $('#tags');
+        elt.tagsinput({
+          itemValue: 'value',
+          itemText: 'text',
+          typeaheadjs: {
+            name: 'tags',
+            displayKey: 'text',
+            source: tags.ttAdapter()
+          }
+        });
+      </script>
+
+      <fieldset class="form-group">
+        <label for="upload_file">Supplementary attachment</label>
+
+        {{ form.upload_file(class_='form-control') }}
+        {% for error in form.upload_file.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+
+      <fieldset class="form-group">
+        {{ form.notify_by_email(type='checkbox') }} Notify by email
+      </fieldset>
     </div>
   </div>
   <div class="panel-group">

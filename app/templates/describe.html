@@ -19,45 +19,32 @@
         <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
         {{ form.duration(class_='form-control', placeholder='Duration') }}
         {% for error in form.duration.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
       </fieldset>
       <fieldset class="form-group">
         <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch"> -->
         {{ form.pitch(class_='form-control', placeholder='Pitch') }}
         {% for error in form.pitch.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
       </fieldset>
       <fieldset class="form-group">
-        <!-- <label class="radio-inline">
-          <input type="radio" name="optradio">Earcon
-        </label>
+        {% for radio_item in form.sound_type %}
         <label class="radio-inline">
-          <input type="radio" name="optradio">Dynamic earcon
+          {{ radio_item }} {{ radio_item.label }}
         </label>
-        <label class="radio-inline">
-          <input type="radio" name="optradio">Spearcon
-        </label> -->
-
-        {{ form.sound_type(class_='radio-inline') }}
+        {% endfor %}
         {% for error in form.sound_type.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
       <fieldset class="form-group">
         <label for="sound_family">Family</label>
-<!--         <select multiple class="form-control" id="exampleSelect2">
-          <option>Warning</option>
-          <option>Notification</option>
-          <option>Confirmation</option>
-          <option>Status alert</option>
-          <option>Spatial</option>
-        </select> -->
         {{ form.sound_family(class_='form-control') }}
         {% for error in form.sound_family.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
@@ -66,19 +53,23 @@
         <!-- <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea> -->
         {{ form.description(class_='form-control', rows='6') }}
         {% for error in form.description.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
+        <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
-        <fieldset class="form-group">
-          <label for="upload_file">Supplementary attachment</label>
+      <fieldset class="form-group">
+        <label for="upload_file">Supplementary attachment</label>
 
-              {{ form.upload_file(class_='form-control') }}
-              {% for error in form.upload_file.errors %}
-                  <span class="help-inline">[{{ error }}]</span><br>
-              {% endfor %}
+        {{ form.upload_file(class_='form-control') }}
+        {% for error in form.upload_file.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
 
-        </fieldset>
+      </fieldset>
+
+      <fieldset class="form-group">
+        {{ form.notify_by_email(type='checkbox') }} Notify by email
+      </fieldset>
     </div>
   </div>
   <div class="panel-group">
