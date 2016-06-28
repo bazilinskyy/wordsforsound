@@ -17,6 +17,30 @@ tags_sounds_table = db.Table(
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
 
+suppliers_projects_table = db.Table(
+    'suppliers_projects',
+    db.Column('supplier_id', db.Integer, db.ForeignKey('supplier_user.id')),
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id'))
+)
+
+clients_projects_table = db.Table(
+    'clients_projects',
+    db.Column('client_id', db.Integer, db.ForeignKey('client_user.id')),
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id'))
+)
+
+suppliers_assets_table = db.Table(
+    'suppliers_assets',
+    db.Column('supplier_id', db.Integer, db.ForeignKey('supplier_user.id')),
+    db.Column('asset_id', db.Integer, db.ForeignKey('asset.id'))
+)
+
+clients_assets_table = db.Table(
+    'clients_assets',
+    db.Column('client_id', db.Integer, db.ForeignKey('client_user.id')),
+    db.Column('asset_id', db.Integer, db.ForeignKey('asset.id'))
+)
+
 class Pitch(Enum):
     A = 1
     B = 2
@@ -149,9 +173,9 @@ class Sound(db.Model):
     filename = db.Column(db.String(200))
     description = db.Column(db.String(1000))
     tags = db.relationship('Tag',
-                               secondary=tags_sounds_table,
-                               backref=db.backref('tags_for_sound', lazy='dynamic'),
-                               lazy='dynamic')
+                           secondary=tags_sounds_table,
+                           backref=db.backref('tags_for_sound', lazy='dynamic'),
+                           lazy='dynamic')
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
@@ -174,6 +198,7 @@ class Asset(db.Model):
     sounds = db.relationship('Sound', backref='asset',
                                 lazy='dynamic')
     filename = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     descriptions = db.relationship('Description', backref='asset',
                                 lazy='dynamic')
@@ -181,7 +206,14 @@ class Asset(db.Model):
                                 lazy='dynamic')
     iterations = db.relationship('Iteration', backref='asset',
                                 lazy='dynamic')
-    timestamp = db.Column(db.DateTime)
+    suppliers = db.relationship('SupplierUser',
+                           secondary=suppliers_assets_table,
+                           backref=db.backref('assets_for_supplier', lazy='dynamic'),
+                           lazy='dynamic')
+    clients = db.relationship('ClientUser',
+                           secondary=clients_assets_table,
+                           backref=db.backref('assets_for_client', lazy='dynamic'),
+                           lazy='dynamic')
 
     @property
     def unique_name(self):
@@ -236,9 +268,17 @@ class Project(db.Model):
     finished  = db.Column(db.Boolean)
     description = db.Column(db.String(1000))
     filename = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime)
     assets = db.relationship('Asset', backref='project',
                                 lazy='dynamic')
-    timestamp = db.Column(db.DateTime)
+    suppliers = db.relationship('SupplierUser',
+                           secondary=suppliers_projects_table,
+                           backref=db.backref('projects_for_supplier', lazy='dynamic'),
+                           lazy='dynamic')
+    clients = db.relationship('ClientUser',
+                           secondary=clients_projects_table,
+                           backref=db.backref('projects_for_client', lazy='dynamic'),
+                           lazy='dynamic')
 
     @property
     def unique_name(self):
