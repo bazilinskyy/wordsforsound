@@ -1,0 +1,11 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+<form  class="form-reset" role="form" method="post">
+    {{ form.csrf_token }}
+    {{ _('Your email') }}: {{ form.email }}<br>
+    <button class="btn btn-sm btn-success" type="submit">Validate</button>
+</form>
+{% endblock %}

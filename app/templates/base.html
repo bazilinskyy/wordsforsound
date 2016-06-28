@@ -68,24 +68,29 @@
           </ul>
         </li>
 
-        <li {% if request.path=="/assets" or request.path=="/add_asset" or request.path=="/delete_asset"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Assets <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li {% if request.path=="/add_asset" %} class="active"{% endif %}><a href="{{ url_for('add_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
-            <li class="dropdown-header">Ongoing assets</li>
-            {% for asset in assets_ongoing %}
-                <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
-            {% endfor %}
-            <li><a href="{{ url_for('assets', assets_type='ongoing') }}">View all</a></li>
-            <li class="dropdown-header">Finished assets</li>
-            {% for asset in assets_finished %}
-                <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
-            {% endfor %}
-            <li><a href="{{ url_for('assets', assets_type='finished') }}">View all</a></li>
-          </ul>
-        </li>
+        <a role="button" class="btn btn-default navbar-btn" style="margin-left: 3px" href="{{ url_for('add_asset') }}">New asset</a>
+        {% if g.user.nickname %}
 
-        <a tole="button" class="btn btn-default navbar-btn" style="margin-left: 3px" href="{{ url_for('add_asset') }}">New asset</a>
+          <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="align: right"><i class="fa fa-user"></i> {{ g.user.nickname}} <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                  <!-- <li>
+                      <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                  </li>
+                  <li>
+                      <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+                  </li>
+                  <li>
+                      <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+                  </li>
+                  <li class="divider"></li> -->
+                  <li>
+                      <a href="{{ url_for('logout') }}"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                  </li>
+              </ul>
+          </li>
+
+        {% endif %}
 
       </ul>
     </div><!-- /.navbar-collapse -->

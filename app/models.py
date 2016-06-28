@@ -46,13 +46,24 @@ class AssetStatus(Enum):
     finished = 4
 
 class User(db.Model):
+    __tablename__ = 'user'
+    __searchable__ = ['first_name', 'last_name', 'email']
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
+    first_name = db.Column(db.String(64))
+    last_name = db.Column(db.String(64))
     email = db.Column(db.String(120), index=True, unique=True)
+    password = db.Column(db.String)
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
-    # role
-    # password
+
+    @property
+    def full_name(self):
+        return "%s %s"%(self.first_name, self.last_name)
+
+    @staticmethod
+    def make_valid_nickname(nickname):
+        return re.sub('[^a-zA-Z0-9_\.]', '', nickname)
 
     @staticmethod
     def make_unique_nickname(nickname):
@@ -88,7 +99,21 @@ class User(db.Model):
         return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % \
             (md5(self.email.encode('utf-8')).hexdigest(), size)
 
-    def __repr__(self):
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+            return self
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+            return self
+
+    def is_following(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
+
+    def __repr__(self):  # pragma: no cover
         return '<User %r>' % (self.nickname)
 
 # TODO Do we need to have categories as well?

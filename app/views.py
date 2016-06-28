@@ -2,12 +2,16 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, \
     login_required
+from flask.ext.sqlalchemy import get_debug_queries
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm, NewProjectForm, EditSoundForm
+from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
+    VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
+    RegisterForm, SearchForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User
 from .emails import follower_notification
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
+    ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -23,6 +27,57 @@ def redirect_url(default='index'):
 def load_user(id):
     return User.query.get(int(id))
 
+@app.route('/reset', methods=["GET", "POST"])
+def reset():
+    form = EmailForm()
+    print 0
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            flash(gettext('Email not found.'))
+        else:
+            token = ts.dumps(user.email, salt='recover-key')
+
+            recover_url = url_for(
+                'reset_with_token',
+                token=token,
+                _external=True)
+
+            msg = Message(subject="Password reset requested",
+                      sender="recover@inventme.com",
+                      recipients=user.email,
+                      html = "Please click on {{ recover_url }} to recover your password. Thank you!")
+
+            # msg.html = render_template(
+            #     'email/recover.html',
+            #     recover_url=recover_url)
+
+            # Send email with recovery link
+            #TODO does not send email
+            mail.send(msg)
+            print 1
+
+            return redirect(url_for('index'))
+    return render_template('reset.html', form=form)
+
+@app.route('/reset/<token>', methods=["GET", "POST"])
+def reset_with_token(token):
+    try:
+        email = ts.loads(token, salt="recover-key", max_age=86400)
+    except:
+        abort(404)
+
+    form = PasswordForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=email).first_or_404()
+        user.password = form.password.data
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('login'))
+
+    return render_template('reset_with_token.html', form=form, token=token)
+
 @app.before_request
 def before_request():
     g.user = current_user
@@ -31,6 +86,25 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
         g.search_form = SearchForm()
+
+@app.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= DATABASE_QUERY_TIMEOUT:
+            app.logger.warning(
+                "SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+                (query.statement, query.parameters, query.duration,
+                 query.context))
+    return response
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
 
 # For horizontal menu
 class HorizontalMenu():
@@ -45,19 +119,111 @@ class HorizontalMenu():
     # projects_ongoing = []
     # projects_finished = []
 
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
+@app.route('/login', methods=['GET', 'POST'])
+@oid.loginhandler
+def login():
+    if g.user is not None and g.user.is_authenticated:
+        return redirect(url_for('index'))
+    error = None
+    form = LoginForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            user = User.query.filter_by(nickname=form.username.data).first()
+            if user is not None and user.password == form.password.data:
+                login_user(user)
+                flash('Welcome!')
+                return redirect(url_for('index'))
+            else:
+                error = 'Invalid username or password.'
+    return render_template('login.html', 
+                            form=form, 
+                            error=error,
+                            title='Sign In',
+                            )
 
-@app.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500
+@app.route('/register/', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(
+            nickname=form.nickname.data,
+            email=form.email.data,
+            password=form.password.data
+        )
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        return redirect(url_for('index'))
+    return render_template('register.html', form=form)
+
+@oid.after_login
+def after_login(resp):
+    if resp.email is None or resp.email == "":
+        flash(gettext('Invalid login. Please try again.'))
+        return redirect(url_for('login'))
+    user = User.query.filter_by(email=resp.email).first()
+    if user is None:
+        nickname = resp.nickname
+        if nickname is None or nickname == "":
+            nickname = resp.email.split('@')[0]
+        nickname = User.make_valid_nickname(nickname)
+        nickname = User.make_unique_nickname(nickname)
+        user = User(nickname=nickname, email=resp.email)
+        db.session.add(user)
+        db.session.commit()
+        # make the user follow him/herself
+        # db.session.add(user.follow(user))
+        db.session.commit()
+    remember_me = False
+    if 'remember_me' in session:
+        remember_me = session['remember_me']
+        session.pop('remember_me', None)
+    login_user(user, remember=remember_me)
+    return redirect(request.args.get('next') or url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+@app.route('/user/<nickname>')
+@app.route('/user/<nickname>/<int:page>')
+@login_required
+def user(nickname, page=1):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash(gettext('User %(nickname)s not found.', nickname=nickname))
+        return redirect(url_for('index'))
+    projects_participating_count = g.user.projects_participated.count()
+    projects_owned_count = g.user.projects_owned.count()
+    return render_template('user.html',
+                           user=user,
+                           projects_participating_count=projects_participating_count,
+                           projects_owned_count=projects_owned_count)
+
+
+@app.route('/edit', methods=['GET', 'POST'])
+@login_required
+def edit():
+    form = EditForm(g.user.nickname)
+    if form.validate_on_submit():
+        g.user.nickname = form.nickname.data
+        g.user.about_me = form.about_me.data
+        db.session.add(g.user)
+        db.session.commit()
+        flash(gettext('Your changes have been saved.'))
+        return redirect(url_for('edit'))
+    elif request.method != "POST":
+        form.nickname.data = g.user.nickname
+        form.about_me.data = g.user.about_me
+    return render_template('edit.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @app.route('/index/<int:page>', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def index(page=1):
     # TODO Move to "in my hands" and "in other hands" with addition of accounts
     assets_description = Asset.query.filter_by(status=1).all() # TODO Add pagination
@@ -77,6 +243,7 @@ def index(page=1):
                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/tags', methods=['GET', 'POST'])
+@login_required
 def tags():
     tags = Tag.query.all()
     return render_template('tags.html',
@@ -87,6 +254,7 @@ def tags():
                             projects_finished = HorizontalMenu.projects_finished)
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
+@login_required
 def tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
     if tag is None:
@@ -100,6 +268,7 @@ def tag(tag_id):
                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
+@login_required
 def add_tag():
     form = AddTagForm()
     if form.validate_on_submit():
@@ -142,6 +311,7 @@ def add_tag():
                             projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
+@login_required
 def delete_tag():
     form = DeleteSoundForm()
     if form.validate_on_submit():
@@ -163,6 +333,7 @@ def delete_tag():
                             projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/sounds', methods=['GET', 'POST'])
+@login_required
 def sounds():
     sounds = Sound.query.all()
     return render_template('sounds.html',
@@ -174,6 +345,7 @@ def sounds():
 
 @app.route('/sound', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
+@login_required
 def sound(sound_id):
     sound = Sound.query.filter_by(id=sound_id).first()
     if sound is None:
@@ -194,6 +366,7 @@ def sound(sound_id):
 
 @app.route('/sound/edit', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
+@login_required
 def sound_edit(sound_id):
     sound = Sound.query.filter_by(id=sound_id).first()
     form = EditSoundForm()
@@ -244,6 +417,7 @@ def sound_edit(sound_id):
                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
+@login_required
 def assets(assets_type):
     if assets_type == 'ongoing':
         assets = Asset.query.filter_by(finished=False).all()
@@ -260,6 +434,7 @@ def assets(assets_type):
                             projects_finished = HorizontalMenu.projects_finished)
 @app.route('/asset')
 @app.route('/asset/<int:asset_id>/')
+@login_required
 def asset(asset_id):
     asset = Asset.query.filter_by(id=asset_id).first()
     if asset is None:
@@ -277,6 +452,7 @@ def asset(asset_id):
 
 @app.route('/project/edit', methods=['GET', 'POST'])
 @app.route('/project/<int:project_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_project(project_id):
     project = Project.query.filter_by(id=project_id).first()
     if project is None:
@@ -330,6 +506,7 @@ def edit_project(project_id):
                             projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/descriptions', methods=['GET', 'POST'])
+@login_required
 def descriptions():
     descriptions = Description.query.all()
     return render_template('descriptions.html',
@@ -341,6 +518,7 @@ def descriptions():
 
 @app.route('/description', methods=['GET', 'POST'])
 @app.route('/description/<int:description_id>/', methods=['GET', 'POST'])
+@login_required
 def description(description_id):
     description = Description.query.filter_by(id=description_id).first()
     if description is None:
@@ -356,6 +534,7 @@ def description(description_id):
                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/iterations', methods=['GET', 'POST'])
+@login_required
 def iterations():
     iterations = Iteration.query.all()
     return render_template('iterations.html',
@@ -367,6 +546,7 @@ def iterations():
 
 @app.route('/iteration', methods=['GET', 'POST'])
 @app.route('/iteration/<int:iteration_id>/', methods=['GET', 'POST'])
+@login_required
 def iteration(iteration_id):
     iteration = Iteration.query.filter_by(id=iteration_id).first()
     if iteration is None:
@@ -382,6 +562,7 @@ def iteration(iteration_id):
                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/verifications', methods=['GET', 'POST'])
+@login_required
 def verifications():
     verifications = Verification.query.all()
     return render_template('verifications.html',
@@ -393,6 +574,7 @@ def verifications():
 
 @app.route('/verification', methods=['GET', 'POST'])
 @app.route('/verification/<int:verification_id>/', methods=['GET', 'POST'])
+@login_required
 def verification(verification_id):
     verification = Verification.query.filter_by(id=verification_id).first()
     if verification is None:
@@ -408,6 +590,7 @@ def verification(verification_id):
                            projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/add_sound', methods=['GET', 'POST'])
+@login_required
 def add_sound():
     form = AddSoundForm()
     if form.validate_on_submit():
@@ -459,6 +642,7 @@ def add_sound():
                             projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
+@login_required
 def delete_sound():
     form = DeleteSoundForm()
     if form.validate_on_submit():
@@ -483,6 +667,7 @@ def delete_sound():
 
 # Create new asset with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_asset', methods=['GET', 'POST'])
+@login_required
 def add_asset():
     form = NewAssetForm()
     if form.validate_on_submit():
@@ -535,6 +720,7 @@ def add_asset():
 
 @app.route('/describe', methods=['GET', 'POST'])
 @app.route('/describe/<int:asset_id>/', methods=['GET', 'POST'])
+@login_required
 def describe(asset_id):
     asset = Asset.query.filter_by(id=asset_id).first()
     if asset is None:
@@ -595,6 +781,7 @@ def describe(asset_id):
 
 @app.route('/verify', methods=['GET', 'POST'])
 @app.route('/verify/<int:asset_id>/', methods=['GET', 'POST'])
+@login_required
 def verify(asset_id):
     asset = Asset.query.filter_by(id=asset_id).first()
     if asset is None:
@@ -658,6 +845,7 @@ def verify(asset_id):
 
 @app.route('/iterate', methods=['GET', 'POST'])
 @app.route('/iterate/<int:asset_id>/', methods=['GET', 'POST'])
+@login_required
 def iterate(asset_id):
     asset = Asset.query.filter_by(id=asset_id).first()
     if asset is None:
@@ -713,6 +901,7 @@ def iterate(asset_id):
 
 # Create new project with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_project', methods=['GET', 'POST'])
+@login_required
 def add_project():
     form = NewProjectForm()
     if form.validate_on_submit():
@@ -745,6 +934,7 @@ def add_project():
                             projects_finished = HorizontalMenu.projects_finished)
 
 @app.route('/projects/<string:projects_type>', methods=['GET', 'POST'])
+@login_required
 def projects(projects_type):
     if projects_type == 'ongoing':
         projects = Project.query.filter_by(finished=False).all()
@@ -761,6 +951,7 @@ def projects(projects_type):
                             projects_finished = HorizontalMenu.projects_finished)
 @app.route('/project')
 @app.route('/project/<int:project_id>/')
+@login_required
 def project(project_id):
     project = Project.query.filter_by(id=project_id).first()
     if project is None:
@@ -770,72 +961,6 @@ def project(project_id):
     return render_template('project.html',
                            project=project,
                            attachment_location = attachment_location,
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
-
-@app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
-def login():
-    if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
-    return render_template('login.html',
-                           title='Sign In',
-                           form=form,
-                           providers=app.config['OPENID_PROVIDERS'],
-                           assets_ongoing = HorizontalMenu.assets_ongoing,
-                           assets_finished = HorizontalMenu.assets_finished,
-                           projects_ongoing = HorizontalMenu.projects_ongoing,
-                           projects_finished = HorizontalMenu.projects_finished)
-
-@oid.after_login
-def after_login(resp):
-    if resp.email is None or resp.email == "":
-        flash('Invalid login. Please try again.')
-        return redirect(url_for('login'))
-    user = User.query.filter_by(email=resp.email).first()
-    if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
-        nickname = User.make_unique_nickname(nickname)
-        user = User(nickname=nickname, email=resp.email)
-        db.session.add(user)
-        db.session.commit()
-        # make the user follow him/herself
-        db.session.add(user.follow(user))
-        db.session.commit()
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-    login_user(user, remember=remember_me)
-    return redirect(request.args.get('next') or url_for('index'))
-
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
-
-
-@app.route('/user/<nickname>')
-@app.route('/user/<nickname>/<int:page>')
-@login_required
-def user(nickname, page=1):
-    user = User.query.filter_by(nickname=nickname).first()
-    if user is None:
-        flash('User %s not found.' % nickname)
-        return redirect(url_for('index'))
-    posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
-    return render_template('user.html',
-                           user=user,
-                           posts=posts,
                            assets_ongoing = HorizontalMenu.assets_ongoing,
                            assets_finished = HorizontalMenu.assets_finished,
                            projects_ongoing = HorizontalMenu.projects_ongoing,

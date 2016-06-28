@@ -1,11 +1,12 @@
 # By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
 from flask.ext.wtf import Form
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, BooleanField, TextAreaField, RadioField, SelectMultipleField, SelectField
+from wtforms import StringField, BooleanField, TextAreaField, RadioField, SelectMultipleField, \
+	SelectField, PasswordField
 from wtforms.validators import DataRequired, Length, Optional, Email, EqualTo
 from wtforms.widgets import TextArea
 from config import SOUND_ALLOWED_EXTENSIONS
-from models import Project
+from models import Project, User
 # from flask.ext.uploads import UploadSet, SOUNDS
 # sounds = UploadSet('audio', AUDIO)
 
@@ -22,6 +23,79 @@ def get_projects():
 	for project in projects:
 		choices.append((str(project.id), project.name))
 	return choices
+
+class LoginForm(Form):
+    openid = StringField('openid', validators=[Optional()])
+    remember_me = BooleanField('remember_me', default=False)
+    username = StringField('Username', validators=[Optional()])
+    password = PasswordField('Password', validators=[Optional()])
+
+class EditForm(Form):
+    nickname = StringField('nickname', validators=[DataRequired()])
+    about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
+
+    def __init__(self, original_nickname, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+        self.original_nickname = original_nickname
+
+    def validate(self):
+        if not Form.validate(self):
+            return False
+        if self.nickname.data == self.original_nickname:
+            return True
+        if self.nickname.data != User.make_valid_nickname(self.nickname.data):
+            self.nickname.errors.append(gettext(
+                'This nickname has invalid characters. '
+                'Please use letters, numbers, dots and underscores only.'))
+            return False
+        user = User.query.filter_by(nickname=self.nickname.data).first()
+        if user is not None:
+            self.nickname.errors.append(gettext(
+                'This nickname is already in use. '
+                'Please choose another one.'))
+            return False
+        return True
+
+class RegisterForm(Form):
+    nickname = StringField(
+        'nickname',
+        validators=[DataRequired(), Length(min=3, max=25)]
+    )
+    email = StringField(
+        'email',
+        validators=[DataRequired(), Email(message=None)]
+    )
+    password = PasswordField(
+        'password',
+        validators=[DataRequired(), Length(min=8, max=15)]
+    )
+    confirm_pass = PasswordField(
+        'Re-enter password',
+        validators=[
+            DataRequired(), EqualTo('password', message='Passwords should be the same.')
+        ]
+    )
+
+    def validate(self):
+        if not Form.validate(self):
+            return False
+        if User.query.filter(User.email == self.email.data).all():
+            self.email.errors.append(
+                gettext("User with this email already exists!"))
+        if User.query.filter(User.nickname == self.nickname.data).all():
+            self.email.errors.append(
+                gettext("User with this nickname already exists!"))
+        return True
+
+class EmailForm(Form):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+
+class PasswordForm(Form):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Password', validators=[DataRequired(), EqualTo(password)])
+
+class SearchForm(Form):
+    search = StringField('search', validators=[DataRequired()])
 
 class DescriptionForm(Form):
 	description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
