@@ -40,7 +40,7 @@ FINISHED_ASSETS_MENU= 5
 
 # uploading sounds
 SOUND_UPLOAD_FOLDER = 'static/sound_uploads/'
-SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac']
+SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a']
 
 # uploading attachments
 ATACHMENT_UPLOAD_FOLDER = 'static/attachment_uploads/'

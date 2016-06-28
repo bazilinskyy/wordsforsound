@@ -4,7 +4,7 @@ from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from datetime import datetime
 from app import app, db, lm, oid
-from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm, NewProjectForm, SoundEditForm
+from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm, NewProjectForm, EditSoundForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
@@ -81,7 +81,7 @@ def tags():
     tags = Tag.query.all()
     return render_template('tags.html',
                             tags=tags,
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -110,7 +110,7 @@ def add_tag():
             return render_template('add_tag.html',
                             form=form,
                             title='Add tag',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -136,7 +136,7 @@ def add_tag():
     return render_template('add_tag.html',
                             form=form,
                             title='Add tag',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -157,7 +157,7 @@ def delete_tag():
     return render_template('delete_tag.html',
                             form=form,
                             title='Delete tag',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -167,7 +167,7 @@ def sounds():
     sounds = Sound.query.all()
     return render_template('sounds.html',
                             sounds=sounds,
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -196,7 +196,7 @@ def sound(sound_id):
 @app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
 def sound_edit(sound_id):
     sound = Sound.query.filter_by(id=sound_id).first()
-    form = SoundEditForm()
+    form = EditSoundForm()
 
     if form.validate_on_submit():
         # check if sound woth the same name exists
@@ -206,6 +206,7 @@ def sound_edit(sound_id):
         sound.description = form.description.data
         sound.sound_type = form.sound_type.data
         sound.sound_family = form.sound_family.data
+        sound.rights = form.rights.data
 
         # add tags
         sound.ags = []
@@ -232,6 +233,7 @@ def sound_edit(sound_id):
             form.description.data = sound.description
             form.sound_type.data = sound.sound_type
             form.sound_family.data = sound.sound_family
+            form.rights.data = sound.rights
 
     return render_template('edit_sound.html',
                            form=form,
@@ -252,7 +254,7 @@ def assets(assets_type):
     return render_template('assets.html',
                             assets=assets,
                             assets_type=assets_type,
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -358,7 +360,7 @@ def iterations():
     iterations = Iteration.query.all()
     return render_template('iterations.html',
                             iterations=iterations,
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished,)
@@ -384,7 +386,7 @@ def verifications():
     verifications = Verification.query.all()
     return render_template('verifications.html',
                             verifications=verifications,
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -416,7 +418,7 @@ def add_sound():
             return render_template('add_sound.html',
                             form=form,
                             title='Add sound',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -426,6 +428,7 @@ def add_sound():
         sound.description = form.description.data
         sound.sound_type = form.sound_type.data
         sound.sound_family = form.sound_family.data
+        sound.rights = form.rights.data
 
         # add tags
         for tag in form.tags.data:
@@ -450,7 +453,7 @@ def add_sound():
                             form=form,
                             title='Add sound',
                             filename=filename,
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -463,7 +466,8 @@ def delete_sound():
         if sound == None:
             flash('Sound ' +  form.name.data + ' does not exist.')
             return redirect(url_for('delete_sound'))
-    	os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
+    	  
+        os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
         db.session.delete(sound)
         db.session.commit()  
         
@@ -472,7 +476,7 @@ def delete_sound():
     return render_template('delete_sound.html',
                             form=form,
                             title='Delete sound',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -584,7 +588,7 @@ def describe(asset_id):
                             form=form,
                             asset=asset,
                             title='Describe asset',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -647,7 +651,7 @@ def verify(asset_id):
                             form=form,
                             asset=asset,
                             title='Verify asset',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -702,7 +706,7 @@ def iterate(asset_id):
                             form=form,
                             asset=asset,
                             title='Iterate asset',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)

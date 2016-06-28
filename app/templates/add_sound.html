@@ -44,6 +44,13 @@
 
     </fieldset>
 
+    <fieldset class="form-group">
+      {{ form.rights(class_='form-control', placeholder='Legal rights') }}
+      {% for error in form.rights.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+      {% endfor %}
+    </fieldset>
+
     <link href="/static/css/bootstrap-tagsinput.css" rel="stylesheet">
     <link href="/static/css/bootstrap-tagsinput-additional.css" rel="stylesheet">
     <script src="/static/js/bootstrap-tagsinput.min.js"></script>

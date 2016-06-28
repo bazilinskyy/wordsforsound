@@ -119,6 +119,7 @@ class Sound(db.Model):
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     sound_type = db.Column(db.String(20))
     sound_family = db.Column(db.String(20))
+    rights = db.Column(db.String(200)) # To use enum instead
 
     def __repr__(self):
         return '<Sound %r>' % (self.name)
