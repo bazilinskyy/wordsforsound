@@ -5,7 +5,7 @@ from flask.ext.login import login_user, logout_user, current_user, \
 from datetime import datetime
 from app import app, db, lm, oid
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, VerificationForm, IterationForm, NewProjectForm, SoundEditForm
-from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project
+from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User
 from .emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
 from werkzeug import secure_filename
