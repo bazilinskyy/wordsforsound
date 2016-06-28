@@ -34,16 +34,16 @@ def before_request():
 
 # For horizontal menu
 class HorizontalMenu():
-    # assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_ASSETS_MENU).all()
-    # assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_ASSETS_MENU).all()
-    # projects_ongoing = Project.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
-    # projects_finished = Project.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
+    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_ASSETS_MENU).all()
+    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_ASSETS_MENU).all()
+    projects_ongoing = Project.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
+    projects_finished = Project.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
 
     # THIS LISTS NEED TO BE USED WHENER MIGRATING DB
-    assets_ongoing = []
-    assets_finished = []
-    projects_ongoing = []
-    projects_finished = []
+    # assets_ongoing = []
+    # assets_finished = []
+    # projects_ongoing = []
+    # projects_finished = []
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -272,12 +272,67 @@ def asset(asset_id):
                            projects_ongoing = HorizontalMenu.projects_ongoing,
                            projects_finished = HorizontalMenu.projects_finished)
 
+
+@app.route('/project/edit', methods=['GET', 'POST'])
+@app.route('/project/<int:project_id>/edit', methods=['GET', 'POST'])
+def edit_project(project_id):
+    project = Project.query.filter_by(id=project_id).first()
+    if project is None:
+        flash(gettext('Project not found.'))
+        return redirect(url_for('index'))
+    form = NewProjectForm()
+
+    if form.validate_on_submit():
+        if request.method == 'POST':
+            if request.form['submit'] == 'edit':
+              project.timestamp = datetime.now()
+              project.name = form.name.data
+              project.description = form.description.data
+              
+              # Upload file
+              if form.upload_file.data.filename:
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                project.filename = filename
+
+              flash('Project was edited successfully.')
+
+            elif request.form['submit'] == 'finalise':
+              project.finished = True
+              flash('Project was marked as finished.')
+
+            else:
+              flash('Unknown status.')
+              pass # unknown
+
+        db.session.add(project)
+        db.session.commit()    
+        
+        return redirect(url_for('project', project_id=project_id))
+
+    elif request.method != "POST":
+        if project is not None:
+          form.name.data = project.name
+          form.description.data = project.description
+
+    return render_template('edit_project.html',
+                            form=form,
+                            title='Edit project',
+                            project=project,
+                            assets_ongoing = HorizontalMenu.projects_ongoing,
+                            assets_finished = HorizontalMenu.projects_finished,
+                            projects_ongoing = HorizontalMenu.projects_ongoing,
+                            projects_finished = HorizontalMenu.projects_finished)
+
 @app.route('/descriptions', methods=['GET', 'POST'])
 def descriptions():
     descriptions = Description.query.all()
     return render_template('descriptions.html',
                             descriptions=descriptions,
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -469,7 +524,7 @@ def add_asset():
     return render_template('add_asset.html',
                             form=form,
                             title='Add asset',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)
@@ -661,6 +716,7 @@ def add_project():
         project.timestamp = datetime.now()
         project.name = form.name.data
         project.description = form.description.data
+        project.finished = False
         
         # Upload file
         if form.upload_file.data.filename:
@@ -679,7 +735,7 @@ def add_project():
     return render_template('add_project.html',
                             form=form,
                             title='Add project',
-							assets_ongoing = HorizontalMenu.assets_ongoing,
+							              assets_ongoing = HorizontalMenu.assets_ongoing,
                             assets_finished = HorizontalMenu.assets_finished,
                             projects_ongoing = HorizontalMenu.projects_ongoing,
                             projects_finished = HorizontalMenu.projects_finished)

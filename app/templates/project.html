@@ -10,15 +10,11 @@
 <!-- Description form -->
 <div class="well">
 
-Id: {{ project.id }}
-Name: {{ project.name }}
+<a href="{{ url_for('edit_project', project_id=project.id) }}">Edit</a>  </br>
 
-Descriptions:
-<div class="list-group">
-    {% for description in project.descriptions %}
-      <a href="{{ url_for('description') }}/{{ description.id }}" class="list-group-item">{{ description.id }}</a>
-    {% endfor %}
-  </div>
+Id: {{ project.id }} </br>
+Name: {{ project.name }}  </br>
+Description: {{ project.description }}  </br>
 
 <a href="/{{ attachment_location }}{{ project.filename }}">Supplementary attachment</a>
 
