@@ -49,6 +49,7 @@ class User(db.Model):
     __tablename__ = 'user'
     __searchable__ = ['first_name', 'last_name', 'email']
     id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(50)) #used for sqlalchemy inheritance
     nickname = db.Column(db.String(64), index=True, unique=True)
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
@@ -99,25 +100,36 @@ class User(db.Model):
         return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % \
             (md5(self.email.encode('utf-8')).hexdigest(), size)
 
-    def follow(self, user):
-        if not self.is_following(user):
-            self.followed.append(user)
-            return self
-
-    def unfollow(self, user):
-        if self.is_following(user):
-            self.followed.remove(user)
-            return self
-
-    def is_following(self, user):
-        return self.followed.filter(
-            followers.c.followed_id == user.id).count() > 0
-
     def __repr__(self):  # pragma: no cover
         return '<User %r>' % (self.nickname)
 
-# TODO Do we need to have categories as well?
+    __mapper_args__ = {
+        'polymorphic_identity':'user',
+        'polymorphic_on':type
+    }
+
+class ClientUser(User):
+    """A user that can submit requests to create assets"""
+    __tablename__ = 'client_user'
+
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'client_user',
+    }
+
+class SupplierUser(User):
+    """A user that can submit requests to create assets"""
+    __tablename__ = 'supplier_user'
+
+    id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity':'supplier_user',
+    }  
+        
 class Tag(db.Model):
+    __tablename__ = 'tag'
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
@@ -129,6 +141,7 @@ class Tag(db.Model):
         return '<Tag %r>' % (self.name)
 
 class Sound(db.Model):
+    __tablename__ = 'sound'
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
@@ -150,6 +163,7 @@ class Sound(db.Model):
         return '<Sound %r>' % (self.name)
 
 class Asset(db.Model):
+    __tablename__ = 'asset'
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
@@ -175,6 +189,7 @@ class Asset(db.Model):
 
 
 class Description(db.Model):
+    __tablename__ = 'description'
     __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(1000))
@@ -196,6 +211,7 @@ class Description(db.Model):
         return '<Description %r>' % (self.description[0:50])
 
 class Verification(db.Model):
+    __tablename__ = 'verification'
     __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(1000))
@@ -204,6 +220,7 @@ class Verification(db.Model):
     filename = db.Column(db.String(200))
 
 class Iteration(db.Model):
+    __tablename__ = 'iteration'
     __searchable__ = ['description']
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(1000))
@@ -212,6 +229,7 @@ class Iteration(db.Model):
     timestamp = db.Column(db.DateTime)
 
 class Project(db.Model):
+    __tablename__ = 'project'
     __searchable__ = ['name']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
