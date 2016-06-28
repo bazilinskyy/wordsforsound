@@ -1,29 +1,57 @@
 <!-- extend base layout -->
+<style>/* Copyright 2014 Evernote Corporation. All rights reserved. */
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="username"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+</style>
+
 {% extends "base.html" %}
 
 {% block content %}
-    <script type="text/javascript">
-    function set_openid(openid, pr)
-    {
-        u = openid.search('<username>');
-        if (u != -1) {
-            // openid requires username
-            user = prompt('Enter your ' + pr + ' username:');
-            openid = openid.substr(0, u) + user;
-        }
-        form = document.forms['login'];
-        form.elements['openid'].value = openid;
-    }
-    </script>
-    {% include 'flash.html' %}
-    <a href="{{ url_for('register') }}">Sign up!</a>
+    
     <div class="well">
-        <h4>Please Sign In with Custom Login</h1>
-        <br>
-        <form class="form-signin" role="form" method="post" action="">
-          {{ form.csrf_token }}
-          <p>
-            {{ form.username(placeholder="username") }}
+        <form class="form-signin" method="post" >
+        {{ form.csrf_token }}
+        <h2 class="form-signin-heading">Please login</h2>
+        <label for="usernameField" class="sr-only">Username</label>
+        {{ form.username(class_='form-control', type='username', placeholder='Username', id='usernameField', required="", autofocus="") }}
             <span class="error">
               {% if form.username.errors %}
                 {% for error in form.username.errors %}
@@ -31,9 +59,8 @@
                 {% endfor %}
               {% endif %}
             </span>
-          </p>
-          <p>
-          {{ form.password(placeholder="password") }}
+        <label for="passwordField" class="sr-only">Password</label>
+        {{ form.password(class_='form-control', type='password', placeholder='Password', id='passwordField', required="") }}
             <span class="error">
               {% if form.password.errors %}
                 {% for error in form.password.errors %}
@@ -41,9 +68,14 @@
                 {% endfor %}
               {% endif %}
             </span>
-          </p>
-          <a href="{{ url_for('reset') }}">Forgot password</a>
-          <button class="btn btn-sm btn-success" type="submit">Sign in</button>
-        </form>    
-</div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" value="remember-me"> Remember me <a href="{{ url_for('reset') }}">Forgot password</a>
+          </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+      </div>
+      
+      <script src="/static/js/ie10-viewport-bug-workaround.js"></script>
 {% endblock %}

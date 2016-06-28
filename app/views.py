@@ -1,7 +1,6 @@
 # By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
 from flask import render_template, flash, redirect, session, url_for, request, g
-from flask.ext.login import login_user, logout_user, current_user, \
-    login_required
+from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.sqlalchemy import get_debug_queries
 from datetime import datetime
 from app import app, db, lm, oid
@@ -26,6 +25,114 @@ def redirect_url(default='index'):
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+@app.before_request
+def before_request():
+    g.user = current_user
+    if g.user.is_authenticated:
+        g.user.last_seen = datetime.utcnow()
+        db.session.add(g.user)
+        db.session.commit()
+        g.search_form = SearchForm()
+
+@app.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= DATABASE_QUERY_TIMEOUT:
+            app.logger.warning(
+                "SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
+                (query.statement, query.parameters, query.duration,
+                 query.context))
+    return response
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
+# For horizontal menu
+class HorizontalMenu():
+    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_ASSETS_MENU).all()
+    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_ASSETS_MENU).all()
+    projects_ongoing = Project.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
+    projects_finished = Project.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
+
+    # THIS LISTS NEED TO BE USED WHENER MIGRATING DB
+    # assets_ongoing = []
+    # assets_finished = []
+    # projects_ongoing = []
+    # projects_finished = []
+
+@app.route('/login', methods=['GET', 'POST'])
+@oid.loginhandler
+def login():
+    if g.user is not None and g.user.is_authenticated:
+        return redirect(url_for('index'))
+    error = None
+    form = LoginForm()
+    if request.method == 'POST':
+      if form.validate_on_submit():
+          user = User.query.filter_by(nickname=form.username.data).first()
+          if user is not None and user.password == form.password.data:
+              login_user(user)
+              flash('Welcome!')
+              return redirect(url_for('index'))
+          else:
+              error = 'Invalid username or password.'
+    return render_template('login.html', 
+                            form=form, 
+                            error=error,
+                            title='Sign In',
+                            )
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(
+            nickname=form.nickname.data,
+            email=form.email.data,
+            password=form.password.data
+        )
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        return redirect(url_for('index'))
+    return render_template('register.html', form=form)
+
+@oid.after_login
+def after_login(resp):
+    if resp.email is None or resp.email == "":
+        flash(gettext('Invalid login. Please try again.'))
+        return redirect(url_for('login'))
+    user = User.query.filter_by(email=resp.email).first()
+    if user is None:
+        nickname = resp.nickname
+        if nickname is None or nickname == "":
+            nickname = resp.email.split('@')[0]
+        nickname = User.make_valid_nickname(nickname)
+        nickname = User.make_unique_nickname(nickname)
+        user = User(nickname=nickname, email=resp.email)
+        db.session.add(user)
+        db.session.commit()
+        # make the user follow him/herself
+        # db.session.add(user.follow(user))
+        db.session.commit()
+    remember_me = False
+    if 'remember_me' in session:
+        remember_me = session['remember_me']
+        session.pop('remember_me', None)
+    login_user(user, remember=remember_me)
+    return redirect(request.args.get('next') or url_for('index'))
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/reset', methods=["GET", "POST"])
 def reset():
@@ -77,116 +184,6 @@ def reset_with_token(token):
         return redirect(url_for('login'))
 
     return render_template('reset_with_token.html', form=form, token=token)
-
-@app.before_request
-def before_request():
-    g.user = current_user
-    if g.user.is_authenticated:
-        g.user.last_seen = datetime.utcnow()
-        db.session.add(g.user)
-        db.session.commit()
-        g.search_form = SearchForm()
-
-@app.after_request
-def after_request(response):
-    for query in get_debug_queries():
-        if query.duration >= DATABASE_QUERY_TIMEOUT:
-            app.logger.warning(
-                "SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" %
-                (query.statement, query.parameters, query.duration,
-                 query.context))
-    return response
-
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internal_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500
-
-# For horizontal menu
-class HorizontalMenu():
-    assets_ongoing = Asset.query.filter_by(finished=False).limit(ONGOING_ASSETS_MENU).all()
-    assets_finished = Asset.query.filter_by(finished=True).limit(FINISHED_ASSETS_MENU).all()
-    projects_ongoing = Project.query.filter_by(finished=False).limit(ONGOING_PROJECTS_MENU).all()
-    projects_finished = Project.query.filter_by(finished=True).limit(FINISHED_PROJECTS_MENU).all()
-
-    # THIS LISTS NEED TO BE USED WHENER MIGRATING DB
-    # assets_ongoing = []
-    # assets_finished = []
-    # projects_ongoing = []
-    # projects_finished = []
-
-@app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
-def login():
-    if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('index'))
-    error = None
-    form = LoginForm()
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            user = User.query.filter_by(nickname=form.username.data).first()
-            if user is not None and user.password == form.password.data:
-                login_user(user)
-                flash('Welcome!')
-                return redirect(url_for('index'))
-            else:
-                error = 'Invalid username or password.'
-    return render_template('login.html', 
-                            form=form, 
-                            error=error,
-                            title='Sign In',
-                            )
-
-@app.route('/register/', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        user = User(
-            nickname=form.nickname.data,
-            email=form.email.data,
-            password=form.password.data
-        )
-        db.session.add(user)
-        db.session.commit()
-        login_user(user)
-        return redirect(url_for('index'))
-    return render_template('register.html', form=form)
-
-@oid.after_login
-def after_login(resp):
-    if resp.email is None or resp.email == "":
-        flash(gettext('Invalid login. Please try again.'))
-        return redirect(url_for('login'))
-    user = User.query.filter_by(email=resp.email).first()
-    if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
-        nickname = User.make_valid_nickname(nickname)
-        nickname = User.make_unique_nickname(nickname)
-        user = User(nickname=nickname, email=resp.email)
-        db.session.add(user)
-        db.session.commit()
-        # make the user follow him/herself
-        # db.session.add(user.follow(user))
-        db.session.commit()
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-    login_user(user, remember=remember_me)
-    return redirect(request.args.get('next') or url_for('index'))
-
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
-
 
 @app.route('/user/<nickname>')
 @app.route('/user/<nickname>/<int:page>')

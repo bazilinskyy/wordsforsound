@@ -25,10 +25,9 @@ def get_projects():
 	return choices
 
 class LoginForm(Form):
-    openid = StringField('openid', validators=[Optional()])
     remember_me = BooleanField('remember_me', default=False)
-    username = StringField('Username', validators=[Optional()])
-    password = PasswordField('Password', validators=[Optional()])
+    username = StringField('Username')
+    password = StringField('Password')
 
 class EditForm(Form):
     nickname = StringField('nickname', validators=[DataRequired()])

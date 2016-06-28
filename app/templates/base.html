@@ -30,6 +30,7 @@
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    {% if g.user.nickname %}
       <ul class="nav navbar-nav">
         <li {% if request.path=="/index" or request.path=="/" %} class="active"{% endif %}><a href="{{ url_for('index') }}">Home</a></li>
         
@@ -69,7 +70,6 @@
         </li>
 
         <a role="button" class="btn btn-default navbar-btn" style="margin-left: 3px" href="{{ url_for('add_asset') }}">New asset</a>
-        {% if g.user.nickname %}
 
           <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="align: right"><i class="fa fa-user"></i> {{ g.user.nickname}} <b class="caret"></b></a>
@@ -89,6 +89,12 @@
                   </li>
               </ul>
           </li>
+        {% else %}
+
+        <ul class="nav navbar-nav">
+          <li {% if request.path=="/login" %} class="active"{% endif %}><a href="{{ url_for('login') }}">Login</a></li>
+          <li {% if request.path=="/register" %} class="active"{% endif %}><a href="{{ url_for('register') }}">Register</a></li>
+        </ul>
 
         {% endif %}
 

@@ -1,51 +1,106 @@
 <!-- extend base layout -->
+<style>/* Copyright 2014 Evernote Corporation. All rights reserved. */
+body {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+}
+
+.form-register {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-register .form-register-heading,
+.form-register .checkbox {
+  margin-bottom: 10px;
+}
+.form-register .checkbox {
+  font-weight: normal;
+}
+.form-register .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-register .form-control:focus {
+  z-index: 2;
+}
+.form-register input[type="username"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-register input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-register #passwordField {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-register input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+</style>
+
 {% extends "base.html" %}
 
 {% block content %}
 
+
 <div class="well">
-    <h1>Please Register</h1>
-    <br>
-    <form class="form-signin" role="form" method="post" action="">
-      {{ form.csrf_token }}
-    <div class="control-group{% if form.nickname.errors %} error{% endif %}">
-        <label class="control-label" for="nickname">Username:</label>
-        <div class="controls">
-            {{ form.nickname() }}
-            {% for error in form.nickname.errors %}
-                <span class="help-inline">[{{ error }}]</span><br>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="control-group{% if form.email.errors %} error{% endif %}">
-        <label class="control-label" for="email">Email:</label>
-        <div class="controls">
-            {{ form.email() }}
-            {% for error in form.email.errors %}
-                <span class="help-inline">[{{ error }}]</span><br>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="control-group{% if form.password.errors %} error{% endif %}">
-        <label class="control-label" for="password">Password:</label>
-        <div class="controls">
-            {{ form.password() }}
-            {% for error in form.password.errors %}
-                <span class="help-inline">[{{ error }}]</span><br>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="control-group{% if form.confirm_pass.errors %} error{% endif %}">
-        <label class="control-label" for="confirm_pass">Confirm Password:</label>
-        <div class="controls">
-            {{ form.confirm_pass() }}
-            {% for error in form.confirm_pass.errors %}
-                <span class="help-inline">[{{ error }}]</span><br>
-            {% endfor %}
-        </div>
-    </div>
-      <button class="btn btn-sm btn-success" type="submit">Register</button>
-    </form>
-</div>
+        <form class="form-register" method="post" >
+        {{ form.csrf_token }}
+        <h2 class="form-register-heading">Please register</h2>
+        <label for="usernameField" class="sr-only">Username</label>
+        {{ form.nickname(class_='form-control', type='username', placeholder='Username', id='usernameField', required="", autofocus="") }}
+            <span class="error">
+              {% if form.nickname.errors %}
+                {% for error in form.nickname.errors %}
+                  {{ error }}
+                {% endfor %}
+              {% endif %}
+            </span>
+        <label for="emailField" class="sr-only">Email</label>
+        {{ form.email(class_='form-control', type='email', placeholder='Email', id='emailField', required="") }}
+            <span class="error">
+              {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                  {{ error }}
+                {% endfor %}
+              {% endif %}
+            </span>
+        <label for="passwordField" class="sr-only">Password</label>
+        {{ form.password(class_='form-control', type='password', placeholder='Password', id='passwordField', required="") }}
+            <span class="error">
+              {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                  {{ error }}
+                {% endfor %}
+              {% endif %}
+            </span>
+        <label for="confirmPasswordField" class="sr-only">Confirm password</label>
+        {{ form.confirm_pass(class_='form-control', type='password', placeholder='Confirm password', id='confirmPasswordField', required="") }}
+            <span class="error">
+              {% if form.confirm_pass.errors %}
+                {% for error in form.confirm_pass.errors %}
+                  {{ error }}
+                {% endfor %}
+              {% endif %}
+            </span>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+      </form>
+      </div>
+      
+      <script src="/static/js/ie10-viewport-bug-workaround.js"></script>
 
 {% endblock %}
