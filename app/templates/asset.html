@@ -20,7 +20,7 @@ Descriptions:
     {% for description in asset.descriptions %}
       <a href="{{ url_for('description') }}/{{ description.id }}" class="list-group-item">{{ description.id }}</a>
     {% endfor %}
-  </div>
+</div>
 
 <a href="/{{ attachment_location }}{{ asset.filename }}">Supplementary attachment</a>
 

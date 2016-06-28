@@ -2,13 +2,15 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.sqlalchemy import get_debug_queries
+from flask.ext.mail import Message
 from datetime import datetime
-from app import app, db, lm, oid
+from app import app, db, lm, oid, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
     RegisterForm, SearchForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User
 from .emails import follower_notification
+from .util import ts
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
 from werkzeug import secure_filename
@@ -107,7 +109,7 @@ def register():
 @oid.after_login
 def after_login(resp):
     if resp.email is None or resp.email == "":
-        flash(gettext('Invalid login. Please try again.'))
+        flash('Invalid login. Please try again.')
         return redirect(url_for('login'))
     user = User.query.filter_by(email=resp.email).first()
     if user is None:
@@ -141,7 +143,7 @@ def reset():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:
-            flash(gettext('Email not found.'))
+            flash('Email not found.')
         else:
             token = ts.dumps(user.email, salt='recover-key')
 
@@ -151,7 +153,7 @@ def reset():
                 _external=True)
 
             msg = Message(subject="Password reset requested",
-                      sender="recover@inventme.com",
+                      sender="wordsforsound@gmail.com",
                       recipients=user.email,
                       html = "Please click on {{ recover_url }} to recover your password. Thank you!")
 
@@ -162,7 +164,6 @@ def reset():
             # Send email with recovery link
             #TODO does not send email
             mail.send(msg)
-            print 1
 
             return redirect(url_for('index'))
     return render_template('reset.html', form=form)
@@ -191,7 +192,7 @@ def reset_with_token(token):
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
-        flash(gettext('User %(nickname)s not found.', nickname=nickname))
+        flash('User %(nickname)s not found.', nickname=nickname)
         return redirect(url_for('index'))
     projects_participating_count = g.user.projects_participated.count()
     projects_owned_count = g.user.projects_owned.count()
@@ -210,7 +211,7 @@ def edit():
         g.user.about_me = form.about_me.data
         db.session.add(g.user)
         db.session.commit()
-        flash(gettext('Your changes have been saved.'))
+        flash('Your changes have been saved.')
         return redirect(url_for('edit'))
     elif request.method != "POST":
         form.nickname.data = g.user.nickname
@@ -255,7 +256,7 @@ def tags():
 def tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
     if tag is None:
-        flash(gettext('Tag not found.'))
+        flash('Tag not found.')
         return redirect(url_for('index'))
     return render_template('tag.html',
                            tag=tag,
@@ -346,7 +347,7 @@ def sounds():
 def sound(sound_id):
     sound = Sound.query.filter_by(id=sound_id).first()
     if sound is None:
-        flash(gettext('Sound not found.'))
+        flash('Sound not found.')
         return redirect(url_for('index'))
 
     sound_location = SOUND_UPLOAD_FOLDER
@@ -453,7 +454,7 @@ def asset(asset_id):
 def edit_project(project_id):
     project = Project.query.filter_by(id=project_id).first()
     if project is None:
-        flash(gettext('Project not found.'))
+        flash('Project not found.')
         return redirect(url_for('index'))
     form = NewProjectForm()
 
@@ -547,7 +548,7 @@ def iterations():
 def iteration(iteration_id):
     iteration = Iteration.query.filter_by(id=iteration_id).first()
     if iteration is None:
-        flash(gettext('Itteration not found.'))
+        flash('Itteration not found.')
         return redirect(url_for('index'))
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('iteration.html',
@@ -675,6 +676,7 @@ def add_asset():
         asset.status = AssetStatus.iteration.value
         asset.iteration_number = 0
         asset.description = form.description.data
+        asset.project_id = form.project.data
         
         # Upload file
         if form.upload_file.data.filename:

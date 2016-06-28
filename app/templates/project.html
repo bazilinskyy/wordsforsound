@@ -16,7 +16,14 @@ Id: {{ project.id }} </br>
 Name: {{ project.name }}  </br>
 Description: {{ project.description }}  </br>
 
-<a href="/{{ attachment_location }}{{ project.filename }}">Supplementary attachment</a>
+<a href="/{{ attachment_location }}{{ project.filename }}">Supplementary attachment</a> </br>
+
+Assets:
+<div class="list-group">
+    {% for asset in project.assets %}
+      <a href="{{ url_for('asset') }}/{{ asset.id }}" class="list-group-item">{{ asset.id }} - {{ asset.name }}</a>
+    {% endfor %}
+</div>
 
 
 </div>
