@@ -55,8 +55,10 @@
         <li {% if request.path=="/projects" or request.path=="/add_project" or request.path=="/delete_project"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li {% if request.path=="/add_project" %} class="active"{% endif %}><a href="{{ url_for('add_project') }}">New project <span class="sr-only">(current)</span></a></li>
-            <li class="divider"></li>
+            {% if g.user.type == 'client_user' %}
+              <li {% if request.path=="/add_project" %} class="active"{% endif %}><a href="{{ url_for('add_project') }}">New project <span class="sr-only">(current)</span></a></li>
+              <li class="divider"></li>
+            {% endif %}
             <li class="dropdown-header">Ongoing projects</li>
             {% for project in g.projects_ongoing %}
                 <li><a href="{{ url_for('project') }}/{{ project.id }}">{{ project.name }}</a></li>
@@ -73,8 +75,10 @@
         <li {% if request.path=="/assets" or request.path=="/add_asset" or request.path=="/delete_asset"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Assets <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li {% if request.path=="/add_asset" %} class="active"{% endif %}><a href="{{ url_for('add_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
-            <li class="divider"></li>
+            {% if g.user.type == 'client_user' %}
+              <li {% if request.path=="/add_asset" %} class="active"{% endif %}><a href="{{ url_for('add_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
+              <li class="divider"></li>
+            {% endif %}
             <li class="dropdown-header">Ongoing assets</li>
             {% for asset in g.assets_ongoing %}
                 <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
@@ -88,7 +92,9 @@
             <li><a href="{{ url_for('assets', assets_type='finished') }}">View all</a></li>
           </ul>
         </li>
+        {% if g.user.type == 'client_user' %}
           <a role="button" class="btn btn-default navbar-btn" style="margin-left: 5px; margin-right: 5px;" href="{{ url_for('add_asset') }}">New asset</a>
+        {% endif %}
 
           <li class="dropdown navbar-right">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-user"></i> {{ g.user.nickname}} <b class="caret"></b></a>
@@ -104,7 +110,7 @@
                   </li>
                   <li class="divider"></li> -->
                   <li>
-                      <a href="{{ url_for('logout') }}"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                      <a href="{{ url_for('logout') }}"><i class="fa fa-fw fa-power-off"></i> Logout</a>
                   </li>
               </ul>
           </li>

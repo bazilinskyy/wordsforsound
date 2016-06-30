@@ -73,7 +73,7 @@ def login():
           user = User.query.filter_by(nickname=form.username.data).first()
           if user is not None and user.password == form.password.data:
               login_user(user)
-              flash('Welcome!')
+              session['remember_me'] = form.remember_me.data
               return redirect(url_for('index'))
           else:
               error = 'Invalid username or password.'
@@ -226,6 +226,8 @@ def index(page=1):
     assets_description = Asset.query.filter_by(status=1).all() # TODO Add pagination
     assets_iteration = Asset.query.filter_by(status=2).all() # TODO Add pagination
     assets_verification = Asset.query.filter_by(status=3).all() # TODO Add pagination
+
+    print g.user.type
 
     return render_template('index.html',
                            title='Home',
@@ -590,6 +592,10 @@ def delete_sound():
 @app.route('/add_asset', methods=['GET', 'POST'])
 @login_required
 def add_asset():
+    if g.user.type == "supplier_user":
+        flash('You do not have permissions to request new assets.')
+        return redirect(url_for('index'))
+
     form = NewAssetForm()
     if form.validate_on_submit():
         asset = Asset()
@@ -809,6 +815,10 @@ def iterate(asset_id):
 @app.route('/add_project', methods=['GET', 'POST'])
 @login_required
 def add_project():
+    if g.user.type == "supplier_user":
+        flash('You do not have permissions to create new projects.')
+        return redirect(url_for('index'))
+
     form = NewProjectForm()
     if form.validate_on_submit():
         project = Project()
