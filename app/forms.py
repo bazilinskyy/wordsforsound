@@ -75,6 +75,8 @@ class RegisterForm(Form):
         ]
     )
 
+    user_type = SelectField('user_type', choices=[('1','I need sounds'),('2','I make sounds')])
+
     def validate(self):
         if not Form.validate(self):
             return False

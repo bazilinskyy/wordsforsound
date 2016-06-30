@@ -40,6 +40,17 @@ body {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
+.form-register #confirmPasswordField {
+  margin-bottom: 5px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-register #typeField {
+  margin-bottom: 5px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  height: 42px;
+}
 .form-register input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
@@ -92,6 +103,9 @@ body {
                 {% endfor %}
               {% endif %}
             </span>
+        <fieldset class="form-group">
+          {{ form.user_type(class_='form-control', id='typeField') }}
+        </fieldset>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
       </form>
       </div>

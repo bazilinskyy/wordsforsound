@@ -8,7 +8,8 @@ from app import app, db, lm, oid, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
     RegisterForm, SearchForm
-from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User
+from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
+    SupplierUser, ClientUser
 from .emails import follower_notification
 from .util import ts
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
@@ -86,11 +87,18 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User(
-            nickname=form.nickname.data,
-            email=form.email.data,
-            password=form.password.data
-        )
+        if form.user_type.data == 1:
+            user = ClientUser(
+                nickname=form.nickname.data,
+                email=form.email.data,
+                password=form.password.data
+            )
+        else:
+            user = SupplierUser(
+                nickname=form.nickname.data,
+                email=form.email.data,
+                password=form.password.data
+            )
         db.session.add(user)
         db.session.commit()
         login_user(user)
