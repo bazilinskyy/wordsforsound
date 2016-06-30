@@ -3,7 +3,7 @@ from hashlib import md5
 from app import db
 from app import app
 from enum import Enum
-
+import logging
 import sys
 # if sys.version_info >= (3, 0):
 #     enable_search = False
@@ -215,6 +215,36 @@ class Asset(db.Model):
                            backref=db.backref('assets_for_client', lazy='dynamic'),
                            lazy='dynamic')
 
+    def supplier_add(self, supplier):
+        if supplier not in self.suppliers.all():
+            self.suppliers.append(supplier)
+            logging.debug("Project %s added supplier %s" % (str(self), str(supplier)))
+            return self
+        else:
+            logging.debug("Project %s already has supplier %s: " % (str(self), str(supplier)))
+
+    def supplier_remove(self, supplier):
+        if supplier in self.suppliers.all():
+            self.suppliers.remove(supplier)
+            logging.debug("Project %s removed supplier %s" % (str(self), str(supplier)))
+        else:
+            logging.debug("Project %s does not haee supplier %s: " % (str(self), str(supplier)))
+
+    def client_add(self, client):
+        if client not in self.clients.all():
+            self.clients.append(client)
+            logging.debug("Project %s added client %s" % (str(self), str(client)))
+            return self
+        else:
+            logging.debug("Project %s already has client %s: " % (str(self), str(client)))
+
+    def client_remove(self, client):
+        if client in self.clients.all():
+            self.clients.remove(client)
+            logging.debug("Project %s removed client %s" % (str(self), str(client)))
+        else:
+            logging.debug("Project %s does not haee client %s: " % (str(self), str(client)))
+
     @property
     def unique_name(self):
         return name + '-' + timestamp
@@ -279,6 +309,36 @@ class Project(db.Model):
                            secondary=clients_projects_table,
                            backref=db.backref('projects_for_client', lazy='dynamic'),
                            lazy='dynamic')
+
+    def supplier_add(self, supplier):
+        if supplier not in self.suppliers.all():
+            self.suppliers.append(supplier)
+            logging.debug("Project %s added supplier %s" % (str(self), str(supplier)))
+            return self
+        else:
+            logging.debug("Project %s already has supplier %s: " % (str(self), str(supplier)))
+
+    def supplier_remove(self, supplier):
+        if supplier in self.suppliers.all():
+            self.suppliers.remove(supplier)
+            logging.debug("Project %s removed supplier %s" % (str(self), str(supplier)))
+        else:
+            logging.debug("Project %s does not haee supplier %s: " % (str(self), str(supplier)))
+
+    def client_add(self, client):
+        if client not in self.clients.all():
+            self.clients.append(client)
+            logging.debug("Project %s added client %s" % (str(self), str(client)))
+            return self
+        else:
+            logging.debug("Project %s already has client %s: " % (str(self), str(client)))
+
+    def client_remove(self, client):
+        if client in self.clients.all():
+            self.clients.remove(client)
+            logging.debug("Project %s removed client %s" % (str(self), str(client)))
+        else:
+            logging.debug("Project %s does not haee client %s: " % (str(self), str(client)))
 
     @property
     def unique_name(self):

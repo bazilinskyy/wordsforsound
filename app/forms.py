@@ -6,7 +6,7 @@ from wtforms import StringField, BooleanField, TextAreaField, RadioField, Select
 from wtforms.validators import DataRequired, Length, Optional, Email, EqualTo
 from wtforms.widgets import TextArea
 from config import SOUND_ALLOWED_EXTENSIONS
-from models import Project, User
+from models import Project, User, ClientUser, SupplierUser
 # from flask.ext.uploads import UploadSet, SOUNDS
 # sounds = UploadSet('audio', AUDIO)
 
@@ -23,6 +23,20 @@ def get_projects():
 	for project in projects:
 		choices.append((str(project.id), project.name))
 	return choices
+
+def get_clients():
+    clients = ClientUser.query.all()
+    choices = []
+    for client in clients:
+        choices.append((str(client.id), client.nickname + ' : ' + client.full_name))
+    return choices
+
+def get_suppliers():
+    suppliers = SupplierUser.query.all()
+    choices = []
+    for supplier in suppliers:
+        choices.append((str(supplier.id), supplier.nickname + ' : ' + supplier.full_name))
+    return choices
 
 class LoginForm(Form):
     remember_me = BooleanField('remember_me', default=False)
@@ -131,6 +145,8 @@ class NewAssetForm(Form):
     sound_family = SelectField('sound_family', choices=[('1','Warning'),('2','Notification'),('3','Confirmation'),('4','Status alert')])
     upload_file = FileField('upload_file')
     tags = StringField('tags')
+    clients = SelectMultipleField('client', choices=get_clients())
+    suppliers = SelectMultipleField('supplier', choices=get_suppliers())
     notify_by_email = BooleanField('remember_me', default=False)
 
 class NewProjectForm(Form):

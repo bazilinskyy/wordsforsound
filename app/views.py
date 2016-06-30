@@ -87,7 +87,7 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        if form.user_type.data == 1:
+        if form.user_type.data == '1':
             user = ClientUser(
                 nickname=form.nickname.data,
                 email=form.email.data,
@@ -226,8 +226,6 @@ def index(page=1):
     assets_description = Asset.query.filter_by(status=1).all() # TODO Add pagination
     assets_iteration = Asset.query.filter_by(status=2).all() # TODO Add pagination
     assets_verification = Asset.query.filter_by(status=3).all() # TODO Add pagination
-
-    print g.user.type
 
     return render_template('index.html',
                            title='Home',
@@ -606,6 +604,11 @@ def add_asset():
         asset.iteration_number = 0
         asset.description = form.description.data
         asset.project_id = form.project.data
+        for client in form.clients.data:
+            asset.client_add(ClientUser.query.filter_by(id=int(client)).first())
+        for supplier in form.suppliers.data:
+            asset.supplier_add(SupplierUser.query.filter_by(id=int(supplier)).first())
+        print asset.suppliers.count()
         
         # Upload file
         if form.upload_file.data.filename:

@@ -120,6 +120,24 @@
       </fieldset>
 
       <fieldset class="form-group">
+        <label for="client">Client</label>
+        {{ form.clients(class_='form-control') }}
+        {% for error in form.clients.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+
+      <fieldset class="form-group">
+        <label for="supplier">Supplier</label>
+        {{ form.suppliers(class_='form-control') }}
+        {% for error in form.suppliers.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+
+      <fieldset class="form-group">
         {{ form.notify_by_email(type='checkbox') }} Notify by email
       </fieldset>
     </div>
