@@ -1,0 +1,30 @@
+<table class="table table-hover">
+    <tr>
+        <td width="70px">
+        	<a href=""><img src="http://gravatar.com/avatar/443f3a0d245fa5200c43182325937f2c?s=60&d=identicon" alt="Current user avatar" title="{{ asset.avatar }}"/></a>
+        </td>
+        <td width="70px">
+            {# <p>{% if asset.active==1 or asset.active==2 %} <strong> {% endif %} {{ asset.name }}{% if asset.active==1 %} </strong> {% endif %}</p> #}
+            <p>{{ asset.name }}</p>
+        </td>
+        <td>
+            <p>{{ asset.description }}</p>
+        </td>
+        <td width="80px">
+            <p>Ver. {{ asset.iteration_number }}</p>
+        </td>
+        <td width="100px">
+            <p>
+                {% if asset.status==1 %} 
+                    <button type="button" class="btn btn-default btn-block" disabled="disabled">Describe</button>
+            	{% elif asset.status==2 %} 
+            		<button type="button" class="btn btn-default btn-block" disabled="disabled">Iterate</button>
+            	{% elif asset.status==3 %}
+            		<button type="button" class="btn btn-default btn-block" disabled="disabled">Verify</button>
+            	{% else %}
+            		<button type="button" class="btn btn-default btn-block" disabled="disabled">In work</button>
+            	{% endif %}
+            </p>
+        </td>
+    </tr>
+</table>

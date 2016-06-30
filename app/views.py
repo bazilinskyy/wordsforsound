@@ -224,24 +224,33 @@ def index(page=1):
     # TODO Move to "in my hands" and "in other hands" with addition of accounts
     assets_description_temp = Asset.query.filter_by(status=1).all() # TODO Add pagination
     assets_description = []
+    assets_iteration_temp = Asset.query.filter_by(status=2).all() # TODO Add pagination
+    assets_iteration = []
+    assets_verification_temp = Asset.query.filter_by(status=3).all() # TODO Add pagination
+    assets_verification = []
+    assets_otherhands = []
     for asset in assets_description_temp:
         if g.user in asset.clients.all():
             assets_description.append(asset)
-    assets_iteration_temp = Asset.query.filter_by(status=2).all() # TODO Add pagination
-    assets_iteration = []
+        else:
+            if g.user not in asset.suppliers.all(): 
+                assets_otherhands.append(asset)
     for asset in assets_iteration_temp:
         if g.user in asset.suppliers.all():
             assets_iteration.append(asset)
-    assets_verification_temp = Asset.query.filter_by(status=3).all() # TODO Add pagination
-    assets_verification = []
+        else:
+            if g.user not in asset.clients.all(): 
+                assets_otherhands.append(asset)
     for asset in assets_verification_temp:
         if g.user in asset.clients.all():
             assets_verification.append(asset)
+        else:
+            if g.user not in asset.suppliers.all(): 
+                assets_otherhands.append(asset)
 
     return render_template('index.html',
                            title='Home',
-                           # assets_action=assets_action,
-                           # assets_otherhands=assets_otherhands,
+                           assets_otherhands=assets_otherhands,
                            assets_description = assets_description,
                            assets_iteration = assets_iteration,
                            assets_verification = assets_verification)

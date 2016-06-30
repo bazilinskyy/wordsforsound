@@ -5,56 +5,88 @@
 {% block content %}
 {% include 'flash.html' %}
 
+{% if assets_description|length > 0 %}
+<div class="panel panel-danger" id="panel1">
+      <div class="panel-heading">
+           <h4 class="panel-title">
+      <a data-toggle="collapse" data-target="#collapseOne" 
+         href="#collapseOne">
+        Description
+      </a>
+    </h4>
 
-		{# <!-- TODO paginate -->
-		<div class="panel panel-success">
-			<div class="panel-heading">Action required</div>
-		  	<div class="panel-body">
-				{% for asset in assets_action %}
-			    	 {% include 'asset_short.html' %}
-				{% endfor %}
-			</div>
-		</div>
+      </div>
+      <div id="collapseOne" class="panel-collapse collapse in">
+          <div class="panel-body">
+            {% for asset in assets_description %}
+            {% include 'asset_short.html' %}
+            {% endfor %}
+          </div>
+      </div>
+  </div>
+{% endif %}
 
-		<!-- TODO paginate -->
-		<div class="panel panel-warning">
-			<div class="panel-heading">In other hands</div>
-		  	<div class="panel-body">
-				{% for asset in assets_otherhands %}
-			    	 {% include 'asset_short.html' %}
-				{% endfor %}
-			</div>
-		</div> #}
+{% if assets_iteration|length > 0 %}
+<div class="panel panel-warning" id="panel2">
+      <div class="panel-heading">
+           <h4 class="panel-title">
+      <a data-toggle="collapse" data-target="#collapseTwo" 
+         href="#collapseTwo">
+        Iteration
+      </a>
+    </h4>
 
+      </div>
+      <div id="collapseTwo" class="panel-collapse collapse in">
+          <div class="panel-body">
+            {% for asset in assets_iteration %}
+            {% include 'asset_short.html' %}
+            {% endfor %}
+          </div>
+      </div>
+  </div>
+{% endif %}
 
+{% if assets_verification|length > 0 %}
+<div class="panel panel-success" id="panel3">
+      <div class="panel-heading">
+           <h4 class="panel-title">
+      <a data-toggle="collapse" data-target="#collapseThree" 
+         href="#collapseThree">
+        Iteration
+      </a>
+    </h4>
 
-		<div class="panel panel-danger">
-			<div class="panel-heading">Description</div>
-		  	<div class="panel-body">
-				{% for asset in assets_description %}
-			    	 {% include 'asset_short.html' %}
-				{% endfor %}
-			</div>
-		</div>
+      </div>
+      <div id="collapseThree" class="panel-collapse collapse in">
+          <div class="panel-body">
+            {% for asset in assets_verification %}
+            {% include 'asset_short.html' %}
+            {% endfor %}
+          </div>
+      </div>
+  </div>
+{% endif %}
 
-		<!-- TODO paginate -->
-		<div class="panel panel-warning">
-			<div class="panel-heading">Iteration</div>
-		  	<div class="panel-body">
-				{% for asset in assets_iteration %}
-			    	 {% include 'asset_short.html' %}
-				{% endfor %}
-			</div>
-		</div> 
+{% if assets_otherhands|length > 0 %}
+<div class="panel panel-default" id="panel4">
+      <div class="panel-heading">
+           <h4 class="panel-title">
+      <a data-toggle="collapse" data-target="#collapseFour" 
+         href="#collapseFour" class="collapsed">
+        In other hands
+      </a>
+    </h4>
 
-		<!-- TODO paginate -->
-		<div class="panel panel-success">
-			<div class="panel-heading">Verification</div>
-		  	<div class="panel-body">
-				{% for asset in assets_verification %}
-			    	 {% include 'asset_short.html' %}
-				{% endfor %}
-			</div>
-		</div> 
+      </div>
+      <div id="collapseFour" class="panel-collapse collapse">
+          <div class="panel-body">
+            {% for asset in assets_otherhands %}
+            {% include 'asset_short_otherhands.html' %}
+            {% endfor %}
+          </div>
+      </div>
+  </div>
+{% endif %}
 
 {% endblock %}
