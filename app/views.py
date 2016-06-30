@@ -138,7 +138,6 @@ def logout():
 @app.route('/reset', methods=["GET", "POST"])
 def reset():
     form = EmailForm()
-    print 0
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:
@@ -223,9 +222,21 @@ def edit():
 @login_required
 def index(page=1):
     # TODO Move to "in my hands" and "in other hands" with addition of accounts
-    assets_description = Asset.query.filter_by(status=1).all() # TODO Add pagination
-    assets_iteration = Asset.query.filter_by(status=2).all() # TODO Add pagination
-    assets_verification = Asset.query.filter_by(status=3).all() # TODO Add pagination
+    assets_description_temp = Asset.query.filter_by(status=1).all() # TODO Add pagination
+    assets_description = []
+    for asset in assets_description_temp:
+        if g.user in asset.clients.all():
+            assets_description.append(asset)
+    assets_iteration_temp = Asset.query.filter_by(status=2).all() # TODO Add pagination
+    assets_iteration = []
+    for asset in assets_iteration_temp:
+        if g.user in asset.suppliers.all():
+            assets_iteration.append(asset)
+    assets_verification_temp = Asset.query.filter_by(status=3).all() # TODO Add pagination
+    assets_verification = []
+    for asset in assets_verification_temp:
+        if g.user in asset.clients.all():
+            assets_verification.append(asset)
 
     return render_template('index.html',
                            title='Home',
@@ -608,7 +619,6 @@ def add_asset():
             asset.client_add(ClientUser.query.filter_by(id=int(client)).first())
         for supplier in form.suppliers.data:
             asset.supplier_add(SupplierUser.query.filter_by(id=int(supplier)).first())
-        print asset.suppliers.count()
         
         # Upload file
         if form.upload_file.data.filename:
