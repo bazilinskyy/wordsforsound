@@ -12,8 +12,9 @@ from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Veri
     SupplierUser, ClientUser
 from .emails import follower_notification
 from .util import ts
-from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
-    ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE
+from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
+    ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
+    TAGS_PER_PAGE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -256,10 +257,13 @@ def index(page=1):
                            assets_verification = assets_verification)
 
 @app.route('/tags', methods=['GET', 'POST'])
+@app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
-def tags():
+def tags(page=1):
+    # tags = Tag.query.all().paginate(page, TAGS_PER_PAGE, False)
     tags = Tag.query.all()
     return render_template('tags.html',
+                            title='Tags',
                             tags=tags)
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
@@ -270,6 +274,7 @@ def tag(tag_id):
         flash('Tag not found.')
         return redirect(url_for('index'))
     return render_template('tag.html',
+                           title='Tag',
                            tag=tag)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
@@ -326,8 +331,10 @@ def delete_tag():
                             title='Delete tag')
 
 @app.route('/sounds', methods=['GET', 'POST'])
+@app.route('/sounds/<int:page>', methods=['GET', 'POST'])
 @login_required
-def sounds():
+def sounds(page=1):
+    # sounds = Sound.query.all().paginate(page, SOUNDS_PER_PAGE, False)
     sounds = Sound.query.all()
     return render_template('sounds.html',
                             sounds=sounds)

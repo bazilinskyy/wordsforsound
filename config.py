@@ -11,7 +11,8 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 WHOOSH_BASE = os.path.join(basedir, 'search.db')
 
 # pagination
-POSTS_PER_PAGE = 3
+TAGS_PER_PAGE = 10
+SOUNDS_PER_PAGE = 10
 MAX_SEARCH_RESULTS = 50
 
 # horizontal menu
