@@ -1,4 +1,5 @@
 # By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
+from __future__ import division
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.sqlalchemy import get_debug_queries
@@ -295,16 +296,25 @@ def add_tag():
         db.session.add(tag)
         db.session.commit()
 
-        # for autofill for tags
+        # for autofill for tags and tag cloud
         tags = Tag.query.all()
         tags_json = []
         if tags is not None:
-	        for tag in tags:
-		        tag_id = tag.id
-		        tag_name = tag.name
-		        tags_json.append({'value': tag_id, 'text' : tag_name})
-	  	with open('app/' + TAGS_FILE, 'w') as outfile:
-			json.dump(tags_json, outfile)  
+            # Determine highest number of sounds linked to a tag for giving max weight of 1.0
+            # max_number_of_sounds = 0
+            # for tag in tags:
+            #     if tag.sounds.count() > max_number_of_sounds:
+            #         max_number_of_sounds = tag.sounds.count()
+            # print max_number_of_sounds
+            for tag in tags:
+                tag_id = tag.id
+                tag_name = tag.name
+                # tag_weight = tag.sounds.count() / max_number_of_sounds # weight for jQuery
+                tag_weight = tag.sounds.count()
+                tag_link = "tag/" + str(tag.id)
+                tags_json.append({'value': tag_id, 'text' : tag_name, 'weight' : tag_weight, 'link' : tag_link})
+                with open('app/' + TAGS_FILE, 'w') as outfile:
+                    json.dump(tags_json, outfile)
         
         flash('New tag added.')
         return redirect(url_for('add_tag'))

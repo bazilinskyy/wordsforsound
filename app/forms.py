@@ -170,7 +170,7 @@ class AddSoundForm(Form):
 	sound_family = SelectField('sound_family', choices=[('1','Warning'),('2','Notification'),('3','Confirmation'),('4','Status alert')])
 	upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
 	tags = StringField('tags')
-	rights = StringField('rights', validators=[DataRequired()])
+	rights = StringField('rights')
 	# upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(audio, 'Sounds only!')])
 
 class EditSoundForm(Form):

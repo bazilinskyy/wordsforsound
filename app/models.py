@@ -174,7 +174,7 @@ class Sound(db.Model):
     description = db.Column(db.String(1000))
     tags = db.relationship('Tag',
                            secondary=tags_sounds_table,
-                           backref=db.backref('tags_for_sound', lazy='dynamic'),
+                           backref=db.backref('sounds', lazy='dynamic'),
                            lazy='dynamic')
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
