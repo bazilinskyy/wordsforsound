@@ -225,11 +225,11 @@ def edit():
 def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
     # TODO Move to "in my hands" and "in other hands" with addition of accounts
     assets_description = Asset.query.filter_by(status=1).paginate(page_description, ASSETS_PER_PAGE, False)
+    # assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).filter_by(client_id = g.user.id).paginate(page_description, ASSETS_PER_PAGE, False)
     # assets_description = Asset.query.select_from(join(Asset, ClientUser, Asset.clients)).filter(Asset.status = 1).filter(ClientUser.id = g.user.id)
     #                      session.query(User).select_from(join(User, Address, User.addresses)).filter(Address.email_address=='foo@bar.com')
     # import idpd; idpb.set_trace()
     # assets_description = []
-    print "Page " + str(page_iteration)
     assets_iteration = Asset.query.filter_by(status=2).paginate(page_iteration, ASSETS_PER_PAGE, False)
     # assets_iteration = []
     assets_verification = Asset.query.filter_by(status=3).paginate(page_verification, ASSETS_PER_PAGE, False)
