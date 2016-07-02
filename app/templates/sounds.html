@@ -16,7 +16,7 @@
   </form> -->
 
   <div class="list-group">
-    {% for sound in sounds %}
+    {% for sound in sounds.items %}
       {% include 'sound_entry.html' %}
     {% endfor %}
   </div>

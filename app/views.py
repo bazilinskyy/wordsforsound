@@ -261,8 +261,7 @@ def index(page=1):
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tags(page=1):
-    # tags = Tag.query.all().paginate(page, TAGS_PER_PAGE, False)
-    tags = Tag.query.all()
+    tags = Tag.query.paginate(page, TAGS_PER_PAGE, False)
     return render_template('tags.html',
                             title='Tags',
                             tags=tags)
@@ -344,8 +343,7 @@ def delete_tag():
 @app.route('/sounds/<int:page>', methods=['GET', 'POST'])
 @login_required
 def sounds(page=1):
-    # sounds = Sound.query.all().paginate(page, SOUNDS_PER_PAGE, False)
-    sounds = Sound.query.all()
+    sounds = Sound.query.paginate(page, SOUNDS_PER_PAGE, False)
     return render_template('sounds.html',
                             sounds=sounds)
 

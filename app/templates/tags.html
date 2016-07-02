@@ -19,7 +19,7 @@
 		#tags_cloud {
 		  margin:0 auto;
 		  width:80%;
-		  max-width:600px;
+		  max-width:800px;
 		  height:250px;
 		}
 		#tags_cloud span {
@@ -55,7 +55,7 @@
 
 	<!-- List of tags -->
 	<div class="list-group">
-	    {% for tag in tags %}
+	    {% for tag in tags.items %}
 	      {% include 'tag_entry.html' %}
 	    {% endfor %}
 	</div>
