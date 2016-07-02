@@ -223,36 +223,10 @@ def edit():
 @app.route('/index/<int:page_description>/<int:page_iteration>/<int:page_verification>/<int:page_otherhands>', methods=['GET', 'POST'])
 @login_required
 def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
-    # TODO Move to "in my hands" and "in other hands" with addition of accounts
-    assets_description = Asset.query.filter_by(status=1).paginate(page_description, ASSETS_PER_PAGE, False)
-    # assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).filter_by(client_id = g.user.id).paginate(page_description, ASSETS_PER_PAGE, False)
-    # assets_description = Asset.query.select_from(join(Asset, ClientUser, Asset.clients)).filter(Asset.status = 1).filter(ClientUser.id = g.user.id)
-    #                      session.query(User).select_from(join(User, Address, User.addresses)).filter(Address.email_address=='foo@bar.com')
-    # import idpd; idpb.set_trace()
-    # assets_description = []
-    assets_iteration = Asset.query.filter_by(status=2).paginate(page_iteration, ASSETS_PER_PAGE, False)
-    # assets_iteration = []
-    assets_verification = Asset.query.filter_by(status=3).paginate(page_verification, ASSETS_PER_PAGE, False)
-    # assets_verification = []
-    assets_otherhands = Asset.query.paginate(page_otherhands, ASSETS_PER_PAGE, False) # TODO Add pagination
-    # for asset in assets_description_temp:
-    #     if g.user in asset.clients.all():
-    #         assets_description.append(asset)
-    #     else:
-    #         if g.user not in asset.suppliers.all(): 
-    #             assets_otherhands.append(asset)
-    # for asset in assets_iteration_temp:
-    #     if g.user in asset.suppliers.all():
-    #         assets_iteration.append(asset)
-    #     else:
-    #         if g.user not in asset.clients.all(): 
-    #             assets_otherhands.append(asset)
-    # for asset in assets_verification_temp:
-    #     if g.user in asset.clients.all():
-    #         assets_verification.append(asset)
-    #     else:
-    #         if g.user not in asset.suppliers.all(): 
-    #             assets_otherhands.append(asset)
+    assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).paginate(page_description, ASSETS_PER_PAGE, False)
+    assets_iteration =    Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
+    assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter_by(id = g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
+    assets_otherhands = Asset.query.join((ClientUser, Asset.clients)).filter(id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
 
     return render_template('index.html',
                            title='Home',
