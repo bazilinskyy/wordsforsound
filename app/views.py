@@ -15,7 +15,7 @@ from .emails import follower_notification
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
-    TAGS_PER_PAGE
+    TAGS_PER_PAGE, ASSETS_PER_PAGE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -220,42 +220,50 @@ def edit():
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-@app.route('/index/<int:page>', methods=['GET', 'POST'])
+@app.route('/index/<int:page_description>/<int:page_iteration>/<int:page_verification>/<int:page_otherhands>', methods=['GET', 'POST'])
 @login_required
-def index(page=1):
+def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
     # TODO Move to "in my hands" and "in other hands" with addition of accounts
-    assets_description_temp = Asset.query.filter_by(status=1).all() # TODO Add pagination
-    assets_description = []
-    assets_iteration_temp = Asset.query.filter_by(status=2).all() # TODO Add pagination
-    assets_iteration = []
-    assets_verification_temp = Asset.query.filter_by(status=3).all() # TODO Add pagination
-    assets_verification = []
-    assets_otherhands = []
-    for asset in assets_description_temp:
-        if g.user in asset.clients.all():
-            assets_description.append(asset)
-        else:
-            if g.user not in asset.suppliers.all(): 
-                assets_otherhands.append(asset)
-    for asset in assets_iteration_temp:
-        if g.user in asset.suppliers.all():
-            assets_iteration.append(asset)
-        else:
-            if g.user not in asset.clients.all(): 
-                assets_otherhands.append(asset)
-    for asset in assets_verification_temp:
-        if g.user in asset.clients.all():
-            assets_verification.append(asset)
-        else:
-            if g.user not in asset.suppliers.all(): 
-                assets_otherhands.append(asset)
+    assets_description = Asset.query.filter_by(status=1).paginate(page_description, ASSETS_PER_PAGE, False)
+    # assets_description = Asset.query.select_from(join(Asset, ClientUser, Asset.clients)).filter(Asset.status = 1).filter(ClientUser.id = g.user.id)
+    #                      session.query(User).select_from(join(User, Address, User.addresses)).filter(Address.email_address=='foo@bar.com')
+    # import idpd; idpb.set_trace()
+    # assets_description = []
+    print "Page " + str(page_iteration)
+    assets_iteration = Asset.query.filter_by(status=2).paginate(page_iteration, ASSETS_PER_PAGE, False)
+    # assets_iteration = []
+    assets_verification = Asset.query.filter_by(status=3).paginate(page_verification, ASSETS_PER_PAGE, False)
+    # assets_verification = []
+    assets_otherhands = Asset.query.paginate(page_otherhands, ASSETS_PER_PAGE, False) # TODO Add pagination
+    # for asset in assets_description_temp:
+    #     if g.user in asset.clients.all():
+    #         assets_description.append(asset)
+    #     else:
+    #         if g.user not in asset.suppliers.all(): 
+    #             assets_otherhands.append(asset)
+    # for asset in assets_iteration_temp:
+    #     if g.user in asset.suppliers.all():
+    #         assets_iteration.append(asset)
+    #     else:
+    #         if g.user not in asset.clients.all(): 
+    #             assets_otherhands.append(asset)
+    # for asset in assets_verification_temp:
+    #     if g.user in asset.clients.all():
+    #         assets_verification.append(asset)
+    #     else:
+    #         if g.user not in asset.suppliers.all(): 
+    #             assets_otherhands.append(asset)
 
     return render_template('index.html',
                            title='Home',
                            assets_otherhands=assets_otherhands,
                            assets_description = assets_description,
                            assets_iteration = assets_iteration,
-                           assets_verification = assets_verification)
+                           assets_verification = assets_verification,
+                           page_description=page_description,
+                           page_iteration=page_iteration,
+                           page_verification=page_verification,
+                           page_otherhands=page_otherhands)
 
 @app.route('/tags', methods=['GET', 'POST'])
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])

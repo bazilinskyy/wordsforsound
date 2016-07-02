@@ -5,7 +5,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-{% if assets_description|length > 0 %}
+{% if assets_description.items|length > 0 %}
 <div class="panel panel-danger" id="panel1">
       <div class="panel-heading">
            <h4 class="panel-title">
@@ -18,15 +18,31 @@
       </div>
       <div id="collapseOne" class="panel-collapse collapse in">
           <div class="panel-body">
-            {% for asset in assets_description %}
-            {% include 'asset_short.html' %}
+            {% for asset in assets_description.items %}
+              {% include 'asset_short.html' %}
             {% endfor %}
+
+            <ul class="pager">
+                {% if assets_description.has_prev %}
+                <li class="previous"><a href="{{ url_for('index', page_description=assets_description.prev_num, page_iteration=page_iteration, page_verification=page_verification, page_otherhands=page_otherhands) }}">{{'Newer assets'}}</a></li>
+                {% else %}
+                <li class="previous disabled"><a href="#">{{'Newer assets'}}</a></li>
+                {% endif %}
+                {% if assets_description.has_next %}
+                <li class="next"><a href="{{ url_for('index', page_description=assets_description.next_num, page_iteration=page_iteration, page_verification=page_verification, page_otherhands=page_otherhands) }}">{{'Older assets'}}</a></li>
+                {% else %}
+                <li class="next disabled"><a href="#">{{'Older assets'}}</a></li>
+                {% endif %}
+            </ul>
+
           </div>
       </div>
+
   </div>
+
 {% endif %}
 
-{% if assets_iteration|length > 0 %}
+{% if assets_iteration.items|length > 0 %}
 <div class="panel panel-warning" id="panel2">
       <div class="panel-heading">
            <h4 class="panel-title">
@@ -39,15 +55,29 @@
       </div>
       <div id="collapseTwo" class="panel-collapse collapse in">
           <div class="panel-body">
-            {% for asset in assets_iteration %}
-            {% include 'asset_short.html' %}
+            {% for asset in assets_iteration.items %}
+              {% include 'asset_short.html' %}
             {% endfor %}
+
+            <ul class="pager">
+                {% if assets_iteration.has_prev %}
+                <li class="previous"><a href="{{ url_for('index', page_description=page_description, page_iteration=assets_iteration.prev_num, page_verification=page_verification, page_otherhands=page_otherhands) }}">{{'Newer assets'}}</a></li>
+                {% else %}
+                <li class="previous disabled"><a href="#">{{'Newer assets'}}</a></li>
+                {% endif %}
+                {% if assets_iteration.has_next %}
+                <li class="next"><a href="{{ url_for('index', page_description=page_description, page_iteration=assets_iteration.next_num, page_verification=page_verification, page_otherhands=page_otherhands) }}">{{'Older assets'}}</a></li>
+                {% else %}
+                <li class="next disabled"><a href="#">{{'Older assets'}}</a></li>
+                {% endif %}
+            </ul>
           </div>
       </div>
   </div>
+
 {% endif %}
 
-{% if assets_verification|length > 0 %}
+{% if assets_verification.items|length > 0 %}
 <div class="panel panel-success" id="panel3">
       <div class="panel-heading">
            <h4 class="panel-title">
@@ -60,15 +90,28 @@
       </div>
       <div id="collapseThree" class="panel-collapse collapse in">
           <div class="panel-body">
-            {% for asset in assets_verification %}
-            {% include 'asset_short.html' %}
+            {% for asset in assets_verification.items %}
+              {% include 'asset_short.html' %}
             {% endfor %}
+            <ul class="pager">
+                {% if assets_verification.has_prev %}
+                <li class="previous"><a href="{{ url_for('index', page_description=page_description, page_iteration=page_iteration, page_verification=assets_verification.prev_num, page_otherhands=page_otherhands) }}">{{'Newer assets'}}</a></li>
+                {% else %}
+                <li class="previous disabled"><a href="#">{{'Newer assets'}}</a></li>
+                {% endif %}
+                {% if assets_verification.has_next %}
+                <li class="next"><a href="{{ url_for('index', page_description=page_description, page_iteration=page_iteration, page_verification=assets_verification.next_num, page_otherhands=page_otherhands) }}">{{'Older assets'}}</a></li>
+                {% else %}
+                <li class="next disabled"><a href="#">{{'Older assets'}}</a></li>
+                {% endif %}
+            </ul>
           </div>
       </div>
   </div>
+
 {% endif %}
 
-{% if assets_otherhands|length > 0 %}
+{% if assets_otherhands.items|length > 0 %}
 <div class="panel panel-default" id="panel4">
       <div class="panel-heading">
            <h4 class="panel-title">
@@ -81,12 +124,26 @@
       </div>
       <div id="collapseFour" class="panel-collapse collapse">
           <div class="panel-body">
-            {% for asset in assets_otherhands %}
-            {% include 'asset_short_otherhands.html' %}
+            {% for asset in assets_otherhands.items %}
+              {% include 'asset_short_otherhands.html' %}
             {% endfor %}
+
+            <ul class="pager">
+                {% if assets_otherhands.has_prev %}
+                <li class="previous"><a href="{{ url_for('index', page_description=page_description, page_iteration=page_iteration, page_verification=page_verification, page_otherhands=assets_otherhands.prev_num) }}">{{'Newer assets'}}</a></li>
+                {% else %}
+                <li class="previous disabled"><a href="#">{{'Newer assets'}}</a></li>
+                {% endif %}
+                {% if assets_otherhands.has_next %}
+                <li class="next"><a href="{{ url_for('index', page_description=page_description, page_iteration=page_iteration, page_verification=page_verification, page_otherhands=assets_otherhands.next_num) }}">{{'Older assets'}}</a></li>
+                {% else %}
+                <li class="next disabled"><a href="#">{{'Older assets'}}</a></li>
+                {% endif %}
+            </ul>
           </div>
       </div>
   </div>
+
 {% endif %}
 
 {% endblock %}

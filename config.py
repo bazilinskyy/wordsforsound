@@ -13,6 +13,7 @@ WHOOSH_BASE = os.path.join(basedir, 'search.db')
 # pagination
 TAGS_PER_PAGE = 10
 SOUNDS_PER_PAGE = 10
+ASSETS_PER_PAGE = 5
 MAX_SEARCH_RESULTS = 50
 
 # horizontal menu
