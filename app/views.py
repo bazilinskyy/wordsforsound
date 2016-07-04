@@ -702,7 +702,7 @@ def describe(asset_id):
             for client in asset.clients:
                 if client.id == g.user.id:
                     current_user_found = True
-                elif current_user_found == True
+                elif current_user_found == True:
                     asset.in_hands_id = client.id
                     in_hands_found = True
                     break
@@ -776,7 +776,7 @@ def verify(asset_id):
 
         asset.description = form.description.data
         if request.method == 'POST':
-	        if request.form['submit'] == 'iterate':
+            if request.form['submit'] == 'iterate':
                 # Found who needs to work on the asset next
                 current_user_found  = False
                 in_hands_found = False
@@ -787,7 +787,7 @@ def verify(asset_id):
                     for client in asset.clients:
                         if client.id == g.user.id:
                             current_user_found = True
-                        elif current_user_found == True
+                        elif current_user_found == True:
                             asset.in_hands_id = client.id
                             in_hands_found = True
                             break
@@ -867,7 +867,7 @@ def iterate(asset_id):
             for supplier in asset.suppliers:
                 if supplier.id == g.user.id:
                     current_user_found = True
-                elif current_user_found == True
+                elif current_user_found == True:
                     asset.in_hands_id = supplier.id
                     in_hands_found = True
                     break
