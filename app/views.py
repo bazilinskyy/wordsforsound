@@ -76,7 +76,7 @@ def login():
           if user is not None and user.password == form.password.data:
               login_user(user)
               session['remember_me'] = form.remember_me.data
-              return redirect(url_for('index', just_logged_in = 'No'))
+              return redirect(url_for('index', just_logged_in = 'Yes'))
           else:
               error = 'Invalid username or password.'
     return render_template('login.html', 
@@ -962,11 +962,7 @@ def projects(projects_type):
         projects = Project.query.all()
     return render_template('projects.html',
                             projects=projects,
-                            projects_type=projects_type,
-                            assets_ongoing = HorizontalMenu.assets_ongoing,
-                            assets_finished = HorizontalMenu.assets_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            projects_type=projects_type)
 @app.route('/project')
 @app.route('/project/<int:project_id>/')
 @login_required
@@ -978,7 +974,7 @@ def project(project_id):
     attachment_location = ATACHMENT_UPLOAD_FOLDER
     return render_template('project.html',
                            project=project,
-                           attachment_location = attachment_location)
+                           attachment_location=attachment_location)
 
 @app.route('/search', methods=['POST'])
 @login_required

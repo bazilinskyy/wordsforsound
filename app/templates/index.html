@@ -3,9 +3,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if just_logged_in == 'No' %}
-  {% include 'flash.html' %}
-{% endif %}
+{% include 'flash.html' %}
 
 {% if assets_description.items|length == 0 and assets_iteration.items|length == 0 and assets_verification.items|length == 0 and assets_otherhands.items|length == 0%}
 <div class="well">
@@ -124,13 +122,13 @@
       <div class="panel-heading">
            <h4 class="panel-title">
       <a data-toggle="collapse" data-target="#collapseFour" 
-         href="#collapseFour" class="collapsed">
+         href="#collapseFour">
         In other hands
       </a>
     </h4>
 
       </div>
-      <div id="collapseFour" class="panel-collapse collapse">
+      <div id="collapseFour" class="panel-collapse collapse in">
           <div class="panel-body">
             {% for asset in assets_otherhands.items %}
               {% include 'asset_short_otherhands.html' %}
