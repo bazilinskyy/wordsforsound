@@ -291,14 +291,17 @@ def tags(page=1):
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
 @login_required
-def tag(tag_id):
+def tag(tag_id, page=1):
     tag = Tag.query.filter_by(id=tag_id).first()
     if tag is None:
         flash('Tag not found.')
         return redirect(url_for('index'))
+    sounds = tag.sounds.paginate(page, SOUNDS_PER_PAGE, False)
     return render_template('tag.html',
                            title='Tag',
-                           tag=tag)
+                           tag=tag,
+                           page=page,
+                           sounds=sounds)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 @login_required

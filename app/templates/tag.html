@@ -10,8 +10,29 @@
 <!-- Description form -->
 <div class="well">
 
-{{ tag.id }} - {{ tag.name }}
+<h4>ID <span class="label label-default">{{ tag.id }}</span> Name <span class="label label-default">{{ tag.name }}</span></h4>
 
+  <div class="list-group">
+    <script src="/static/js/wavesurfer.min.js"></script>
+    {% for sound in sounds.items %}
+      {% include 'sound_entry.html' %}
+    {% endfor %}
+  </div>
+
+    <ul class="pager">
+        {% if sounds.has_prev %}
+        <li class="previous"><a href="{{ url_for('tag.sounds', page=tag.sounds.prev_num) }}">{{'Newer sounds'}}</a></li>
+        {% else %}
+        <li class="previous disabled"><a href="#">{{'Newer sounds'}}</a></li>
+        {% endif %}
+        {% if sounds.has_next %}
+        <li class="next"><a href="{{ url_for('tag.sounds', page=tag.sounds.next_num) }}">{{'Older sounds'}}</a></li>
+        {% else %}
+        <li class="next disabled"><a href="#">{{'Older sounds'}}</a></li>
+        {% endif %}
+    </ul>
+
+</div>
 
 </div>
 {% endblock %}
