@@ -192,7 +192,7 @@ def reset_with_token(token):
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
-        flash('User %(nickname)s not found.', nickname=nickname)
+        flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
     user_assets = Asset.query.join((ClientUser, Asset.clients)).filter_by(id = g.user.id). \
     join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page, ASSETS_PER_PAGE, False)
@@ -219,28 +219,28 @@ def edit():
     return render_template('edit.html', form=form)
 
 
-@app.route('/follow/<nickname>')
+@app.route('/follow/<nickname>', methods=['GET', 'POST'])
 @login_required
 def follow(nickname):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
-        flash('User %s not found.' % nickname)
+        flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
     if user == g.user:
-        flash(gettext('You can\'t follow yourself!'))
+        flash('You can\'t follow yourself!')
         return redirect(url_for('user', nickname=nickname))
     u = g.user.follow(user)
     if u is None:
-        flash(gettext('Cannot follow %(nickname)s.', nickname=nickname))
+        flash('Cannot follow ' + nickname + '.')
         return redirect(url_for('user', nickname=nickname))
     db.session.add(u)
     db.session.commit()
-    flash(gettext('You are now following %(nickname)s!', nickname=nickname))
+    flash('You are now following ' + nickname)
     follower_notification(user, g.user)
     return redirect(url_for('user', nickname=nickname))
 
 
-@app.route('/unfollow/<nickname>')
+@app.route('/unfollow/<nickname>', methods=['GET', 'POST'])
 @login_required
 def unfollow(nickname):
     user = User.query.filter_by(nickname=nickname).first()
@@ -248,16 +248,15 @@ def unfollow(nickname):
         flash('User %s not found.' % nickname)
         return redirect(url_for('index'))
     if user == g.user:
-        flash(gettext('You can\'t unfollow yourself!'))
+        flash('You can\'t unfollow yourself!')
         return redirect(url_for('user', nickname=nickname))
     u = g.user.unfollow(user)
     if u is None:
-        flash(gettext('Cannot unfollow %(nickname)s.', nickname=nickname))
+        flash('Cannot unfollow ' + nickname + '.')
         return redirect(url_for('user', nickname=nickname))
     db.session.add(u)
     db.session.commit()
-    flash(gettext('You have stopped following %(nickname)s.',
-                  nickname=nickname))
+    flash('You have stopped following ' + nickname + '.')
     return redirect(url_for('user', nickname=nickname))
 
 @app.route('/', methods=['GET', 'POST'])
@@ -760,8 +759,8 @@ def describe(asset_id):
         # Found who needs to work on the asset next
         current_user_found  = False
         in_hands_found = False
-        if len(asset.clients) != 1:
-            if len(asset.clients) < 1:
+        if len(asset.clients.all()) != 1:
+            if len(asset.clients.all()) < 1:
                 flash('No clients for the asset.')
                 return redirect(url_for('index'))  
             for client in asset.clients:
@@ -773,7 +772,7 @@ def describe(asset_id):
                     break
 
         if not in_hands_found:
-            if len(asset.suppliers) < 1:
+            if len(asset.suppliers.all()) < 1:
                 flash('No suppliers for the asset.')
                 return redirect(url_for('index'))    
             asset.in_hands_id = asset.suppliers[0].id
@@ -845,8 +844,8 @@ def verify(asset_id):
                 # Found who needs to work on the asset next
                 current_user_found  = False
                 in_hands_found = False
-                if len(asset.clients) != 1:
-                    if len(asset.clients) < 1:
+                if len(asset.clients.all()) != 1:
+                    if len(asset.clients.all()) < 1:
                         flash('No clients for the asset.')
                         return redirect(url_for('index'))  
                     for client in asset.clients:
@@ -858,7 +857,7 @@ def verify(asset_id):
                             break
 
                 if not in_hands_found:
-                    if len(asset.suppliers) < 1:
+                    if len(asset.suppliers.all()) < 1:
                         flash('No suppliers for the asset.')
                         return redirect(url_for('index'))    
                     asset.in_hands_id = asset.suppliers[0].id
@@ -925,8 +924,8 @@ def iterate(asset_id):
         # Found who needs to work on the asset next
         current_user_found  = False
         in_hands_found = False
-        if len(asset.suppliers) != 1:
-            if len(asset.suppliers) < 1:
+        if len(asset.suppliers.all()) != 1:
+            if len(asset.suppliers.all()) < 1:
                 flash('No suppliers for the asset.')
                 return redirect(url_for('index'))  
             for supplier in asset.suppliers:
@@ -938,7 +937,7 @@ def iterate(asset_id):
                     break
 
         if not in_hands_found:
-            if len(asset.clients) < 1:
+            if len(asset.clients.all()) < 1:
                 flash('No clients for the asset.')
                 return redirect(url_for('index'))    
             asset.in_hands_id = asset.clients[0].id
