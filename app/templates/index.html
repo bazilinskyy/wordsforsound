@@ -25,7 +25,7 @@
       <div id="collapseOne" class="panel-collapse collapse in">
           <div class="panel-body">
             {% for asset in assets_description.items %}
-              {% include 'asset_short.html' %}
+              {% include 'asset_entry.html' %}
             {% endfor %}
 
             <ul class="pager">
@@ -62,7 +62,7 @@
       <div id="collapseTwo" class="panel-collapse collapse in">
           <div class="panel-body">
             {% for asset in assets_iteration.items %}
-              {% include 'asset_short.html' %}
+              {% include 'asset_entry.html' %}
             {% endfor %}
 
             <ul class="pager">
@@ -97,7 +97,7 @@
       <div id="collapseThree" class="panel-collapse collapse in">
           <div class="panel-body">
             {% for asset in assets_verification.items %}
-              {% include 'asset_short.html' %}
+              {% include 'asset_entry.html' %}
             {% endfor %}
             <ul class="pager">
                 {% if assets_verification.has_prev %}
@@ -131,7 +131,7 @@
       <div id="collapseFour" class="panel-collapse collapse in">
           <div class="panel-body">
             {% for asset in assets_otherhands.items %}
-              {% include 'asset_short_otherhands.html' %}
+              {% include 'asset_entry.html' %}
             {% endfor %}
 
             <ul class="pager">

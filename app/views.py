@@ -8,7 +8,7 @@ from datetime import datetime
 from app import app, db, lm, oid, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
-    RegisterForm, SearchForm
+    RegisterForm, SearchForm, EditForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
 from .emails import follower_notification
@@ -194,12 +194,12 @@ def user(nickname, page=1):
     if user is None:
         flash('User %(nickname)s not found.', nickname=nickname)
         return redirect(url_for('index'))
-    projects_participating_count = g.user.projects_participated.count()
-    projects_owned_count = g.user.projects_owned.count()
+    user_assets = Asset.query.join((ClientUser, Asset.clients)).filter_by(id = g.user.id). \
+    join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page, ASSETS_PER_PAGE, False)
     return render_template('user.html',
+                           page=page,
                            user=user,
-                           projects_participating_count=projects_participating_count,
-                           projects_owned_count=projects_owned_count)
+                           user_assets=user_assets)
 
 
 @app.route('/edit', methods=['GET', 'POST'])
@@ -218,12 +218,54 @@ def edit():
         form.about_me.data = g.user.about_me
     return render_template('edit.html', form=form)
 
+
+@app.route('/follow/<nickname>')
+@login_required
+def follow(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('User %s not found.' % nickname)
+        return redirect(url_for('index'))
+    if user == g.user:
+        flash(gettext('You can\'t follow yourself!'))
+        return redirect(url_for('user', nickname=nickname))
+    u = g.user.follow(user)
+    if u is None:
+        flash(gettext('Cannot follow %(nickname)s.', nickname=nickname))
+        return redirect(url_for('user', nickname=nickname))
+    db.session.add(u)
+    db.session.commit()
+    flash(gettext('You are now following %(nickname)s!', nickname=nickname))
+    follower_notification(user, g.user)
+    return redirect(url_for('user', nickname=nickname))
+
+
+@app.route('/unfollow/<nickname>')
+@login_required
+def unfollow(nickname):
+    user = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('User %s not found.' % nickname)
+        return redirect(url_for('index'))
+    if user == g.user:
+        flash(gettext('You can\'t unfollow yourself!'))
+        return redirect(url_for('user', nickname=nickname))
+    u = g.user.unfollow(user)
+    if u is None:
+        flash(gettext('Cannot unfollow %(nickname)s.', nickname=nickname))
+        return redirect(url_for('user', nickname=nickname))
+    db.session.add(u)
+    db.session.commit()
+    flash(gettext('You have stopped following %(nickname)s.',
+                  nickname=nickname))
+    return redirect(url_for('user', nickname=nickname))
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 @app.route('/index/<int:page_description>/<int:page_iteration>/<int:page_verification>/<int:page_otherhands>', methods=['GET', 'POST'])
 @login_required
 def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
-    assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).paginate(page_description, ASSETS_PER_PAGE, False)
+    assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).filter_by(id = g.user.id).paginate(page_description, ASSETS_PER_PAGE, False)
     assets_iteration = Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
     assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter_by(id = g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)

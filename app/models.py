@@ -5,6 +5,7 @@ from app import app
 from enum import Enum
 import logging
 import sys
+import re
 # if sys.version_info >= (3, 0):
 #     enable_search = False
 # else:
@@ -39,6 +40,12 @@ clients_assets_table = db.Table(
     'clients_assets',
     db.Column('client_id', db.Integer, db.ForeignKey('client_user.id')),
     db.Column('asset_id', db.Integer, db.ForeignKey('asset.id'))
+)
+
+followers = db.Table(
+    'followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
 )
 
 class Pitch(Enum):
@@ -81,6 +88,28 @@ class User(db.Model):
     password = db.Column(db.String)
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
+    assets_in_hands = db.relationship('Asset', backref='user_in_hands', lazy='dynamic')
+
+    followed = db.relationship('User',
+                           secondary=followers,
+                           primaryjoin=(followers.c.follower_id == id),
+                           secondaryjoin=(followers.c.followed_id == id),
+                           backref=db.backref('followers', lazy='dynamic'),
+                           lazy='dynamic')
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+            return self
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+            return self
+
+    def is_following(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
 
     @property
     def full_name(self):

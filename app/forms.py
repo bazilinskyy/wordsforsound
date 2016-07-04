@@ -27,15 +27,15 @@ class EditForm(Form):
         if self.nickname.data == self.original_nickname:
             return True
         if self.nickname.data != User.make_valid_nickname(self.nickname.data):
-            self.nickname.errors.append(gettext(
+            self.nickname.errors.append(
                 'This nickname has invalid characters. '
-                'Please use letters, numbers, dots and underscores only.'))
+                'Please use letters, numbers, dots and underscores only.')
             return False
         user = User.query.filter_by(nickname=self.nickname.data).first()
         if user is not None:
-            self.nickname.errors.append(gettext(
+            self.nickname.errors.append(
                 'This nickname is already in use. '
-                'Please choose another one.'))
+                'Please choose another one.')
             return False
         return True
 
@@ -65,11 +65,9 @@ class RegisterForm(Form):
         if not Form.validate(self):
             return False
         if User.query.filter(User.email == self.email.data).all():
-            self.email.errors.append(
-                gettext("User with this email already exists!"))
+            self.email.errors.append("User with this email already exists!")
         if User.query.filter(User.nickname == self.nickname.data).all():
-            self.email.errors.append(
-                gettext("User with this nickname already exists!"))
+            self.email.errors.append("User with this nickname already exists!")
         return True
 
 class EmailForm(Form):
