@@ -89,7 +89,7 @@
            <h4 class="panel-title">
       <a data-toggle="collapse" data-target="#collapseThree" 
          href="#collapseThree">
-        Iteration
+        Verification
       </a>
     </h4>
 
@@ -120,18 +120,18 @@
 {% if assets_otherhands.items|length > 0 %}
 <div class="panel panel-default" id="panel4">
       <div class="panel-heading">
-           <h4 class="panel-title">
-      <a data-toggle="collapse" data-target="#collapseFour" 
+          <h4 class="panel-title">
+          <a data-toggle="collapse" data-target="#collapseFour" 
          href="#collapseFour">
         In other hands
-      </a>
-    </h4>
-
+          </a>
+      </h4>
       </div>
+
       <div id="collapseFour" class="panel-collapse collapse in">
           <div class="panel-body">
             {% for asset in assets_otherhands.items %}
-              {% include 'asset_entry.html' %}
+              {% include 'asset_entry_in_other_hands.html' %}
             {% endfor %}
 
             <ul class="pager">

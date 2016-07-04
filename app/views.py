@@ -194,8 +194,9 @@ def user(nickname, page=1):
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
-    user_assets = Asset.query.join((ClientUser, Asset.clients)).filter_by(id = g.user.id). \
-    join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page, ASSETS_PER_PAGE, False)
+    user_assets = Asset.query.join((ClientUser, Asset.clients)).filter_by(id = user.id). \
+        join((SupplierUser, Asset.suppliers)).filter_by(id = user.id).paginate(page, ASSETS_PER_PAGE, False)
+    print "Assets " + str(user_assets.items)
     return render_template('user.html',
                            page=page,
                            user=user,
