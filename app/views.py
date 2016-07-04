@@ -325,9 +325,11 @@ def delete_tag():
 @app.route('/sounds/<int:page>', methods=['GET', 'POST'])
 @login_required
 def sounds(page=1):
+    sound_location = SOUND_UPLOAD_FOLDER
     sounds = Sound.query.paginate(page, SOUNDS_PER_PAGE, False)
     return render_template('sounds.html',
-                            sounds=sounds)
+                            sounds=sounds,
+                            sound_location=sound_location)
 
 @app.route('/sound', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
@@ -592,8 +594,10 @@ def delete_sound():
         if sound == None:
             flash('Sound ' +  form.name.data + ' does not exist.')
             return redirect(url_for('delete_sound'))
-    	  
-        os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
+        try:
+            os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
+        except OSError:
+            pass
         db.session.delete(sound)
         db.session.commit()  
         
@@ -646,9 +650,7 @@ def add_asset():
         for supplier in form.suppliers.data:
             asset.supplier_add(SupplierUser.query.filter_by(id=int(supplier)).first())
         asset.in_hands_id = asset.suppliers[0].id  # After creating the request for the asset the \
-                                                   # first user to work on it is the first supplier
-        print "ID " + str(asset.in_hands_id)
-        
+                                                   # first user to work on it is the first supplier        
         # Upload file
         if form.upload_file.data.filename:
 	        filename = secure_filename(form.upload_file.data.filename)

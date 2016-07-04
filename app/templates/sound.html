@@ -25,11 +25,6 @@
 		// wavesurfer.load("sound_uploads/song_cjrg_teasdale_64kb.mp3v");
 		wavesurfer.load("/{{ sound_location }}{{ sound.filename }}");
 		// wavesurfer.load('http://ia902606.us.archive.org/35/items/shortpoetry_047_librivox/song_cjrg_teasdale_64kb.mp3');
-		var slider = document.querySelector('#slider');
-		slider.oninput = function () {
-		  var zoomLevel = Number(slider.value);
-		  wavesurfer.zoom(zoomLevel);
-		};
 	</script>
 
 	<div style="text-align: center">
@@ -40,20 +35,6 @@
 		    <i class="glyphicon glyphicon-pause"></i>
 		    Pause
 		</button>
-
-	 <!--  <p class="row">
-	    <div class="col-xs-1">
-	      <i class="glyphicon glyphicon-zoom-in"></i>
-	    </div>
-
-	    <div class="col-xs-10">
-	      <input id="slider" type="range" min="1" max="200" value="1" style="width: 100%" />
-	    </div>
-
-	    <div class="col-xs-1">
-	      <i class="glyphicon glyphicon-zoom-out"></i>
-	    </div>
-	  </p> -->
 	</div>
 </div>
 {% endblock %}

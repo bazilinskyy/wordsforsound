@@ -1,11 +1,27 @@
 <table class="table table-hover">
     <tr>
-        <td width="170x"><a href="{{ url_for('sound') }}/{{ sound.id }}" class="list-group-item">{{ sound.name }}</a>
+        <td width="170x">
+        	<a href="{{ url_for('sound') }}/{{ sound.id }}">{{ sound.name }}</a>
 		</td>
         <td>
             {% for tag in sound.tags.all() %}
-		      <a href="{{ url_for('tag') }}/{{ tag.id }}">{{ tag.name }}</a>
+		      <span class="tag label label-info"><a href="{{ url_for('tag') }}/{{ tag.id }}">{{ tag.name }}</a></span> 
 		    {% endfor %}
+        </td>
+        <td width="270x">
+			<div id="waveform_{{ sound.id }}" onclick="wavesurfer_{{ sound.id }}.playPause()"></div>
+
+			<script>
+				var wavesurfer_{{ sound.id }} = WaveSurfer.create({
+				    container: '#waveform_{{ sound.id }}',
+				    waveColor: '#A8DBA8',
+			        progressColor: '#3B8686',
+			        backend: 'MediaElement',
+			        height: 50,
+			        hideScrollbar: true
+				});
+				wavesurfer_{{ sound.id }}.load("/{{ sound_location }}{{ sound.filename }}");
+			</script>
         </td>
     </tr>
 </table>
