@@ -3,7 +3,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% include 'flash.html' %}
+{% if just_logged_in == 'No' %}
+  {% include 'flash.html' %}
+{% endif %}
 
 {% if assets_description.items|length == 0 and assets_iteration.items|length == 0 and assets_verification.items|length == 0 and assets_otherhands.items|length == 0%}
 <div class="well">

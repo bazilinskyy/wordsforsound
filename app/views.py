@@ -76,7 +76,7 @@ def login():
           if user is not None and user.password == form.password.data:
               login_user(user)
               session['remember_me'] = form.remember_me.data
-              return redirect(url_for('index'))
+              return redirect(url_for('index', just_logged_in = 'No'))
           else:
               error = 'Invalid username or password.'
     return render_template('login.html', 
