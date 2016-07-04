@@ -5,6 +5,12 @@
 {% block content %}
 {% include 'flash.html' %}
 
+{% if assets_description.items|length == 0 and assets_iteration.items|length == 0 and assets_verification.items|length == 0 and assets_otherhands.items|length == 0%}
+<div class="well">
+  No assets to show.
+</div>
+{% endif %}
+
 {% if assets_description.items|length > 0 %}
 <div class="panel panel-danger" id="panel1">
       <div class="panel-heading">

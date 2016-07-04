@@ -15,7 +15,7 @@ from .emails import follower_notification
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
-    TAGS_PER_PAGE, ASSETS_PER_PAGE
+    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -224,9 +224,9 @@ def edit():
 @login_required
 def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
     assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).paginate(page_description, ASSETS_PER_PAGE, False)
-    assets_iteration =    Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
+    assets_iteration = Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
     assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter_by(id = g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
-    assets_otherhands = Asset.query.join((ClientUser, Asset.clients)).filter(id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+    assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
 
     return render_template('index.html',
                            title='Home',
@@ -612,6 +612,26 @@ def add_asset():
         return redirect(url_for('index'))
 
     form = NewAssetForm()
+
+    # List of projects for selection during new asset creation
+    projects = Project.query.all()
+    project_choices = []
+    for project in projects:
+        project_choices.append((str(project.id), project.name))
+    form.project.choices = project_choices
+    # List of users as clients for new assets
+    clients = ClientUser.query.all()
+    clients_choices = []
+    for client in clients:
+        clients_choices.append((str(client.id), client.nickname + ' : ' + client.full_name))
+    form.clients.choices =clients_choices
+    # List of users as suppliers for new assets
+    suppliers = SupplierUser.query.all()
+    suppliers_choices = []
+    for supplier in suppliers:
+        suppliers_choices.append((str(supplier.id), supplier.nickname + ' : ' + supplier.full_name))
+    form.suppliers.choices = suppliers_choices
+
     if form.validate_on_submit():
         asset = Asset()
         asset.timestamp = datetime.now()

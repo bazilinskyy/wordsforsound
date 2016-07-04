@@ -10,6 +10,9 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 WHOOSH_BASE = os.path.join(basedir, 'search.db')
 
+# slow database query threshold (in seconds)
+DATABASE_QUERY_TIMEOUT = 0.5
+
 # pagination
 TAGS_PER_PAGE = 10
 SOUNDS_PER_PAGE = 10
