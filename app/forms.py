@@ -145,8 +145,8 @@ class NewAssetForm(Form):
     sound_family = SelectField('sound_family', choices=[('1','Warning'),('2','Notification'),('3','Confirmation'),('4','Status alert')])
     upload_file = FileField('upload_file')
     tags = StringField('tags')
-    clients = SelectMultipleField('client', choices=get_clients())
-    suppliers = SelectMultipleField('supplier', choices=get_suppliers())
+    clients = SelectMultipleField('client', choices=get_clients(), validators=[DataRequired()])
+    suppliers = SelectMultipleField('supplier', choices=get_suppliers(), validators=[DataRequired()])
     notify_by_email = BooleanField('remember_me', default=False)
 
 class NewProjectForm(Form):

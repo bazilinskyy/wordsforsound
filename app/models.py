@@ -193,6 +193,7 @@ class Asset(db.Model):
     name = db.Column(db.String(200))
     finished  = db.Column(db.Boolean)
     status = db.Column(db.Integer)
+    in_hands_id = db.Column(db.Integer, db.ForeignKey('user.id')) # User that needs to take action with the asset
     iteration_number = db.Column(db.Integer)
     description = db.Column(db.String(1000))
     sounds = db.relationship('Sound', backref='asset',

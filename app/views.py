@@ -625,6 +625,8 @@ def add_asset():
             asset.client_add(ClientUser.query.filter_by(id=int(client)).first())
         for supplier in form.suppliers.data:
             asset.supplier_add(SupplierUser.query.filter_by(id=int(supplier)).first())
+        asset.in_hands_id = asset.suppliers[0]  # After creating the request for the asset the \
+                                                # first user to work on it is the first supplier
         
         # Upload file
         if form.upload_file.data.filename:
@@ -689,7 +691,29 @@ def describe(asset_id):
         description.asset_id = asset.id
 
         asset.description = form.description.data
-        asset.status = AssetStatus.iteration.value
+
+        # Found who needs to work on the asset next
+        current_user_found  = False
+        in_hands_found = False
+        if len(asset.clients) != 1:
+            if len(asset.clients) < 1:
+                flash('No clients for the asset.')
+                return redirect(url_for('index'))  
+            for client in asset.clients:
+                if client.id == g.user.id:
+                    current_user_found = True
+                elif current_user_found == True
+                    asset.in_hands_id = client.id
+                    in_hands_found = True
+                    break
+
+        if not in_hands_found:
+            if len(asset.suppliers) < 1:
+                flash('No suppliers for the asset.')
+                return redirect(url_for('index'))    
+            asset.in_hands_id = asset.suppliers[0].id
+            asset.status = AssetStatus.iteration.value
+
 
         # Upload file
         if form.upload_file.data:
@@ -753,7 +777,28 @@ def verify(asset_id):
         asset.description = form.description.data
         if request.method == 'POST':
 	        if request.form['submit'] == 'iterate':
-	            asset.status = AssetStatus.description.value
+                # Found who needs to work on the asset next
+                current_user_found  = False
+                in_hands_found = False
+                if len(asset.clients) != 1:
+                    if len(asset.clients) < 1:
+                        flash('No clients for the asset.')
+                        return redirect(url_for('index'))  
+                    for client in asset.clients:
+                        if client.id == g.user.id:
+                            current_user_found = True
+                        elif current_user_found == True
+                            asset.in_hands_id = client.id
+                            in_hands_found = True
+                            break
+
+                if not in_hands_found:
+                    if len(asset.suppliers) < 1:
+                        flash('No suppliers for the asset.')
+                        return redirect(url_for('index'))    
+                    asset.in_hands_id = asset.suppliers[0].id
+                    asset.status = AssetStatus.description.value
+
 	            flash('Verification created.')
 	        elif request.form['submit'] == 'finalise':
 	            asset.status = AssetStatus.finished.value
@@ -811,7 +856,28 @@ def iterate(asset_id):
 
         asset.iteration_number = asset.iteration_number+1
         asset.description = form.description.data
-        asset.status = AssetStatus.verification.value
+
+        # Found who needs to work on the asset next
+        current_user_found  = False
+        in_hands_found = False
+        if len(asset.suppliers) != 1:
+            if len(asset.suppliers) < 1:
+                flash('No suppliers for the asset.')
+                return redirect(url_for('index'))  
+            for supplier in asset.suppliers:
+                if supplier.id == g.user.id:
+                    current_user_found = True
+                elif current_user_found == True
+                    asset.in_hands_id = supplier.id
+                    in_hands_found = True
+                    break
+
+        if not in_hands_found:
+            if len(asset.clients) < 1:
+                flash('No clients for the asset.')
+                return redirect(url_for('index'))    
+            asset.in_hands_id = asset.clients[0].id
+            asset.status = AssetStatus.verification.value
 
         db.session.add(iteration)
         db.session.commit()
