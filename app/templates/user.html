@@ -20,11 +20,12 @@
         {% endif %}
         </p>
     </div>
-    {% for asset in user_assets.items %}
-        {% include 'asset_entry.html' %}
-    {% endfor %}
-
     {% if user_assets.items|length > 0 %}
+        <h3>In hands of the user:</h3>
+        {% for asset in user_assets.items %}
+            {% include 'asset_entry_in_other_hands.html' %}
+        {% endfor %}
+
         <ul class="pager">
             {% if user_assets.has_prev %}
             <li class="previous"><a href="{{ url_for('user', nickname=user.nickname, page=user_assets.prev_num) }}">Newer assets</a></li>
