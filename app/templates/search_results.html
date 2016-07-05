@@ -2,9 +2,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{('Search results for "%(query)s":', query = query)}}</h1>
-{% include 'flash.html' %}
-{% for sound in results %}
-    {% include 'sound.html' %}
-{% endfor %}
+	<div class="well">
+		<h1>Search results for <i>{{ query }}</i>.</h1>
+		{% include 'flash.html' %}
+
+		<h3>Tags:</h3>
+		{% for tag in tags_results %}
+		    {% include 'tag_entry.html' %}
+		{% endfor %}
+
+		<h3>Sounds:</h3>
+		{% for sound in sounds_results %}
+		    {% include 'sound_entry.html' %}
+		{% endfor %}
+
+		<h3>Projects:</h3>
+		{% for project in projects_results %}
+		    {% include 'project_entry.html' %}
+		{% endfor %}
+
+		<h3>Assets:</h3>
+		{% for asset in assets_results %}
+		    {% include 'asset_entry.html' %}
+		{% endfor %}
+	</div>
 {% endblock %}

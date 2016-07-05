@@ -4,13 +4,18 @@ from app import db
 from app import app
 from enum import Enum
 import logging
-import sys
 import re
-# if sys.version_info >= (3, 0):
-#     enable_search = False
-# else:
-#     enable_search = True
-#     import flask.ext.whooshalchemy as whooshalchemy
+import sys
+from config import WHOOSH_ENABLED
+
+# import flask_whooshalchemyplus as whooshalchemy
+
+if sys.version_info >= (3, 0):
+    enable_search = False
+else:
+    enable_search = WHOOSH_ENABLED
+    if enable_search:
+        import flask.ext.whooshalchemy as whooshalchemy
 
 tags_sounds_table = db.Table(
     'tags_for_sound',
@@ -78,7 +83,7 @@ class AssetStatus(Enum):
 
 class User(db.Model):
     __tablename__ = 'user'
-    __searchable__ = ['first_name', 'last_name', 'email']
+    __searchable__ = ['first_name', 'last_name', 'email', 'nickname']
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50)) #used for sqlalchemy inheritance
     nickname = db.Column(db.String(64), index=True, unique=True)
@@ -195,7 +200,7 @@ class Tag(db.Model):
 
 class Sound(db.Model):
     __tablename__ = 'sound'
-    __searchable__ = ['name']
+    __searchable__ = ['name', 'filename', 'description']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     url = db.Column(db.String(400)) #location
@@ -217,7 +222,7 @@ class Sound(db.Model):
 
 class Asset(db.Model):
     __tablename__ = 'asset'
-    __searchable__ = ['name']
+    __searchable__ = ['name', 'description']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     finished  = db.Column(db.Boolean)
@@ -322,7 +327,7 @@ class Iteration(db.Model):
 
 class Project(db.Model):
     __tablename__ = 'project'
-    __searchable__ = ['name']
+    __searchable__ = ['name', 'description']
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(200))
     finished  = db.Column(db.Boolean)
@@ -374,5 +379,9 @@ class Project(db.Model):
     def unique_name(self):
         return name + '-' + timestamp
 
-# if enable_search:
-#     whooshalchemy.whoosh_index(app, Sound)
+if enable_search:
+    whooshalchemy.whoosh_index(app, Project)
+    whooshalchemy.whoosh_index(app, Asset)
+    whooshalchemy.whoosh_index(app, Tag)
+    whooshalchemy.whoosh_index(app, Sound)
+    # whooshalchemy.whoosh_index(app, User)

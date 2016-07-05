@@ -5,7 +5,7 @@
 		</td>
         <td>
             {% for tag in sound.tags.all() %}
-		      <span class="tag label label-info"><a href="{{ url_for('tag') }}/{{ tag.id }}">{{ tag.name }}</a></span> 
+		      {% include 'tag_entry.html' %}
 		    {% endfor %}
         </td>
         <td width="270x">
