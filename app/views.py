@@ -1034,13 +1034,15 @@ def search():
 def search_results(query):
     tags_results = Tag.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
     sounds_results = Sound.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
-    users_results = User.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+    # users_results = User.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+    users_results = []
     projects_results = Project.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
     assets_results = Asset.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
-
+    
+    print "query: " + query
     print "tags: " + str(tags_results)
     print "sounds: " + str(sounds_results)
-    print "users: " + str(users_results)
+    # print "users: " + str(users_results)
     print "projects: " + str(projects_results)
     print "assets: " + str(assets_results)
 
