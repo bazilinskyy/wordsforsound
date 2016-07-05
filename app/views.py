@@ -301,7 +301,8 @@ def tag(tag_id, page=1):
                            title='Tag',
                            tag=tag,
                            page=page,
-                           sounds=sounds)
+                           sounds=sounds,
+                           sound_location=SOUND_UPLOAD_FOLDER)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 @login_required
@@ -369,11 +370,10 @@ def delete_tag():
 @app.route('/sounds/<int:page>', methods=['GET', 'POST'])
 @login_required
 def sounds(page=1):
-    sound_location = SOUND_UPLOAD_FOLDER
     sounds = Sound.query.paginate(page, SOUNDS_PER_PAGE, False)
     return render_template('sounds.html',
                             sounds=sounds,
-                            sound_location=sound_location)
+                            sound_location=SOUND_UPLOAD_FOLDER)
 
 @app.route('/sound', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
@@ -384,13 +384,12 @@ def sound(sound_id):
         flash('Sound not found.')
         return redirect(url_for('index'))
 
-    sound_location = SOUND_UPLOAD_FOLDER
     if sound.description == '':
     	sound.description = 'N/A'
 
     return render_template('sound.html',
                            sound=sound,
-                           sound_location=sound_location)
+                           sound_location=SOUND_UPLOAD_FOLDER)
 
 @app.route('/sound/edit', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
@@ -1052,4 +1051,5 @@ def search_results(query):
                            sounds_results=sounds_results,
                            users_results=users_results,
                            projects_results=projects_results,
-                           assets_results=assets_results)
+                           assets_results=assets_results,
+                           sound_location=SOUND_UPLOAD_FOLDER)

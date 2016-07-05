@@ -1,4 +1,3 @@
-<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
 <!-- extend base layout -->
 {% extends "base.html" %}
 
@@ -9,31 +8,26 @@
 
 <!-- Description form -->
 <div class="well">
-  <!-- <form>
-    <fieldset class="form-group">
-      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your search phrase">
-    </fieldset>
-  </form> -->
 
   <div class="list-group">
-    <script src="/static/js/wavesurfer.min.js"></script>
+
     {% for sound in sounds.items %}
       {% include 'sound_entry.html' %}
     {% endfor %}
   </div>
 
-    <ul class="pager">
-        {% if sounds.has_prev %}
-        <li class="previous"><a href="{{ url_for('sounds', page=sounds.prev_num) }}">{{'Newer sounds'}}</a></li>
-        {% else %}
-        <li class="previous disabled"><a href="#">{{'Newer sounds'}}</a></li>
-        {% endif %}
-        {% if sounds.has_next %}
-        <li class="next"><a href="{{ url_for('sounds', page=sounds.next_num) }}">{{'Older sounds'}}</a></li>
-        {% else %}
-        <li class="next disabled"><a href="#">{{'Older sounds'}}</a></li>
-        {% endif %}
-    </ul>
+  <ul class="pager">
+    {% if sounds.has_prev %}
+      <li class="previous"><a href="{{ url_for('sounds', page=sounds.prev_num) }}">{{'Newer sounds'}}</a></li>
+      {% else %}
+      <li class="previous disabled"><a href="#">{{'Newer sounds'}}</a></li>
+      {% endif %}
+      {% if sounds.has_next %}
+      <li class="next"><a href="{{ url_for('sounds', page=sounds.next_num) }}">{{'Older sounds'}}</a></li>
+      {% else %}
+      <li class="next disabled"><a href="#">{{'Older sounds'}}</a></li>
+    {% endif %}
+  </ul>
 
 </div>
 {% endblock %}

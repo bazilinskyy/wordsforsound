@@ -9,8 +9,8 @@
 		    {% endfor %}
         </td>
         <td width="270x">
+        	<script src="/static/js/wavesurfer.min.js"></script>
 			<div id="waveform_{{ sound.id }}" onclick="wavesurfer_{{ sound.id }}.playPause()"></div>
-
 			<script>
 				var wavesurfer_{{ sound.id }} = WaveSurfer.create({
 				    container: '#waveform_{{ sound.id }}',

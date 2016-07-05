@@ -83,6 +83,7 @@ class AssetStatus(Enum):
 
 class User(db.Model):
     __tablename__ = 'user'
+    # __searchable__ = ['nickname', 'first_name', 'last_name']
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50)) #used for sqlalchemy inheritance
     nickname = db.Column(db.String(64), index=True, unique=True)
