@@ -5,17 +5,17 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.mail import Message
 from datetime import datetime
-from app import app, db, lm, oid, mail
+from app import app, db, lm, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
     RegisterForm, SearchForm, EditForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
-from .emails import follower_notification
+from .emails import follower_notification, test_notification, send_email, description_notification
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
-    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT
+    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -64,7 +64,6 @@ def internal_error(error):
     return render_template('500.html'), 500
 
 @app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
 def login():
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
@@ -107,7 +106,6 @@ def register():
         return redirect(url_for('index'))
     return render_template('register.html', form=form)
 
-@oid.after_login
 def after_login(resp):
     if resp.email is None or resp.email == "":
         flash('Invalid login. Please try again.')
@@ -152,18 +150,13 @@ def reset():
                 token=token,
                 _external=True)
 
-            msg = Message(subject="Password reset requested",
-                      sender="wordsforsound@gmail.com",
-                      recipients=user.email,
-                      html = "Please click on {{ recover_url }} to recover your password. Thank you!")
+            subject="Password reset requested"
+            sender="wordsforsound@gmail.com"
+            recipients=user.email
+            txt = "Please click on {{ recover_url }} to recover your password. Thank you!"
+            html = "Please click on {{ recover_url }} to recover your password. Thank you!"
 
-            # msg.html = render_template(
-            #     'email/recover.html',
-            #     recover_url=recover_url)
-
-            # Send email with recovery link
-            #TODO does not send email
-            mail.send(msg)
+            send_email(subject, sender, recipients, txt, html)
 
             return redirect(url_for('index'))
     return render_template('reset.html', form=form)
@@ -269,6 +262,7 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
     assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter_by(id = g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
 
+    # test_notification(g.user)
     return render_template('index.html',
                            title='Home',
                            assets_otherhands=assets_otherhands,
@@ -440,17 +434,19 @@ def sound_edit(sound_id):
                            sound=sound)
 
 @app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
+@app.route('/sounds/<string:assets_type>/<int:page>', methods=['GET', 'POST'])
 @login_required
-def assets(assets_type):
+def assets(assets_type, page=1):
     if assets_type == 'ongoing':
-        assets = Asset.query.filter_by(finished=False).all()
+        assets = Asset.query.filter_by(finished=False).paginate(page, ASSETS_PER_PAGE, False)
     elif assets_type == 'finished':
-        assets = Asset.query.filter_by(finished=True).all()
+        assets = Asset.query.filter_by(finished=True).paginate(page, ASSETS_PER_PAGE, False)
     else:
-        assets = Asset.query.all()
+        assets = Asset.query.paginate(page, ASSETS_PER_PAGE, False)
     return render_template('assets.html',
                             assets=assets,
-                            assets_type=assets_type)
+                            assets_type=assets_type,
+                            page=page)
 @app.route('/asset')
 @app.route('/asset/<int:asset_id>/')
 @login_required
@@ -793,6 +789,7 @@ def describe(asset_id):
         db.session.add(description)
         db.session.commit()
         
+        description_notification(g.user, asset)
         flash('Description created.')
         return redirect(url_for('index'))
     elif request.method != "POST":
@@ -997,17 +994,19 @@ def add_project():
                             title='Add project')
 
 @app.route('/projects/<string:projects_type>', methods=['GET', 'POST'])
+@app.route('/projects/<string:projects_type>/<int:page>', methods=['GET', 'POST'])
 @login_required
-def projects(projects_type):
+def projects(projects_type, page=1):
     if projects_type == 'ongoing':
-        projects = Project.query.filter_by(finished=False).all()
+        projects = Project.query.filter_by(finished=False).paginate(page, PROJECTS_PER_PAGE, False)
     elif projects_type == 'finished':
-        projects = Project.query.filter_by(finished=True).all()
+        projects = Project.query.filter_by(finished=True).paginate(page, PROJECTS_PER_PAGE, False)
     else:
-        projects = Project.query.all()
+        projects = Project.query.paginate(page, PROJECTS_PER_PAGE, False)
     return render_template('projects.html',
                             projects=projects,
-                            projects_type=projects_type)
+                            projects_type=projects_type,
+                            page=page)
 @app.route('/project')
 @app.route('/project/<int:project_id>/')
 @login_required

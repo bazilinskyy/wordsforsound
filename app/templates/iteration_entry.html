@@ -1,0 +1,13 @@
+<table class="table table-hover">
+    <tr>
+        <td>
+        	<a href="{{ url_for('iteration', iteration_id=iteration.id) }}">ID:{{ iteration.id }}</a>
+        </td>
+        <td>
+        	{{ iteration.description }}
+        </td>
+        <td width="100px">
+        	<a href="/{{ attachment_location }}{{ iteration.filename }}">{{ iteration.filename }}</a>
+        </td>
+    </tr>
+</table>

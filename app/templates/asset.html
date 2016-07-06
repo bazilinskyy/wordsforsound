@@ -10,19 +10,36 @@
 <!-- Description form -->
 <div class="well">
 
-Id: {{ asset.id }}
-Name: {{ asset.name }}
-Status: {{ asset.status }}
-Finished: {{ asset.finished }}
+	<h4>ID <span class="label label-default">{{ asset.id }}</span> Name <span class="label label-default">{{ asset.name }}</span> Status <span class="label label-default">{{ asset.status }}</span> Finished <span class="label label-default">{{ asset.finished }}</span></h4>
 
-Descriptions:
-<div class="list-group">
-    {% for description in asset.descriptions %}
-      <a href="{{ url_for('description') }}/{{ description.id }}" class="list-group-item">{{ description.id }}</a>
-    {% endfor %}
-</div>
+	<a href="/{{ attachment_location }}{{ asset.filename }}">Supplementary attachment ({{ asset.filename }})</a> </br>
 
-<a href="/{{ attachment_location }}{{ asset.filename }}">Supplementary attachment</a>
+	{% if asset.descriptions.count > 0 %}
+		<h4>Descriptions:</h4>
+		<div class="list-group">
+		    {% for description in asset.descriptions %}
+		      {% include 'description_entry.html' %}
+		    {% endfor %}
+		</div>
+	{% endif %}
+
+	{% if asset.iterations.count > 0 %}
+		<h4>Iterations:</h4>
+		<div class="list-group">
+		    {% for iteration in asset.iterations %}
+		      {% include 'iteration_entry.html' %}
+		    {% endfor %}
+		</div>
+	{% endif %}
+
+	{% if asset.verifications.count > 0 %}
+		<h4>Verifications:</h4>
+		<div class="list-group">
+		    {% for verification in asset.verifications %}
+		      {% include 'verification_entry.html' %}
+		    {% endfor %}
+		</div>
+	{% endif %}
 
 </div>
 {% endblock %}

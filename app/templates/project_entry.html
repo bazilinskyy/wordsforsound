@@ -1,20 +1,13 @@
 <table class="table table-hover">
     <tr>
         <td>
-            Id: {{ project.id }} </br>
-            Name: {{ project.name }}  </br>
-
-            <a href="/{{ attachment_location }}{{ project.filename }}">Supplementary attachment</a> </br>
-        <td>
-            Description: {{ project.description }}  </br>
+            <a href="{{ url_for('project', project_id=project.id) }}">ID:{{ project.id }}</a>
         </td>
         <td>
-            Assets:
-            <div class="list-group">
-                {% for asset in project.assets %}
-                  <a href="{{ url_for('asset') }}/{{ asset.id }}" class="list-group-item">{{ asset.id }} - {{ asset.name }}</a>
-                {% endfor %}
-            </div>
+            {{ project.description }}
+        </td>
+        <td>
+            <a href="/{{ attachment_location }}{{ project.filename }}">{{ project.filename }}</a>
         </td>
     </tr>
 </table>

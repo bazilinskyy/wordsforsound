@@ -25,10 +25,23 @@
   </form> -->
 
   <div class="list-group">
-    {% for asset in assets %}
-      <a href="{{ url_for('asset') }}/{{ asset.id }}" class="list-group-item">{{ asset.name }}</a>
+    {% for asset in assets.items %}
+      {% include 'asset_entry_in_other_hands.html' %}
     {% endfor %}
   </div>
+
+  <ul class="pager">
+    {% if assets.has_prev %}
+      <li class="previous"><a href="{{ url_for('assets', page=assets.prev_num, assets_type=assets_type) }}">{{'Newer assets'}}</a></li>
+      {% else %}
+      <li class="previous disabled"><a href="#">{{'Newer assets'}}</a></li>
+      {% endif %}
+      {% if assets.has_next %}
+      <li class="next"><a href="{{ url_for('assets', page=assets.next_num, assets_type=assets_type) }}">{{'Older assets'}}</a></li>
+      {% else %}
+      <li class="next disabled"><a href="#">{{'Older assets'}}</a></li>
+    {% endif %}
+  </ul>
 
 </div>
 {% endblock %}

@@ -1,0 +1,8 @@
+<p>Dear {{ user.nickname }},</p>
+
+<p>An iteration for the asset {{ asset.name }} has been submitted. Click on the following link to submit your verification for the asset {{ asset.name }}:</p>
+
+{{ url_for("verify", asset_id=asset.id) }}
+
+<p>Regards,</p>
+<p>The <code>wordsforsound</code> admin</p>

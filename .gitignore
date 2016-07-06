@@ -8,4 +8,3 @@ tmp/
 *.sublime-workspace
 tests/
 app/static/*.json
-config_secret.py

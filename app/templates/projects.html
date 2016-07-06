@@ -25,10 +25,23 @@
   </form> -->
 
   <div class="list-group">
-    {% for project in projects %}
-      <a href="{{ url_for('project') }}/{{ project.id }}" class="list-group-item">{{ project.name }}</a>
+    {% for project in projects.items %}
+      {% include 'project_entry.html' %}
     {% endfor %}
   </div>
+
+    <ul class="pager">
+    {% if projects.has_prev %}
+      <li class="previous"><a href="{{ url_for('projects', page=projects.prev_num, projects_type=projects_type) }}">{{'Newer projects'}}</a></li>
+      {% else %}
+      <li class="previous disabled"><a href="#">{{'Newer projects'}}</a></li>
+      {% endif %}
+      {% if projects.has_next %}
+      <li class="next"><a href="{{ url_for('projects', page=projects.next_num, projects_type=projects_type) }}">{{'Older projects'}}</a></li>
+      {% else %}
+      <li class="next disabled"><a href="#">{{'Older projects'}}</a></li>
+    {% endif %}
+  </ul>
 
 </div>
 {% endblock %}
