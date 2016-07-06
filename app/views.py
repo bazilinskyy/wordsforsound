@@ -674,6 +674,12 @@ def add_asset():
     for supplier in suppliers:
         suppliers_choices.append((str(supplier.id), supplier.nickname + ' : ' + supplier.full_name))
     form.suppliers.choices = suppliers_choices
+    # List of sounds
+    sounds = Sound.query.all()
+    sounds_choices = []
+    for sound in sounds:
+        sounds_choices.append((str(sound.id), sound.name))
+    form.sounds.choices = sounds_choices
 
     if form.validate_on_submit():
         asset = Asset()
@@ -715,6 +721,12 @@ def add_asset():
         for tag in form.tags.data:
             if tag != ',':
                 description.tags.append(Tag.query.filter_by(id=int(tag)).first())
+
+        # Add sounds
+        for sound in form.sounds.data:
+            if sound != ',':
+                description.sounds.append(Sound.query.filter_by(id=int(sound)).first())
+
 
         db.session.add(description)
         db.session.commit()

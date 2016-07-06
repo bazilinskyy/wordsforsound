@@ -212,7 +212,7 @@ class Sound(db.Model):
                            lazy='dynamic')
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
-    asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
+    description_id = db.Column(db.Integer, db.ForeignKey('description.id'))
     sound_type = db.Column(db.String(20))
     sound_family = db.Column(db.String(20))
     rights = db.Column(db.String(200)) # To use enum instead
@@ -230,8 +230,6 @@ class Asset(db.Model):
     in_hands_id = db.Column(db.Integer, db.ForeignKey('user.id')) # User that needs to take action with the asset
     iteration_number = db.Column(db.Integer)
     description = db.Column(db.String(1000))
-    sounds = db.relationship('Sound', backref='asset',
-                                lazy='dynamic')
     filename = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
@@ -302,6 +300,8 @@ class Description(db.Model):
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     filename = db.Column(db.String(200))
     tags = db.relationship('Tag', backref='asset',
+                            lazy='dynamic')
+    sounds = db.relationship('Sound', backref='description_entity',
                             lazy='dynamic')
 
     def __repr__(self):

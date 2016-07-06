@@ -111,8 +111,9 @@ class NewAssetForm(Form):
     sound_family = SelectField('sound_family', choices=[('1','Warning'),('2','Notification'),('3','Confirmation'),('4','Status alert')])
     upload_file = FileField('upload_file')
     tags = StringField('tags')
-    clients = SelectMultipleField('client', validators=[DataRequired()])
-    suppliers = SelectMultipleField('supplier', validators=[DataRequired()])
+    sounds = SelectMultipleField('sounds', validators=[DataRequired()])
+    clients = SelectMultipleField('clients', validators=[DataRequired()])
+    suppliers = SelectMultipleField('suppliers', validators=[DataRequired()])
     notify_by_email = BooleanField('remember_me', default=False)
 
 class NewProjectForm(Form):

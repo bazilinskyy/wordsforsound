@@ -110,6 +110,15 @@
       </script>
 
       <fieldset class="form-group">
+        <label for="sounds">Sounds</label>
+        {{ form.sounds(class_='form-control') }}
+        {% for error in form.sounds.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+
+      <fieldset class="form-group">
         <label for="upload_file">Supplementary attachment</label>
 
         {{ form.upload_file(class_='form-control') }}
@@ -120,7 +129,7 @@
       </fieldset>
 
       <fieldset class="form-group">
-        <label for="client">Client</label>
+        <label for="clients">Client</label>
         {{ form.clients(class_='form-control') }}
         {% for error in form.clients.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
@@ -129,7 +138,7 @@
       </fieldset>
 
       <fieldset class="form-group">
-        <label for="supplier">Supplier</label>
+        <label for="suppliers">Supplier</label>
         {{ form.suppliers(class_='form-control') }}
         {% for error in form.suppliers.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
