@@ -658,18 +658,27 @@ def add_asset():
 
     # List of projects for selection during new asset creation
     projects = Project.query.all()
+    if len(projects) == 0:
+        flash('You need to create at least one project before adding assets.')
+        return redirect(url_for('index'))
     project_choices = []
     for project in projects:
         project_choices.append((str(project.id), project.name))
     form.project.choices = project_choices
     # List of users as clients for new assets
     clients = ClientUser.query.all()
+    if len(clients) == 0:
+        flash('You need have at least one client user before adding assets.')
+        return redirect(url_for('index'))
     clients_choices = []
     for client in clients:
         clients_choices.append((str(client.id), client.nickname + ' : ' + client.full_name))
     form.clients.choices =clients_choices
     # List of users as suppliers for new assets
     suppliers = SupplierUser.query.all()
+    if len(suppliers) == 0:
+        flash('You need have at least one supplier user before adding assets.')
+        return redirect(url_for('index'))
     suppliers_choices = []
     for supplier in suppliers:
         suppliers_choices.append((str(supplier.id), supplier.nickname + ' : ' + supplier.full_name))

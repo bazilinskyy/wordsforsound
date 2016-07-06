@@ -5,6 +5,10 @@
         </td>
         <td>
         	{{ description.description }}
+            {% for tag in description.tags.all() %}
+              {% include 'tag_entry.html' %}
+            {% endfor %}
+        </td>
         </td>
         <td>
         	<a href="/{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
