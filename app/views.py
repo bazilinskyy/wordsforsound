@@ -703,8 +703,8 @@ def add_asset():
             asset.client_add(ClientUser.query.filter_by(id=int(client)).first())
         for supplier in form.suppliers.data:
             asset.supplier_add(SupplierUser.query.filter_by(id=int(supplier)).first())
-        asset.in_hands_id = asset.suppliers[0].id  # After creating the request for the asset the \
-                                                   # first user to work on it is the first supplier        
+        asset.init_in_hands()
+                
         # Upload file
         if form.upload_file.data.filename:
 	        filename = secure_filename(form.upload_file.data.filename)

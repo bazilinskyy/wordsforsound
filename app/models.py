@@ -278,6 +278,10 @@ class Asset(db.Model):
         else:
             logging.debug("Project %s does not haee client %s: " % (str(self), str(client)))
 
+    def init_in_hands(self):
+        self.in_hands_id = self.suppliers[0].id  # After creating the request for the asset the \
+                                                 # first user to work on it is the first supplier     
+
     @property
     def unique_name(self):
         return name + '-' + timestamp
