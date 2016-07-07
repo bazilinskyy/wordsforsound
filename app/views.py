@@ -975,6 +975,7 @@ def iterate(asset_id):
                     current_user_found = True
                 elif current_user_found == True:
                     asset.in_hands_id = supplier.id
+                    print "Found " + str(supplier.id) + str(supplier)
                     in_hands_found = True
                     break
 
