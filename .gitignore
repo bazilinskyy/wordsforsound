@@ -9,4 +9,4 @@ tmp/
 tests/
 app/static/*.json
 config_secret.py
-favicon.ico
+app/static/img/favicon.ico
