@@ -4,13 +4,16 @@
         	<a href="{{ url_for('description', description_id=description.id) }}">ID:{{ description.id }}</a>
         </td>
         <td width="400px">
-        	{{ description.description }}
-            {% for tag in description.tags.all() %}
-              {% include 'tag_entry.html' %}
-            {% endfor %} 
-            {% for sound in description.sounds.all() %}
-              <a href="{{ url_for('sound') }}/{{ sound.id }}">{{ sound.name }}</a> 
-            {% endfor %}
+            <p>
+                {{ description.description }}. Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. 
+
+                {% for tag in description.tags.all() %}
+                  {% include 'tag_entry.html' %}
+                {% endfor %} 
+                {% for sound in description.sounds.all() %}
+                  <a href="{{ url_for('sound') }}/{{ sound.id }}">{{ sound.name }}</a> 
+                {% endfor %}
+            </p>
         </td>
         {% if description.filename != None %}
             <td>
