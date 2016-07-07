@@ -699,6 +699,7 @@ def add_asset():
         asset.iteration_number = 0
         asset.description = form.description.data
         asset.project_id = form.project.data
+        asset.user_id = g.user.id
         for client in form.clients.data:
             asset.client_add(ClientUser.query.filter_by(id=int(client)).first())
         for supplier in form.suppliers.data:
@@ -725,6 +726,7 @@ def add_asset():
         description.sound_family = form.sound_family.data
         description.timestamp = datetime.now()
         description.asset_id = asset.id
+        description.user_id = g.user.id
 
         # Add tags
         for tag in form.tags.data:
@@ -772,8 +774,9 @@ def describe(asset_id):
         description.sound_family = form.sound_family.data
         description.timestamp = datetime.now()
         description.asset_id = asset.id
+        description.user_id = g.user.id
 
-        asset.description = form.description.data
+        # asset.description = form.description.data
 
         # Found who needs to work on the asset next
         current_user_found  = False
@@ -824,6 +827,7 @@ def describe(asset_id):
     return render_template('describe.html',
                             form=form,
                             asset=asset,
+                            verification=asset.get_last_verification(),
                             title='Describe asset')
 
 @app.route('/verify', methods=['GET', 'POST'])
@@ -848,6 +852,7 @@ def verify(asset_id):
         verification.description = form.description.data
         verification.timestamp = datetime.now()
         verification.asset_id = asset.id
+        verification.user_id = g.user.id
 
         # Upload file
         if form.upload_file.data:
@@ -858,7 +863,7 @@ def verify(asset_id):
 	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
 	        verification.filename = filename
 
-        asset.description = form.description.data
+        # asset.description = form.description.data
         if request.method == 'POST':
             if request.form['submit'] == 'iterate':
                 # Found who needs to work on the asset next
@@ -895,16 +900,10 @@ def verify(asset_id):
         db.session.commit()
        
         return redirect(url_for('index'))
-    # elif request.method != "POST":
-    #     if verification is not None:
-    #         form.name.data = verification.name
-    #         form.duration.data = verification.duration
-    #         form.pitch.data = verification.pitch
-    #         form.sound_type = verification.sound_type
-    #         form.sound_family = verification.sound_family
     return render_template('verify.html',
                             form=form,
                             asset=asset,
+                            iteration=asset.get_last_iteration(),
                             title='Verify asset')
 
 @app.route('/iterate', methods=['GET', 'POST'])
@@ -928,6 +927,7 @@ def iterate(asset_id):
         iteration.description = form.description.data
         iteration.timestamp = datetime.now()
         iteration.asset_id = asset.id
+        iteration.user_id = g.user.id
 
         # Upload file
         if form.upload_file.data:
@@ -939,7 +939,7 @@ def iterate(asset_id):
 	        iteration.filename = filename
 
         asset.iteration_number = asset.iteration_number+1
-        asset.description = form.description.data
+        # asset.description = form.description.data
 
         # Found who needs to work on the asset next
         current_user_found  = False
@@ -968,16 +968,19 @@ def iterate(asset_id):
         
         flash('Iteration created.')
         return redirect(url_for('index'))
-    # elif request.method != "POST":
-    #     if description is not None:
-    #         form.name.data = description.name
-    #         form.duration.data = description.duration
-    #         form.pitch.data = description.pitch
-    #         form.sound_type = description.sound_type
-    #         form.sound_family = description.sound_family
+    description = asset.get_last_description()
+    description_pitch = description.get_pitch()
+    description_duration = description.get_duration()
+    description_type = description.get_sound_type()
+    description_family = description.get_sound_family()
     return render_template('iterate.html',
                             form=form,
                             asset=asset,
+                            description_pitch=description_pitch,
+                            description_duration=description_duration,
+                            description=description,
+                            description_type=description_type,
+                            description_family=description_family,
                             title='Iterate asset')
 
 # Create new project with status = iteration. Creation process also includes the first description stage.

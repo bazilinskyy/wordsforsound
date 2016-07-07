@@ -5,7 +5,19 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Verification for asset {{ asset.name }}</h1>
+<h1>Verification for asset <a href="{{ url_for('asset', asset_id=asset.id) }}">{{ asset.name }}</a></h1>
+
+{% if iteration != None %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Last iteration with ID <a href="{{ url_for('iteration', iteration_id=iteration.id) }}">ID {{ iteration.id }}</a></h3>
+    </div>
+    <div class="panel-body">
+      {% include 'iteration_entry_no_list.html' %}
+    </div>
+  </div>
+{% endif %}
+
 
 <!-- Description form -->
 <form action="" method="post" name="iterate" enctype="multipart/form-data">

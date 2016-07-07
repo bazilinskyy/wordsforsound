@@ -94,6 +94,10 @@ class User(db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime)
     assets_in_hands = db.relationship('Asset', backref='user_in_hands', lazy='dynamic')
+    descriptions = db.relationship('Description', backref='user', lazy='dynamic')
+    iterations = db.relationship('Iteration', backref='user', lazy='dynamic')
+    verifications = db.relationship('Verification', backref='user', lazy='dynamic')
+    projects = db.relationship('Project', backref='user', lazy='dynamic')
 
     followed = db.relationship('User',
                            secondary=followers,
@@ -261,7 +265,7 @@ class Asset(db.Model):
             self.suppliers.remove(supplier)
             logging.debug("Project %s removed supplier %s" % (str(self), str(supplier)))
         else:
-            logging.debug("Project %s does not haee supplier %s: " % (str(self), str(supplier)))
+            logging.debug("Project %s does not have supplier %s: " % (str(self), str(supplier)))
 
     def client_add(self, client):
         if client not in self.clients.all():
@@ -276,7 +280,34 @@ class Asset(db.Model):
             self.clients.remove(client)
             logging.debug("Project %s removed client %s" % (str(self), str(client)))
         else:
-            logging.debug("Project %s does not haee client %s: " % (str(self), str(client)))
+            logging.debug("Project %s does not have client %s: " % (str(self), str(client)))
+
+    def get_last_description(self):
+        if self.descriptions.count() != 0:
+            description = self.descriptions[-1]
+            logging.debug("Project %s\'s last description is %s" % (str(self), str(description)))
+            return description
+        else:
+            logging.debug("Project %s does not have any descriptions to get the last description." % (str(self)))
+            return None
+
+    def get_last_iteration(self):
+        if self.iterations.count() != 0:
+            iteration = self.iterations[-1]
+            logging.debug("Project %s\'s last iteration is %s" % (str(self), str(iteration)))
+            return iteration
+        else:
+            logging.debug("Project %s does not have any iterations to get the last iteration." % (str(self)))
+            return None
+
+    def get_last_verification(self):
+        if self.verifications.count() != 0:
+            verification = self.verifications[-1]
+            logging.debug("Project %s\'s last verification is %s" % (str(self), str(verification)))
+            return verification
+        else:
+            logging.debug("Project %s does not have any verifications to get the last verification." % (str(self)))
+            return None
 
     def init_in_hands(self):
         self.in_hands_id = self.suppliers[0].id  # After creating the request for the asset the \
@@ -285,7 +316,6 @@ class Asset(db.Model):
     @property
     def unique_name(self):
         return name + '-' + timestamp
-
 
 class Description(db.Model):
     __tablename__ = 'description'
@@ -303,10 +333,45 @@ class Description(db.Model):
     sound_family = db.Column(db.String(20))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     filename = db.Column(db.String(200))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
     tags = db.relationship('Tag', backref='asset',
                             lazy='dynamic')
     sounds = db.relationship('Sound', backref='description_entity',
                             lazy='dynamic')
+
+    def get_sound_type(self):
+        if self.sound_type == '1':
+            return 'Earcon'
+        elif self.sound_type == '2':
+            return 'Dynamic earcon'
+        elif self.sound_type == '3':
+            return 'Spearcon'
+        else:
+             return 'Unkonwn type'
+
+    def get_sound_family(self):
+        if self.sound_family == '1':
+            return 'Warning'
+        elif self.sound_family == '2':
+            return 'Notification'
+        elif self.sound_family == '3':
+            return 'Confirmation'
+        elif self.sound_family == '4':
+            return 'Status alert'
+        else:
+             return 'Unkonwn family'
+
+    def get_pitch(self):
+        if len(self.pitch) != 0:
+            return self.pitch
+        else:
+            return 'N/A'
+
+    def get_duration(self):
+        if len(self.duration) != 0:
+            return self.duration
+        else:
+            return 'N/A'
 
     def __repr__(self):
         return '<Description %r>' % (self.description[0:50])
@@ -319,6 +384,7 @@ class Verification(db.Model):
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     timestamp = db.Column(db.DateTime)
     filename = db.Column(db.String(200))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
 
 class Iteration(db.Model):
     __tablename__ = 'iteration'
@@ -328,6 +394,7 @@ class Iteration(db.Model):
     filename = db.Column(db.String(200))
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
 
 class Project(db.Model):
     __tablename__ = 'project'
@@ -338,6 +405,7 @@ class Project(db.Model):
     description = db.Column(db.String(1000))
     filename = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
     assets = db.relationship('Asset', backref='project',
                                 lazy='dynamic')
     suppliers = db.relationship('SupplierUser',

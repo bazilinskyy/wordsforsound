@@ -1,0 +1,19 @@
+<table class="table">
+    <tr>
+        <td width="70px">
+            <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" /></a>
+        </td>
+        <td width="70px">
+            <p>{{ iteration.id }}</p>
+        </td>
+        <td>
+            <p>{{ iteration.description }}</p>
+        </td>
+        <td width="80px">
+            <p>Ver. {{ asset.iteration_number }}</p>
+        </td>
+        <td>
+            <a href="/{{ attachment_location }}{{ iteration.filename }}">{{ iteration.filename }}</a>
+        </td>
+    </tr>
+</table>

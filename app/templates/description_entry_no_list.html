@@ -1,0 +1,19 @@
+<table class="table">
+    <tr>
+        <td width="70px">
+            <a href="{{ url_for('user', nickname=description.user.nickname) }}"><img src="{{ description.user.avatar(70) }}" /></a>
+        </td>
+        <td width="70px">
+            <p>{{ description.id }}</p>
+        </td>
+        <td>
+            <p>{{ description.description }}. Duration: <span class="label label-default">{{ description_duration }}</span>. Pitch: <span class="label label-default">{{ description_pitch }}</span>. Type: <span class="label label-default">{{ description_type }}</span>. Family: <span class="label label-default">{{ description_family }}</span>. </p>
+        </td>
+        <td width="80px">
+            <p>Ver. {{ asset.iteration_number }}</p>
+        </td>
+        <td>
+            <a href="/{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
+        </td>
+    </tr>
+</table>
