@@ -1,13 +1,19 @@
-<table class="table table-hover">
+<table class="table-responsive">
     <tr>
-        <td>
-        	<a href="{{ url_for('verification', iteration_id=verification.id) }}">ID:{{ verification.id }}</a>
+        <td width="70px">
+            <a href="{{ url_for('user', nickname=verification.user.nickname) }}"><img src="{{ verification.user.avatar(70) }}" /></a>
+        </td>
+        <td width="70px">
+            <p>{{ verification.id }}</p>
         </td>
         <td>
-        	{{ verification.description }}
+            <p>{{ verification.description }}</p>
         </td>
-        <td width="100px">
-        	<a href="/{{ attachment_location }}{{ verification.filename }}">{{ verification.filename }}</a>
+        <td width="80px">
+            <p>Ver. {{ asset.iteration_number }}</p>
+        </td>
+        <td>
+            <a href="/{{ attachment_location }}{{ verification.filename }}">{{ verification.filename }}</a>
         </td>
     </tr>
 </table>
