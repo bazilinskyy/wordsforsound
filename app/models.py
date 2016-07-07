@@ -282,6 +282,51 @@ class Asset(db.Model):
         else:
             logging.debug("Project %s does not have client %s: " % (str(self), str(client)))
 
+    def description_add(self, description):
+        if description not in self.descriptions.all():
+            self.descriptions.append(description)
+            logging.debug("Project %s added description %s" % (str(self), str(description)))
+            return self
+        else:
+            logging.debug("Project %s already has description %s: " % (str(self), str(description)))
+
+    def description_remove(self, description):
+        if description in self.descriptions.all():
+            self.descriptions.remove(description)
+            logging.debug("Project %s removed description %s" % (str(self), str(description)))
+        else:
+            logging.debug("Project %s does not have description %s: " % (str(self), str(description)))
+
+    def iteration_add(self, iteration):
+        if iteration not in self.iterations.all():
+            self.iterations.append(iteration)
+            logging.debug("Project %s added iteration %s" % (str(self), str(iteration)))
+            return self
+        else:
+            logging.debug("Project %s already has iteration %s: " % (str(self), str(iteration)))
+
+    def iteration_remove(self, iteration):
+        if iteration in self.iterations.all():
+            self.iterations.remove(iteration)
+            logging.debug("Project %s removed iteration %s" % (str(self), str(iteration)))
+        else:
+            logging.debug("Project %s does not have iteration %s: " % (str(self), str(iteration)))
+
+    def verification_add(self, verification):
+        if verification not in self.verifications.all():
+            self.verifications.append(verification)
+            logging.debug("Project %s added verification %s" % (str(self), str(verification)))
+            return self
+        else:
+            logging.debug("Project %s already has verification %s: " % (str(self), str(verification)))
+
+    def verification_remove(self, verification):
+        if verification in self.verifications.all():
+            self.verifications.remove(verification)
+            logging.debug("Project %s removed verification %s" % (str(self), str(verification)))
+        else:
+            logging.debug("Project %s does not have verification %s: " % (str(self), str(verification)))
+
     def get_last_description(self):
         if self.descriptions.count() != 0:
             description = self.descriptions[-1]

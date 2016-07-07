@@ -188,7 +188,6 @@ def user(nickname, page=1):
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
     user_assets = Asset.query.filter_by(in_hands_id = user.id).paginate(page, ASSETS_PER_PAGE, False)
-    print "Assets " + str(user_assets.items)
     return render_template('user.html',
                            page=page,
                            user=user,
@@ -331,6 +330,7 @@ def add_tag():
                 tag_name = tag.name
                 # tag_weight = tag.sounds.count() / max_number_of_sounds # weight for jQuery
                 tag_weight = tag.sounds.count()
+                print tag.sounds.count()
                 tag_link = "tag/" + str(tag.id)
                 tags_json.append({'value': tag_id, 'text' : tag_name, 'weight' : tag_weight, 'link' : tag_link})
                 with open('app/' + TAGS_FILE, 'w') as outfile:
@@ -532,6 +532,7 @@ def description(description_id):
         flash('Description not found.')
         return redirect(url_for('index'))
     attachment_location = ATACHMENT_UPLOAD_FOLDER
+
     return render_template('description.html',
                            description=description,
                            attachment_location=attachment_location)
@@ -615,6 +616,26 @@ def add_sound():
 
         db.session.add(sound)
         db.session.commit()
+
+        # for autofill for tags and tag cloud
+        tags = Tag.query.all()
+        tags_json = []
+        if tags is not None:
+            # Determine highest number of sounds linked to a tag for giving max weight of 1.0
+            # max_number_of_sounds = 0
+            # for tag in tags:
+            #     if tag.sounds.count() > max_number_of_sounds:
+            #         max_number_of_sounds = tag.sounds.count()
+            # print max_number_of_sounds
+            for tag in tags:
+                tag_id = tag.id
+                tag_name = tag.name
+                # tag_weight = tag.sounds.count() / max_number_of_sounds # weight for jQuery
+                tag_weight = tag.sounds.count()
+                tag_link = "tag/" + str(tag.id)
+                tags_json.append({'value': tag_id, 'text' : tag_name, 'weight' : tag_weight, 'link' : tag_link})
+                with open('app/' + TAGS_FILE, 'w') as outfile:
+                    json.dump(tags_json, outfile)
         
         flash('New sound added.')
         return redirect(url_for('add_sound'))
@@ -1053,13 +1074,6 @@ def search_results(query):
     users_results = []
     projects_results = Project.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
     assets_results = Asset.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
-    
-    print "query: " + query
-    print "tags: " + str(tags_results)
-    print "sounds: " + str(sounds_results)
-    # print "users: " + str(users_results)
-    print "projects: " + str(projects_results)
-    print "assets: " + str(assets_results)
 
     return render_template('search_results.html',
                            query=query,
