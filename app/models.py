@@ -447,6 +447,20 @@ class Project(db.Model):
         else:
             logging.debug("Project %s does not haee client %s: " % (str(self), str(client)))
 
+    def asset_add(self, asset):
+        if asset not in self.assets.all():
+            self.assets.append(asset)
+            logging.debug("Project %s added asset %s" % (str(self), str(asset)))
+        else:
+            logging.debug("Project %s already has asset %s: " % (str(self), str(asset)))
+
+    def asset_remove(self, asset):
+        if asset in self.assets.all():
+            self.assets.remove(asset)
+            logging.debug("Project %s removed asset %s" % (str(self), str(asset)))
+        else:
+            logging.debug("Project %s does not haee asset %s: " % (str(self), str(asset)))
+
     @property
     def unique_name(self):
         return name + '-' + timestamp

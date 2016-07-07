@@ -904,6 +904,7 @@ def verify(asset_id):
                             form=form,
                             asset=asset,
                             iteration=asset.get_last_iteration(),
+                            attachment_location=ATACHMENT_UPLOAD_FOLDER,
                             title='Verify asset')
 
 @app.route('/iterate', methods=['GET', 'POST'])

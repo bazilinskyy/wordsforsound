@@ -10,7 +10,7 @@
             <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" /></a>
         </td>
         <td width="70px">
-            <p>{{ iteration.id }}</p>
+            <a href="{{ url_for('iteration', iteration_id=iteration.id) }}">{{ iteration.id }}</a>
         </td>
         <td width="200px">
             <p>{{ iteration.description }}</p>
@@ -33,9 +33,6 @@
                     });
                     wavesurfer_{{ iteration.id }}.load("/{{ attachment_location }}{{ iteration.filename }}");
                 </script>
-            </td>
-            <td width="80px">
-                <a href="/{{ attachment_location }}{{ iteration.filename }}">Download</a>
             </td>
         {% endif %}
     </tr>

@@ -19,8 +19,8 @@
             <p>Ver. {{ asset.iteration_number }}</p>
         </td>
         {% if description.filename != None %}
-            <td>
-                <a href="/{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
+             <td width="80px">
+                <a href="/{{ attachment_location }}{{ verification.filename }}">Download</a>
             </td>
         {% endif %}
     </tr>
