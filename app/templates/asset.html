@@ -10,7 +10,19 @@
 <!-- Description form -->
 <div class="well">
 
-	<h4>ID <span class="label label-default">{{ asset.id }}</span> Name <span class="label label-default">{{ asset.name }}</span> Status <span class="label label-default">{{ asset.status }}</span> Finished <span class="label label-default">{{ asset.finished }}</span></h4>
+	<h4>ID <span class="label label-default">{{ asset.id }}</span> Name <span class="label label-default">{{ asset.name }}</span> Status <span class="label label-default">{{ asset.status }}</span> Finished <span class="label label-default">{{ asset.finished }}</span>
+		Clients:
+			{% for client in asset.clients[:-1] %}
+		      <span class="label label-default"><a href="{{ url_for('user', nickname=client.nickname) }}" class="white_text">{{ client.nickname }}</a> </span>, 
+		    {% endfor %}
+		      <span class="label label-default"><a href="{{ url_for('user', nickname=asset.clients[-1].nickname) }}" class="white_text">{{ asset.clients[-1].nickname }}</a></span>&nbsp;
+		Suppliers:
+			{% for supplier in asset.suppliers[:-1] %}
+		      <span class="label label-default"><a href="{{ url_for('user', nickname=supplier.nickname) }}" class="white_text">{{ supplier.nickname }}</a></span>, 
+		    {% endfor %}
+		      <span class="label label-default"><a href="{{ url_for('user', nickname=asset.suppliers[-1].nickname) }}" class="white_text">{{ asset.suppliers[-1].nickname }}</a> </span>&nbsp;
+		In hands of: <span class="label label-default"><a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}" class="white_text">{{ asset.user_in_hands.nickname }}</a></span>
+	</h4>
 
 	{% if asset.filename != None %}
 		<a href="/{{ attachment_location }}{{ asset.filename }}">Supplementary attachment ({{ asset.filename }})</a> </br>

@@ -4,7 +4,7 @@
         	<a href="{{ url_for('iteration', iteration_id=iteration.id) }}">ID:{{ iteration.id }}</a>
         </td>
         <td width="400px">
-        	{{ iteration.description }}
+        	{{ iteration.description }} Time: {{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}
         </td>
         {% if iteration.filename != None %}
             <td width="400px">

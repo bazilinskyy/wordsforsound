@@ -256,11 +256,11 @@ def unfollow(nickname):
 @app.route('/index/<int:page_description>/<int:page_iteration>/<int:page_verification>/<int:page_otherhands>', methods=['GET', 'POST'])
 @login_required
 def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
-    assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).filter_by(id = g.user.id).paginate(page_description, ASSETS_PER_PAGE, False)
-    assets_iteration = Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter_by(id = g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
-    assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter_by(id = g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
+    assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).filter(Asset.in_hands_id == g.user.id).paginate(page_description, ASSETS_PER_PAGE, False)
+    assets_iteration = Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter(Asset.in_hands_id == g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
+    assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter(Asset.in_hands_id == g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
-
+    print assets_iteration.items
     # test_notification(g.user)
     return render_template('index.html',
                            title='Home',

@@ -5,7 +5,7 @@
         </td>
         <td width="400px">
             <p>
-                {{ description.description }}. Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. 
+                {{ description.description }} Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. Time: {{ description.timestamp.strftime('%Y-%m-%d %H:%M') }}
 
                 {% for tag in description.tags.all() %}
                   {% include 'tag_entry.html' %}
