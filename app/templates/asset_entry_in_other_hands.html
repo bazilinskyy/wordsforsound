@@ -5,7 +5,7 @@
         </td>
         <td width="120px">
             {# <p>{% if asset.active==1 or asset.active==2 %} <strong> {% endif %} {{ asset.name }}{% if asset.active==1 %} </strong> {% endif %}</p> #}
-            <p><a href="{{ url_for('asset', asset_id=asset.id) }}">{{ asset.name }}</a></p>
+            <p><a href="{{ url_for('asset', asset_id=asset.id) }}">{{ asset.name }}</a> <br>({{ asset.project.name }})</p>
         </td>
         <td>
             <p>{{ asset.description }}</p>
