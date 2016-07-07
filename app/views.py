@@ -329,7 +329,6 @@ def add_tag():
                 tag_name = tag.name
                 # tag_weight = tag.sounds.count() / max_number_of_sounds # weight for jQuery
                 tag_weight = tag.sounds.count()
-                print tag.sounds.count()
                 tag_link = "tag/" + str(tag.id)
                 tags_json.append({'value': tag_id, 'text' : tag_name, 'weight' : tag_weight, 'link' : tag_link})
                 with open('app/' + TAGS_FILE, 'w') as outfile:
@@ -973,7 +972,6 @@ def iterate(asset_id):
                     current_user_found = True
                 elif current_user_found == True:
                     asset.in_hands_id = supplier.id
-                    print "Found " + str(supplier.id) + str(supplier)
                     in_hands_found = True
                     break
 
