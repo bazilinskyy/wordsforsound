@@ -260,7 +260,6 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
     assets_iteration = Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter(Asset.in_hands_id == g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
     assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter(Asset.in_hands_id == g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
-    print assets_iteration.items
     # test_notification(g.user)
     return render_template('index.html',
                            title='Home',
@@ -469,6 +468,9 @@ def edit_project(project_id):
     if project is None:
         flash('Project not found.')
         return redirect(url_for('index'))
+    if project.finished is True:
+        flash('Finished project cannot be edited.')
+        return redirect(url_for('index'))
     form = NewProjectForm()
 
     if form.validate_on_submit():
@@ -510,11 +512,7 @@ def edit_project(project_id):
     return render_template('edit_project.html',
                             form=form,
                             title='Edit project',
-                            project=project,
-                            assets_ongoing = HorizontalMenu.projects_ongoing,
-                            assets_finished = HorizontalMenu.projects_finished,
-                            projects_ongoing = HorizontalMenu.projects_ongoing,
-                            projects_finished = HorizontalMenu.projects_finished)
+                            project=project)
 
 @app.route('/descriptions', methods=['GET', 'POST'])
 @login_required
@@ -909,13 +907,13 @@ def verify(asset_id):
                     asset.in_hands_id = asset.suppliers[0].id
                     asset.status = AssetStatus.description.value
 
-	            flash('Verification created.')
-	        elif request.form['submit'] == 'finalise':
-	            asset.status = AssetStatus.finished.value
-	            asset.finished = True
-	            flash('Asset was marked as finalised.')
-	        else:
-	            pass # unknown
+                    flash('Verification created.')
+            elif request.form['submit'] == 'finalise':
+                asset.status = AssetStatus.finished.value
+                asset.finished = True
+                flash('Asset was marked as finalised.')
+            else:
+                pass # unknown
 
         db.session.add(verification)
         db.session.commit()

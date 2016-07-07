@@ -9,7 +9,11 @@
 <!-- Description form -->
 <div class="well">
 
-	<h4>ID <span class="label label-default">{{ project.id }}</span> Name <span class="label label-default">{{ project.name }}</span> <a href="{{ url_for('edit_project', project_id=project.id) }}">Edit</a></h4>
+	<h4>ID <span class="label label-default">{{ project.id }}</span> Name <span class="label label-default">{{ project.name }}</span>
+	{% if project.finished != True %}
+		<a href="{{ url_for('edit_project', project_id=project.id) }}">Edit</a>
+	{% endif %}
+	</h4>
 
 	<h4>Description:</h4>
 	<p>{{ project.description }}</p>
