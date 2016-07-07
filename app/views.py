@@ -969,18 +969,10 @@ def iterate(asset_id):
         flash('Iteration created.')
         return redirect(url_for('index'))
     description = asset.get_last_description()
-    description_pitch = description.get_pitch()
-    description_duration = description.get_duration()
-    description_type = description.get_sound_type()
-    description_family = description.get_sound_family()
     return render_template('iterate.html',
                             form=form,
                             asset=asset,
-                            description_pitch=description_pitch,
-                            description_duration=description_duration,
                             description=description,
-                            description_type=description_type,
-                            description_family=description_family,
                             title='Iterate asset')
 
 # Create new project with status = iteration. Creation process also includes the first description stage.

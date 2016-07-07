@@ -1,17 +1,21 @@
 <table class="table table-hover">
     <tr>
-        <td>
+        <td width="80px">
         	<a href="{{ url_for('description', description_id=description.id) }}">ID:{{ description.id }}</a>
         </td>
-        <td>
+        <td width="400px">
         	{{ description.description }}
             {% for tag in description.tags.all() %}
               {% include 'tag_entry.html' %}
+            {% endfor %} 
+            {% for sound in description.sounds.all() %}
+              <a href="{{ url_for('sound') }}/{{ sound.id }}">{{ sound.name }}</a> 
             {% endfor %}
         </td>
-        </td>
-        <td>
-        	<a href="/{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
-        </td>
+        {% if description.filename != None %}
+            <td>
+            	<a href="/{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
+            </td>
+        {% endif %}
     </tr>
 </table>

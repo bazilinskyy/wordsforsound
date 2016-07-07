@@ -1,13 +1,30 @@
 <table class="table table-hover">
     <tr>
-        <td>
+        <td width="80px">
         	<a href="{{ url_for('iteration', iteration_id=iteration.id) }}">ID:{{ iteration.id }}</a>
         </td>
-        <td>
+        <td width="400px">
         	{{ iteration.description }}
         </td>
-        <td width="100px">
-        	<a href="/{{ attachment_location }}{{ iteration.filename }}">{{ iteration.filename }}</a>
-        </td>
+        {% if iteration.filename != None %}
+            <td width="400px">
+                <script src="/static/js/wavesurfer.min.js"></script>
+                <div id="waveform_{{ iteration.id }}" onclick="wavesurfer_{{ iteration.id }}.playPause()"></div>
+                <script>
+                    var wavesurfer_{{ iteration.id }} = WaveSurfer.create({
+                        container: '#waveform_{{ iteration.id }}',
+                        waveColor: '#A8DBA8',
+                        progressColor: '#3B8686',
+                        backend: 'MediaElement',
+                        height: 50,
+                        hideScrollbar: true
+                    });
+                    wavesurfer_{{ iteration.id }}.load("/{{ attachment_location }}{{ iteration.filename }}");
+                </script>
+            </td>
+            <td width="80px">
+                <a href="/{{ attachment_location }}{{ iteration.filename }}">Download</a>
+            </td>
+        {% endif %}
     </tr>
 </table>
