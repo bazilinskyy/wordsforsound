@@ -735,12 +735,9 @@ def describe(asset_id):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    # if g.user not in project.owners:
-    #     flash('You do not have permissions to create milestones for this project.')
-    #     return redirect(url_for('index'))
-    # description = None
-    # if description_id:
-    #     description = Description.query.filter_by(id=description_id).first()
+    if asset.user_in_hands is not user:
+        flash('You do not have permissions to work on this asset at this moment.')
+        return redirect(url_for('index'))
 
     form = DescriptionForm()
     if form.validate_on_submit():
@@ -817,12 +814,9 @@ def verify(asset_id):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    # if g.user not in project.owners:
-    #     flash('You do not have permissions to create milestones for this project.')
-    #     return redirect(url_for('index'))
-    # description = None
-    # if description_id:
-    #     description = Description.query.filter_by(id=description_id).first()
+    if asset.user_in_hands is not user:
+        flash('You do not have permissions to work on this asset at this moment.')
+        return redirect(url_for('index'))
 
     form = VerificationForm()
     if form.validate_on_submit():
@@ -895,12 +889,9 @@ def iterate(asset_id):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    # if g.user not in project.owners:
-    #     flash('You do not have permissions to create milestones for this project.')
-    #     return redirect(url_for('index'))
-    # description = None
-    # if description_id:
-    #     description = Description.query.filter_by(id=description_id).first()
+    if asset.user_in_hands is not user:
+        flash('You do not have permissions to work on this asset at this moment.')
+        return redirect(url_for('index'))
 
     form = IterationForm()
     if form.validate_on_submit():
