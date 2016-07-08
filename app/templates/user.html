@@ -7,7 +7,7 @@
         <div class="pull-right">
             <img src="{{ user.avatar(128) }}" class="img-polaroid">
         </div>
-        <h1>{{ user.nickname }}</h1>
+        <h1>{{ user.nickname }} - {{ user.full_name }}</h1>
         {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
         {% if user.last_seen %}<p><em>Last seen on: {{ user.last_seen }}</em></p>{% endif %}
         {% if user.id == g.user.id %}

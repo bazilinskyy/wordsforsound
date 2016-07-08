@@ -23,14 +23,15 @@ def send_email(subject, recipient, body):
     yag.send(str(recipient), subject, body)
 
 def description_notification(user, asset):
-  print user.type
-  if user.type == "client_user":
-    user_type = "client"
-  elif user.type == "supplier_user":
-    user_type = "supplier"
-  else:
-    user_type = "N/A"
-  send_email("Description for asset " + asset.name + " is ready.",
+  if user.receive_emails and asset.notify_by_email:
+    print user.type
+    if user.type == "client_user":
+      user_type = "client"
+    elif user.type == "supplier_user":
+      user_type = "supplier"
+    else:
+      user_type = "N/A"
+    send_email("Description for asset " + asset.name + " is ready.",
                user.email,
                str(render_template("description_email.html",
                                user=user,
@@ -38,13 +39,14 @@ def description_notification(user, asset):
                                user_type=user_type)))
 
 def iteration_notification(user, asset):
-  if user.type == "client_user":
-    user_type = "client"
-  elif user.type == "supplier_user":
-    user_type = "supplier"
-  else:
-    user_type = "N/A"
-  send_email("Iteration for asset " + asset.name + " is ready.",
+  if user.receive_emails and asset.notify_by_email:
+    if user.type == "client_user":
+      user_type = "client"
+    elif user.type == "supplier_user":
+      user_type = "supplier"
+    else:
+      user_type = "N/A"
+    send_email("Iteration for asset " + asset.name + " is ready.",
                user.email,
                str(render_template("iteration_email.html",
                                user=user,
@@ -52,9 +54,10 @@ def iteration_notification(user, asset):
                                user_type=user_type)))
 
 def verification_notification(user, asset):
-  if user.type == "client_user" and asset.status == AssetStatus.verification:
-    user_type = "client"
-    send_email("Verificartion for asset " + asset.name + " is ready.",
+  if user.receive_emails and asset.notify_by_email:
+    if user.type == "client_user" and asset.status == AssetStatus.verification:
+      user_type = "client"
+      send_email("Verificartion for asset " + asset.name + " is ready.",
                user.email,
                str(render_template("verification_email.html",
                                user=user,

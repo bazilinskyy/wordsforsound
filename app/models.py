@@ -86,6 +86,7 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     password = db.Column(db.String)
     about_me = db.Column(db.String(140))
+    receive_emails = db.Column(db.Boolean)
     last_seen = db.Column(db.DateTime)
     assets_in_hands = db.relationship('Asset', backref='user_in_hands', lazy='dynamic')
     descriptions = db.relationship('Description', backref='user', lazy='dynamic')
@@ -207,6 +208,7 @@ class Asset(db.Model):
     in_hands_id = db.Column(db.Integer, db.ForeignKey('user.id')) # User that needs to take action with the asset
     iteration_number = db.Column(db.Integer)
     description = db.Column(db.String(1000))
+    notify_by_email = db.Column(db.Boolean)
     filename = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))

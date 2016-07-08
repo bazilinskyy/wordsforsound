@@ -17,7 +17,10 @@ class LoginForm(Form):
 
 class EditForm(Form):
     nickname = StringField('nickname', validators=[DataRequired()])
+    first_name = StringField('first_name', validators=[DataRequired()])
+    last_name = StringField('last_name', validators=[DataRequired()])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
+    receive_emails = BooleanField('receive_emails', default=True)
 
     def __init__(self, original_nickname, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -116,7 +119,7 @@ class NewAssetForm(Form):
     sounds = SelectMultipleField('sounds')
     clients = SelectMultipleField('clients', validators=[DataRequired()])
     suppliers = SelectMultipleField('suppliers', validators=[DataRequired()])
-    notify_by_email = BooleanField('remember_me', default=False)
+    notify_by_email = BooleanField('remember_me', default=True)
 
 class NewProjectForm(Form):
 	name = StringField('name', validators=[DataRequired()])

@@ -202,6 +202,9 @@ def edit():
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
+        g.user.first_name = form.first_name.data
+        g.user.last_name = form.last_name.data
+        g.user.receive_emails = form.receive_emails.data
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
@@ -209,6 +212,9 @@ def edit():
     elif request.method != "POST":
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
+        form.first_name.data = g.user.first_name 
+        form.last_name.data = g.user.last_name
+        form.receive_emails.data = g.user.receive_emails
     return render_template('edit.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -676,6 +682,7 @@ def add_asset():
         asset.status = AssetStatus.iteration.value
         asset.iteration_number = 0
         asset.description = form.description.data
+        asset.notify_by_email = form.notify_by_email.data
         asset.project_id = form.project.data
         asset.user_id = g.user.id
         for client in form.clients.data:

@@ -8,12 +8,33 @@
     <div class="well">
     <form action="" method="post" name="edit_user">
     {{ form.hidden_tag() }}
-      <fieldset class="form-group">
-        {{ form.nickname(maxlength=64, class_='form-control', placeholder='Your username') }}
-        {% for error in form.nickname.errors %}
-            <span class="help-inline">[{{ error }}]</span><br>
-        {% endfor %}
-      </fieldset>
+      <div class="row" style="margin-left: -15px">
+        <div class="col-md-4">
+          <fieldset class="form-group">
+            {{ form.nickname(maxlength=64, class_='form-control', placeholder='Your username') }}
+            {% for error in form.nickname.errors %}
+                <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+        </div>
+        <div class="col-md-4">
+          <fieldset class="form-group">
+            {{ form.first_name(maxlength=64, class_='form-control', placeholder='First name') }}
+            {% for error in form.first_name.errors %}
+                <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+        </div>
+        <div class="col-md-4">
+          <fieldset class="form-group">
+            {{ form.last_name(maxlength=64, class_='form-control', placeholder='Last name') }}
+            {% for error in form.last_name.errors %}
+                <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+        </div>
+      </div>
+
       <fieldset class="form-group">
         <label for="exampleTextarea">About you</label>
         <!-- <textarea class="form-control" id="exampleTextarea" rows="3">Beep-like sound that gives a feeling of happiness. Not very long in duration. Wooden sound. It should give a sense of elegance, and it should sound worthy.</textarea> -->
@@ -21,8 +42,12 @@
         {% for error in form.about_me.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
-
       </fieldset>
+
+      <fieldset class="form-group">
+        {{ form.receive_emails(type='checkbox') }} Receive emails
+      </fieldset>
+
       <button type="submit" class="btn btn-block btn-primary">Submit</button>
     </form>
     </div>
