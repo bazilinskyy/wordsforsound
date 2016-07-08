@@ -11,7 +11,7 @@ from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, Dele
     RegisterForm, SearchForm, EditForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
-from .emails import follower_notification, test_notification, send_email, description_notification
+from .emails import test_notification, send_email, description_notification
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
@@ -46,6 +46,7 @@ def before_request():
 
 @app.after_request
 def after_request(response):
+    app.logger.info("USER %s visited URL %s" % (str(g.user.nickname), str(request.url)))
     for query in get_debug_queries():
         if query.duration >= DATABASE_QUERY_TIMEOUT:
             app.logger.warning(
@@ -120,8 +121,6 @@ def after_login(resp):
         user = User(nickname=nickname, email=resp.email)
         db.session.add(user)
         db.session.commit()
-        # make the user follow him/herself
-        # db.session.add(user.follow(user))
         db.session.commit()
     remember_me = False
     if 'remember_me' in session:
@@ -209,47 +208,6 @@ def edit():
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
     return render_template('edit.html', form=form)
-
-
-@app.route('/follow/<nickname>', methods=['GET', 'POST'])
-@login_required
-def follow(nickname):
-    user = User.query.filter_by(nickname=nickname).first()
-    if user is None:
-        flash('User ' + nickname + ' not found.')
-        return redirect(url_for('index'))
-    if user == g.user:
-        flash('You can\'t follow yourself!')
-        return redirect(url_for('user', nickname=nickname))
-    u = g.user.follow(user)
-    if u is None:
-        flash('Cannot follow ' + nickname + '.')
-        return redirect(url_for('user', nickname=nickname))
-    db.session.add(u)
-    db.session.commit()
-    flash('You are now following ' + nickname)
-    follower_notification(user, g.user)
-    return redirect(url_for('user', nickname=nickname))
-
-
-@app.route('/unfollow/<nickname>', methods=['GET', 'POST'])
-@login_required
-def unfollow(nickname):
-    user = User.query.filter_by(nickname=nickname).first()
-    if user is None:
-        flash('User %s not found.' % nickname)
-        return redirect(url_for('index'))
-    if user == g.user:
-        flash('You can\'t unfollow yourself!')
-        return redirect(url_for('user', nickname=nickname))
-    u = g.user.unfollow(user)
-    if u is None:
-        flash('Cannot unfollow ' + nickname + '.')
-        return redirect(url_for('user', nickname=nickname))
-    db.session.add(u)
-    db.session.commit()
-    flash('You have stopped following ' + nickname + '.')
-    return redirect(url_for('user', nickname=nickname))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])

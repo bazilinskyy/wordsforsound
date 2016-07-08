@@ -47,12 +47,6 @@ clients_assets_table = db.Table(
     db.Column('asset_id', db.Integer, db.ForeignKey('asset.id'))
 )
 
-followers = db.Table(
-    'followers',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
-)
-
 class Pitch(Enum):
     A = 1
     B = 2
@@ -98,27 +92,6 @@ class User(db.Model):
     iterations = db.relationship('Iteration', backref='user', lazy='dynamic')
     verifications = db.relationship('Verification', backref='user', lazy='dynamic')
     projects = db.relationship('Project', backref='user', lazy='dynamic')
-
-    followed = db.relationship('User',
-                           secondary=followers,
-                           primaryjoin=(followers.c.follower_id == id),
-                           secondaryjoin=(followers.c.followed_id == id),
-                           backref=db.backref('followers', lazy='dynamic'),
-                           lazy='dynamic')
-
-    def follow(self, user):
-        if not self.is_following(user):
-            self.followed.append(user)
-            return self
-
-    def unfollow(self, user):
-        if self.is_following(user):
-            self.followed.remove(user)
-            return self
-
-    def is_following(self, user):
-        return self.followed.filter(
-            followers.c.followed_id == user.id).count() > 0
 
     @property
     def full_name(self):
