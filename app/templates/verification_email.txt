@@ -1,9 +1,0 @@
-Dear {{ user.nickname }},
-
-A verification for the asset {{ asset.name }} has been submitted. Click on the following link to submit your description for the asset {{ asset.name }}:
-
-{{ url_for("describe", asset_id=asset.id) }}
-
-Regards,
-
-The wordsforsound admin

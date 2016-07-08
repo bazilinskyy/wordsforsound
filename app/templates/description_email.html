@@ -1,8 +1,1 @@
-<p>Dear {{ user.nickname }},</p>
-
-<p>A description for the asset {{ asset.name }} has been submitted. Click on the following link to submit your iteration for the asset {{ asset.name }}:</p>
-
-{{ url_for("iterate", asset_id=asset.id) }}
-
-<p>Regards,</p>
-<p>The <code>wordsforsound</code> admin</p>
+<p>Dear {{ user.nickname }},</p><p>A description for the asset <strong>{{ asset.name }}</strong> has been submitted. Click on the following link to submit your {% if user_type == "client" %}own description for the asset {{ asset.name }}: <a href="{{ url_for('describe', asset_id=asset.id, _external=True)}}">Submit description for asset</a>.</p>{% elif user_type == "supplier" %}iteration for the asset {{ asset.name }}: <a href="{{ url_for('iterate', asset_id=asset.id, _external=True)}}">Submit iteration for asset</a>.</p>{% endif %}<p>Regards,</br>The wordsforsound admin</p>

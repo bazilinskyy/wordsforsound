@@ -1,8 +1,2 @@
-<p>Dear {{ user.nickname }},</p>
-
-<p>A verification for the asset {{ asset.name }} has been submitted. Click on the following link to submit your description for the asset {{ asset.name }}:</p>
-
-{{ url_for("describe", asset_id=asset.id) }}
-
-<p>Regards,</p>
-<p>The <code>wordsforsound</code> admin</p>
+<p>Dear {{ user.nickname }},</p><p>A verification for the asset <strong>{{ asset.name }}</strong> has been submitted. Click on the following link to submit your {% if user_type == "client" %}own verification for the asset {{ asset.name }}: <a href="{{ url_for('verify', asset_id=asset.id, _external=True)}}">Submit verification for asset</a>.</p>{% elif user_type == "supplier" %}description for the asset {{ asset.name }}: <a href="{{ url_for('describe', asset_id=asset.id, _external=True)}}">Submit descrption for asset</a>.</p>
+{% endif %}<p>Regards,</br>The wordsforsound admin</p>

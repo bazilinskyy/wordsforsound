@@ -11,7 +11,7 @@ from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, Dele
     RegisterForm, SearchForm, EditForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
-from .emails import test_notification, send_email, description_notification
+from .emails import description_notification, iteration_notification, verification_notification
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
@@ -46,7 +46,9 @@ def before_request():
 
 @app.after_request
 def after_request(response):
-    app.logger.info("USER %s visited URL %s" % (str(g.user.nickname), str(request.url)))
+    g.user = current_user
+    if g.user.is_authenticated:
+        app.logger.info("USER %s visited URL %s" % (str(g.user.nickname), str(request.url)))
     for query in get_debug_queries():
         if query.duration >= DATABASE_QUERY_TIMEOUT:
             app.logger.warning(
@@ -718,6 +720,7 @@ def add_asset():
         db.session.add(description)
         db.session.commit()
         
+        description_notification(asset.user_in_hands, asset)
         flash('New asset description created.')
         return redirect(url_for('index'))
     return render_template('add_asset.html',
@@ -789,7 +792,7 @@ def describe(asset_id):
         db.session.add(description)
         db.session.commit()
         
-        description_notification(g.user, asset)
+        description_notification(asset.user_in_hands, asset)
         flash('Description created.')
         return redirect(url_for('index'))
     elif request.method != "POST":
@@ -864,6 +867,7 @@ def verify(asset_id):
                     asset.in_hands_id = asset.suppliers[0].id
                     asset.status = AssetStatus.description.value
 
+                    verification_notification(asset.user_in_hands, asset)
                     flash('Verification created.')
             elif request.form['submit'] == 'finalise':
                 asset.status = AssetStatus.finished.value
@@ -943,6 +947,7 @@ def iterate(asset_id):
         db.session.add(iteration)
         db.session.commit()
         
+        iteration_notification(asset.user_in_hands, asset)
         flash('Iteration created.')
         return redirect(url_for('index'))
     description = asset.get_last_description()
