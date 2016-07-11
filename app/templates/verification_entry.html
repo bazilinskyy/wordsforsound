@@ -4,7 +4,7 @@
         	<a href="{{ url_for('verification', verification_id=verification.id) }}">ID:{{ verification.id }}</a>
         </td>
         <td width="400px">
-        	{{ verification.description }} Time: {{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}
+        	{% if verification.description|length != 0 %} {{ verification.description }}. {% else %} No textual description was given. {% endif %} Time: {{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}
         </td>
         {% if verification.filename != None %}
             <td>
