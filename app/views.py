@@ -78,7 +78,7 @@ def login():
           if user is not None and user.password == form.password.data:
               login_user(user)
               session['remember_me'] = form.remember_me.data
-              return redirect(url_for('index', just_logged_in = 'Yes'))
+              return redirect(url_for('index'))
           else:
               error = 'Invalid username or password.'
     return render_template('login.html', 
@@ -124,7 +124,6 @@ def after_login(resp):
         nickname = User.make_unique_nickname(nickname)
         user = User(nickname=nickname, email=resp.email)
         db.session.add(user)
-        db.session.commit()
         db.session.commit()
     remember_me = False
     if 'remember_me' in session:
@@ -654,12 +653,6 @@ def add_asset():
     for supplier in suppliers:
         suppliers_choices.append((str(supplier.id), supplier.nickname + ' : ' + supplier.full_name))
     form.suppliers.choices = suppliers_choices
-    # List of sounds
-    sounds = Sound.query.all()
-    sounds_choices = []
-    for sound in sounds:
-        sounds_choices.append((str(sound.id), sound.name))
-    form.sounds.choices = sounds_choices
 
     if form.validate_on_submit():
         asset = Asset()

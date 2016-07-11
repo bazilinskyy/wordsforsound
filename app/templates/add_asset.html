@@ -81,7 +81,7 @@
 
         {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
         {% for error in form.tags.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
+          <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
       </fieldset>
