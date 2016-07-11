@@ -95,13 +95,15 @@ def register():
             user = ClientUser(
                 nickname=form.nickname.data,
                 email=form.email.data,
-                password=form.password.data
+                password=form.password.data,
+                receive_emails=True
             )
         else:
             user = SupplierUser(
                 nickname=form.nickname.data,
                 email=form.email.data,
-                password=form.password.data
+                password=form.password.data,
+                receive_emails=True
             )
         db.session.add(user)
         db.session.commit()
