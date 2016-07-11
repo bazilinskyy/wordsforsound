@@ -45,3 +45,4 @@ Whoosh==2.7.2
 WTForms==2.1
 yagmail==0.5.140
 yarg==0.1.9
+psycopg2==2.6.2
