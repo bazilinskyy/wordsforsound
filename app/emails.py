@@ -2,7 +2,11 @@ from flask import render_template
 from flask.ext.mail import Message
 from app import mail
 from .decorators import async
-from config_secret import ADMINS, GMAIL_USERNAME, GMAIL_PASSWORD
+if not os.environ.get('HEROKU'): 
+  from config_secret import ADMINS, GMAIL_USERNAME, GMAIL_PASSWORD
+else:
+  GMAIL_USERNAME=os.environ.get('GMAIL_USERNAME')
+  GMAIL_PASSWORD=os.environ.get('GMAIL_PASSWORD')
 from app import app
 import yagmail
 from models import ClientUser, SupplierUser, AssetStatus
