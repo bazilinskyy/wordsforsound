@@ -117,9 +117,14 @@ class NewAssetForm(Form):
     upload_file = FileField('upload_file')
     tags = StringField('tags')
     sounds = StringField('sounds')
-    # sounds = SelectMultipleField('sounds')
     clients = SelectMultipleField('clients', validators=[DataRequired()])
     suppliers = SelectMultipleField('suppliers', validators=[DataRequired()])
+    notify_by_email = BooleanField('remember_me', default=True)
+
+class EditAssetForm(Form):
+    name = StringField('name', validators=[DataRequired()])
+    description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
+    upload_file = FileField('upload_file')
     notify_by_email = BooleanField('remember_me', default=True)
 
 class NewProjectForm(Form):

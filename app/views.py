@@ -8,7 +8,7 @@ from datetime import datetime
 from app import app, db, lm, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
-    RegisterForm, SearchForm, EditForm
+    RegisterForm, SearchForm, EditForm, EditAssetForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
 from .emails import description_notification, iteration_notification, verification_notification
@@ -227,7 +227,7 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
     assets_description = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_iteration = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_verification = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).paginate(page_verification, ASSETS_PER_PAGE, False)
-    assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+    assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).paginate(page_otherhands, ASSETS_PER_PAGE, False)
     return render_template('index.html',
                            title='Home',
                            assets_otherhands=assets_otherhands,
@@ -450,7 +450,9 @@ def edit_project(project_id):
 
             elif request.form['submit'] == 'finalise':
               project.finished = True
-              flash('Project was marked as finished.')
+              for asset in project:
+                asset.finished = True
+              flash('Project and assets in project were marked as finished.')
 
             else:
               flash('Unknown status.')
@@ -720,6 +722,65 @@ def add_asset():
     return render_template('add_asset.html',
                             form=form,
                             title='Add asset')
+
+@app.route('/asset/edit', methods=['GET', 'POST'])
+@app.route('/asset/<int:asset_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_asset(asset_id):
+    asset = Asset.query.filter_by(id=asset_id).first()
+    if asset is None:
+        flash('Asset not found.')
+        return redirect(url_for('index'))
+    if asset.finished is True:
+        flash('Finished asset cannot be edited.')
+        return redirect(url_for('index'))
+    form = EditAssetForm()
+
+    if form.validate_on_submit():
+        if request.method == 'POST':
+            if request.form['submit'] == 'edit':
+              asset.timestamp = datetime.now()
+              asset.name = form.name.data
+              asset.description = form.description.data
+              
+              # Upload file
+              if not os.environ.get('HEROKU'):
+                  if form.upload_file.data.filename:
+                    filename = secure_filename(form.upload_file.data.filename)
+                    if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                        current_milli_time = lambda: int(round(time.time() * 1000))
+                        filename = str(current_milli_time()) + filename
+                    form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                    asset.filename = filename
+              else:
+                  pass # Add file upload for Heroku
+
+              flash('Asset was edited successfully.')
+
+            elif request.form['submit'] == 'finalise':
+              asset.finished = True
+              flash('Asset was marked as finished.')
+
+            else:
+              flash('Unknown status.')
+              pass # unknown
+
+        update_tags_json()
+
+        db.session.add(asset)
+        db.session.commit()    
+        
+        return redirect(url_for('asset', asset_id=asset_id))
+
+    elif request.method != "POST":
+        if asset is not None:
+          form.name.data = asset.name
+          form.description.data = asset.description
+
+    return render_template('edit_asset.html',
+                            form=form,
+                            title='Edit asset',
+                            asset=asset)
 
 @app.route('/describe', methods=['GET', 'POST'])
 @app.route('/describe/<int:asset_id>/', methods=['GET', 'POST'])

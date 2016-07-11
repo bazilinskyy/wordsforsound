@@ -16,7 +16,6 @@
     </div>
     <div class="panel-body">
       <fieldset class="form-group">
-        <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Name of asset"> -->
         {{ form.name(class_='form-control', placeholder='Name of asset') }}
         {% for error in form.name.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
@@ -31,14 +30,12 @@
 
       </fieldset>
       <fieldset class="form-group">
-        <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
         {{ form.duration(class_='form-control', placeholder='Duration') }}
         {% for error in form.duration.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
       </fieldset>
       <fieldset class="form-group">
-        <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch"> -->
         {{ form.pitch(class_='form-control', placeholder='Pitch') }}
         {% for error in form.pitch.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
@@ -158,7 +155,7 @@
       </fieldset>
 
       <fieldset class="form-group">
-        <label for="clients">Client</label>
+        <label for="clients">Clients</label>
         {{ form.clients(class_='form-control') }}
         {% for error in form.clients.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
@@ -167,7 +164,7 @@
       </fieldset>
 
       <fieldset class="form-group">
-        <label for="suppliers">Supplier</label>
+        <label for="suppliers">Suppliers</label>
         {{ form.suppliers(class_='form-control') }}
         {% for error in form.suppliers.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
