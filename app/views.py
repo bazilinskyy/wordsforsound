@@ -47,7 +47,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     g.user = current_user
-    if g.user.is_authenticated:
+    if not app.debug and g.user.is_authenticated:
         app.logger.info("USER %s visited URL %s" % (str(g.user.nickname), str(request.url)))
     for query in get_debug_queries():
         if query.duration >= DATABASE_QUERY_TIMEOUT:
@@ -224,9 +224,9 @@ def edit():
 @app.route('/index/<int:page_description>/<int:page_iteration>/<int:page_verification>/<int:page_otherhands>', methods=['GET', 'POST'])
 @login_required
 def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
-    assets_description = Asset.query.filter_by(status = 1).join((ClientUser, Asset.clients)).filter(Asset.in_hands_id == g.user.id).paginate(page_description, ASSETS_PER_PAGE, False)
-    assets_iteration = Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter(Asset.in_hands_id == g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
-    assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter(Asset.in_hands_id == g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
+    assets_description = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).paginate(page_verification, ASSETS_PER_PAGE, False)
+    assets_iteration = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).paginate(page_verification, ASSETS_PER_PAGE, False)
+    assets_verification = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
     return render_template('index.html',
                            title='Home',
