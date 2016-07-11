@@ -373,12 +373,15 @@ def sound_edit(sound_id):
                 sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
 
         # Upload file
-        filename = secure_filename(form.upload_file.data.filename)
-        if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
-            current_milli_time = lambda: int(round(time.time() * 1000))
-            filename = str(current_milli_time()) + filename
-        form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
-        sound.filename = filename
+        if not os.environ.get('HEROKU'):
+            filename = secure_filename(form.upload_file.data.filename)
+            if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
+                current_milli_time = lambda: int(round(time.time() * 1000))
+                filename = str(current_milli_time()) + filename
+            form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
+            sound.filename = filename
+        else:
+            pass # add file upload for Heroku
 
         db.session.commit()
         
@@ -446,13 +449,16 @@ def edit_project(project_id):
               project.description = form.description.data
               
               # Upload file
-              if form.upload_file.data.filename:
-                filename = secure_filename(form.upload_file.data.filename)
-                if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-                    current_milli_time = lambda: int(round(time.time() * 1000))
-                    filename = str(current_milli_time()) + filename
-                form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-                project.filename = filename
+              if not os.environ.get('HEROKU'):
+                  if form.upload_file.data.filename:
+                    filename = secure_filename(form.upload_file.data.filename)
+                    if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                        current_milli_time = lambda: int(round(time.time() * 1000))
+                        filename = str(current_milli_time()) + filename
+                    form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                    project.filename = filename
+              else:
+                  pass # Add file upload for Heroku
 
               flash('Project was edited successfully.')
 
@@ -570,12 +576,15 @@ def add_sound():
                 sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
 
         # Upload file
-        filename = secure_filename(form.upload_file.data.filename)
-        if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
-            current_milli_time = lambda: int(round(time.time() * 1000))
-            filename = str(current_milli_time()) + filename
-        form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
-        sound.filename = filename
+        if not os.environ.get('HEROKU'):
+            filename = secure_filename(form.upload_file.data.filename)
+            if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
+                current_milli_time = lambda: int(round(time.time() * 1000))
+                filename = str(current_milli_time()) + filename
+            form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
+            sound.filename = filename
+        else:
+            pass # Add file upload for Heroku
 
         db.session.add(sound)
         db.session.commit()
@@ -692,13 +701,16 @@ def add_asset():
         asset.init_in_hands()
                 
         # Upload file
-        if form.upload_file.data.filename:
-	        filename = secure_filename(form.upload_file.data.filename)
-	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-	            current_milli_time = lambda: int(round(time.time() * 1000))
-	            filename = str(current_milli_time()) + filename
-	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-	        asset.filename = filename
+        if not os.environ.get('HEROKU'):
+            if form.upload_file.data.filename:
+    	        filename = secure_filename(form.upload_file.data.filename)
+    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	            current_milli_time = lambda: int(round(time.time() * 1000))
+    	            filename = str(current_milli_time()) + filename
+    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        asset.filename = filename
+        else:
+            pass # Add file upload for Heroku
 
         db.session.add(asset)
         db.session.commit()    
@@ -785,13 +797,16 @@ def describe(asset_id):
 
 
         # Upload file
-        if form.upload_file.data:
-	        filename = secure_filename(form.upload_file.data.filename)
-	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-	            current_milli_time = lambda: int(round(time.time() * 1000))
-	            filename = str(current_milli_time()) + filename
-	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-	        description.filename = filename
+        if not os.environ.get('HEROKU'):
+            if form.upload_file.data:
+    	        filename = secure_filename(form.upload_file.data.filename)
+    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	            current_milli_time = lambda: int(round(time.time() * 1000))
+    	            filename = str(current_milli_time()) + filename
+    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        description.filename = filename
+        else:
+            pass # Add file upload for Heroku
 
         db.session.add(description)
         db.session.commit()
@@ -835,13 +850,16 @@ def verify(asset_id):
         verification.user_id = g.user.id
 
         # Upload file
-        if form.upload_file.data:
-	        filename = secure_filename(form.upload_file.data.filename)
-	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-	            current_milli_time = lambda: int(round(time.time() * 1000))
-	            filename = str(current_milli_time()) + filename
-	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-	        verification.filename = filename
+        if not os.environ.get('HEROKU'):
+            if form.upload_file.data:
+    	        filename = secure_filename(form.upload_file.data.filename)
+    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	            current_milli_time = lambda: int(round(time.time() * 1000))
+    	            filename = str(current_milli_time()) + filename
+    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        verification.filename = filename
+        else:
+            pass # Add file upload for Heroku
 
         # asset.description = form.description.data
         if request.method == 'POST':
@@ -909,13 +927,16 @@ def iterate(asset_id):
         iteration.user_id = g.user.id
 
         # Upload file
-        if form.upload_file.data:
-	        filename = secure_filename(form.upload_file.data.filename)
-	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-	            current_milli_time = lambda: int(round(time.time() * 1000))
-	            filename = str(current_milli_time()) + filename
-	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-	        iteration.filename = filename
+        if not os.environ.get('HEROKU'):
+            if form.upload_file.data:
+    	        filename = secure_filename(form.upload_file.data.filename)
+    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	            current_milli_time = lambda: int(round(time.time() * 1000))
+    	            filename = str(current_milli_time()) + filename
+    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        iteration.filename = filename
+        else:
+            pass # Add file upload for Heroku
 
         asset.iteration_number = asset.iteration_number+1
         # asset.description = form.description.data
@@ -972,13 +993,16 @@ def add_project():
         project.finished = False
         
         # Upload file
-        if form.upload_file.data.filename:
-            filename = secure_filename(form.upload_file.data.filename)
-            if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-                current_milli_time = lambda: int(round(time.time() * 1000))
-                filename = str(current_milli_time()) + filename
-            form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-            project.filename = filename
+        if not os.environ.get('HEROKU'):
+            if form.upload_file.data.filename:
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                project.filename = filename
+        else:
+            pass # Add file upload for Heroku
 
         db.session.add(project)
         db.session.commit()    
