@@ -101,7 +101,6 @@ class User(db.Model):
         else:
             return "N/A"
 
-
     @staticmethod
     def make_valid_nickname(nickname):
         return re.sub('[^a-zA-Z0-9_\.]', '', nickname)

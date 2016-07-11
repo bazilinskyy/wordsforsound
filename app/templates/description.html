@@ -35,7 +35,7 @@
 
 	<h3>Sounds:</h3>
 	<div class="list-group">
-	    {% for sound in description.sounds.items %}
+	    {% for sound in description.sounds.all() %}
 	        {% include 'sound_entry.html' %}
 	    {% endfor %}
 	</div>

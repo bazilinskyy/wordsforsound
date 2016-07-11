@@ -40,5 +40,6 @@ SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a']
 # uploading attachments
 ATACHMENT_UPLOAD_FOLDER = 'static/attachment_uploads/'
 
-# json files for tags
+# json files for tags and sounds
 TAGS_FILE = '/static/tags.json'
+SOUNDS_FILE = '/static/sounds.json'

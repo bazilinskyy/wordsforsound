@@ -109,14 +109,43 @@
         });
       </script>
 
-      <fieldset class="form-group">
+      {# <fieldset class="form-group">
         <label for="sounds">Sounds</label>
         {{ form.sounds(class_='form-control') }}
         {% for error in form.sounds.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
 
+      </fieldset> #}
+
+      <fieldset class="form-group">
+
+        {{ form.sounds(class_='form-control', id='sounds', placeholder='Add sounds', **{'data-role':'soundsinput'}) }}
+        {% for error in form.sounds.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
       </fieldset>
+
+      <script>
+        var sounds = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          prefetch: '/static/sounds.json'
+        });
+        sounds.initialize();
+
+        var elt_sounds = $('#sounds');
+        elt_sounds.tagsinput({
+          itemValue: 'value',
+          itemText: 'text',
+          typeaheadjs: {
+            name: 'sounds',
+            displayKey: 'text',
+            source: sounds.ttAdapter()
+          }
+        });
+      </script>
 
       <fieldset class="form-group">
         <label for="upload_file">Supplementary attachment</label>

@@ -15,7 +15,7 @@ from .emails import description_notification, iteration_notification, verificati
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
-    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE
+    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -228,7 +228,6 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
     assets_iteration = Asset.query.filter_by(status = 2).join((SupplierUser, Asset.suppliers)).filter(Asset.in_hands_id == g.user.id).paginate(page_iteration, ASSETS_PER_PAGE, False)
     assets_verification = Asset.query.filter_by(status = 3).join((ClientUser, Asset.clients)).filter(Asset.in_hands_id == g.user.id).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).paginate(page_otherhands, ASSETS_PER_PAGE, False)
-    # test_notification(g.user)
     return render_template('index.html',
                            title='Home',
                            assets_otherhands=assets_otherhands,
@@ -281,32 +280,15 @@ def add_tag():
         tag.name = form.name.data
         db.session.add(tag)
         db.session.commit()
-
-        # for autofill for tags and tag cloud
-        tags = Tag.query.all()
-        tags_json = []
-        if tags is not None:
-            # Determine highest number of sounds linked to a tag for giving max weight of 1.0
-            # max_number_of_sounds = 0
-            # for tag in tags:
-            #     if tag.sounds.count() > max_number_of_sounds:
-            #         max_number_of_sounds = tag.sounds.count()
-            # print max_number_of_sounds
-            for tag in tags:
-                tag_id = tag.id
-                tag_name = tag.name
-                # tag_weight = tag.sounds.count() / max_number_of_sounds # weight for jQuery
-                tag_weight = tag.sounds.count()
-                tag_link = "tag/" + str(tag.id)
-                tags_json.append({'value': tag_id, 'text' : tag_name, 'weight' : tag_weight, 'link' : tag_link})
-                with open('app/' + TAGS_FILE, 'w') as outfile:
-                    json.dump(tags_json, outfile)
+        update_tags_json() # For autofill for tags and tag cloud
         
         flash('New tag added.')
         return redirect(url_for('add_tag'))
     return render_template('add_tag.html',
                             form=form,
                             title='Add tag')
+
+
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 @login_required
@@ -318,7 +300,9 @@ def delete_tag():
             flash('Tag ' +  form.name.data + ' does not exist.')
             return redirect(url_for('delete_tag'))
         db.session.delete(tag)
-        db.session.commit()  
+        db.session.commit()
+
+        update_tags_json()  # for autofill for tags
         
         flash('Tag ' +  form.name.data + ' was deleted.')
         return redirect(url_for('delete_tag'))
@@ -577,6 +561,9 @@ def add_sound():
             if tag != ',':
                 sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
 
+        update_sounds_json()  # for autofill for sounds
+        update_tags_json()  # for autofill for sounds
+
         # Upload file
         if not os.environ.get('HEROKU'):
             filename = secure_filename(form.upload_file.data.filename)
@@ -591,25 +578,9 @@ def add_sound():
         db.session.add(sound)
         db.session.commit()
 
-        # for autofill for tags and tag cloud
-        tags = Tag.query.all()
-        tags_json = []
-        if tags is not None:
-            # Determine highest number of sounds linked to a tag for giving max weight of 1.0
-            # max_number_of_sounds = 0
-            # for tag in tags:
-            #     if tag.sounds.count() > max_number_of_sounds:
-            #         max_number_of_sounds = tag.sounds.count()
-            # print max_number_of_sounds
-            for tag in tags:
-                tag_id = tag.id
-                tag_name = tag.name
-                # tag_weight = tag.sounds.count() / max_number_of_sounds # weight for jQuery
-                tag_weight = tag.sounds.count()
-                tag_link = "tag/" + str(tag.id)
-                tags_json.append({'value': tag_id, 'text' : tag_name, 'weight' : tag_weight, 'link' : tag_link})
-                with open('app/' + TAGS_FILE, 'w') as outfile:
-                    json.dump(tags_json, outfile)
+        # Upate json files for autofill
+        update_sounds_json()
+        update_tags_json()
         
         flash('New sound added.')
         return redirect(url_for('add_sound'))
@@ -634,6 +605,9 @@ def delete_sound():
             pass
         db.session.delete(sound)
         db.session.commit()  
+
+        update_sounds_json()  # for autofill for sounds
+        update_tags_json()  # for autofill for sounds
         
         flash('Sound ' +  form.name.data + ' was deleted.')
         return redirect(url_for('delete_sound'))
@@ -727,16 +701,15 @@ def add_asset():
         description.asset_id = asset.id
         description.user_id = g.user.id
 
-        # Add tags
+        # Change tags
         for tag in form.tags.data:
             if tag != ',':
                 description.tags.append(Tag.query.filter_by(id=int(tag)).first())
 
-        # Add sounds
+        # Change sounds
         for sound in form.sounds.data:
             if sound != ',':
                 description.sounds.append(Sound.query.filter_by(id=int(sound)).first())
-
 
         db.session.add(description)
         db.session.commit()
@@ -756,7 +729,7 @@ def describe(asset_id):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    if asset.user_in_hands is not user:
+    if asset.user_in_hands.id != g.user.id:
         flash('You do not have permissions to work on this asset at this moment.')
         return redirect(url_for('index'))
 
@@ -772,8 +745,6 @@ def describe(asset_id):
         description.timestamp = datetime.now()
         description.asset_id = asset.id
         description.user_id = g.user.id
-
-        # asset.description = form.description.data
 
         # Found who needs to work on the asset next
         current_user_found  = False
@@ -797,7 +768,6 @@ def describe(asset_id):
             asset.in_hands_id = asset.suppliers[0].id
             asset.status = AssetStatus.iteration.value
 
-
         # Upload file
         if not os.environ.get('HEROKU'):
             if form.upload_file.data:
@@ -809,6 +779,18 @@ def describe(asset_id):
     	        description.filename = filename
         else:
             pass # Add file upload for Heroku
+
+        # Add tags
+        description.tags = []
+        for tag in form.tags.data:
+            if tag != ',':
+                description.tags.append(Tag.query.filter_by(id=int(tag)).first())
+
+        # Add sounds
+        description.sounds = []
+        for sound in form.sounds.data:
+            if sound != ',':
+                description.sounds.append(Sound.query.filter_by(id=int(sound)).first())
 
         db.session.add(description)
         db.session.commit()
@@ -838,7 +820,7 @@ def verify(asset_id):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    if asset.user_in_hands is not user:
+    if asset.user_in_hands.id != g.user.id:
         flash('You do not have permissions to work on this asset at this moment.')
         return redirect(url_for('index'))
 
@@ -916,7 +898,7 @@ def iterate(asset_id):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    if asset.user_in_hands is not user:
+    if asset.user_in_hands.id != g.user.id:
         flash('You do not have permissions to work on this asset at this moment.')
         return redirect(url_for('index'))
 
@@ -1067,3 +1049,31 @@ def search_results(query):
                            projects_results=projects_results,
                            assets_results=assets_results,
                            sound_location=SOUND_UPLOAD_FOLDER)
+
+# For autofill for tags and tag cloud
+def update_tags_json():
+    tags = Tag.query.all()
+    tags_json = []
+    if tags is not None:
+        for tag in tags:
+            tag_id = tag.id
+            tag_name = tag.name
+            # tag_weight = tag.sounds.count() / max_number_of_sounds # weight for jQuery
+            tag_weight = tag.sounds.count()
+            tag_link = "tag/" + str(tag.id)
+            tags_json.append({'value': tag_id, 'text' : tag_name, 'weight' : tag_weight, 'link' : tag_link})
+            with open('app/' + TAGS_FILE, 'w') as outfile:
+                json.dump(tags_json, outfile)
+
+# For autofill for sounds
+def update_sounds_json():
+    sounds = Sound.query.all()
+    sounds_json = []
+    if sounds is not None:
+        for sound in sounds:
+            sound_id = sound.id
+            sound_name = sound.name
+            sound_link = "sound/" + str(sound.id)
+            sounds_json.append({'value': sound_id, 'text' : sound_name, 'link' : sound_link})
+            with open('app/' + SOUNDS_FILE, 'w') as outfile:
+                json.dump(sounds_json, outfile)
