@@ -18,7 +18,7 @@
 	            <p>{{ verification.id }}</p>
 	        </td>
 	        <td>
-            	<p>{{ verification.description }}</p>
+            	<p>{% if verification.description|length != 0 %} {{ verification.description }}. {% else %} No textual description was given. {% endif %}</p>
 	        </td>
 	        {% if verification.filename != None %}
 		        <td>

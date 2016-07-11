@@ -13,7 +13,7 @@
             <p>{{ verification.id }}</p>
         </td>
         <td>
-            <p>{{ verification.description }} Time: {{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p>{% if verification.description|length != 0 %} {{ verification.description }}. {% else %} No textual description was given. {% endif %} Time: {{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
         </td>
         <td width="80px">
             <p> Ver. {{ asset.iteration_number }}</p>

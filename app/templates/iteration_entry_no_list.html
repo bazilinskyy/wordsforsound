@@ -13,7 +13,7 @@
             <a href="{{ url_for('iteration', iteration_id=iteration.id) }}">{{ iteration.id }}</a>
         </td>
         <td>
-            <p>{{ iteration.description }} Time: {{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p>{% if iteration.description|length != 0 %} {{ iteration.description }}. {% else %} No textual description was given. {% endif %} Time: {{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
         </td>
         <td width="80px">
             <p>Ver. {{ asset.iteration_number }}</p>

@@ -18,7 +18,7 @@
 	            <p>{{ description.id }}</p>
 	        </td>
 	        <td>
-            	<p>{{ description.description }}. Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. </p>
+            	<p>{% if description.description|length != 0 %} {{ description.description }}. {% else %} No textual description was given. {% endif %} Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. </p>
 	        </td>
 	        {% if description.filename != None %}
 		        <td>
