@@ -14,7 +14,7 @@ WHOOSH_BASE = os.path.join(basedir, 'search.db')
 DATABASE_QUERY_TIMEOUT = 0.5
 
 # Whoosh does not work on Heroku
-WHOOSH_ENABLED = True#os.environ.get('HEROKU') is None
+WHOOSH_ENABLED = os.environ.get('HEROKU') is None
 
 # pagination
 TAGS_PER_PAGE = 10
