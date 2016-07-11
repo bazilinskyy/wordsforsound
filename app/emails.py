@@ -1,6 +1,7 @@
 from flask import render_template
 from flask.ext.mail import Message
 from app import mail
+import os
 from .decorators import async
 if not os.environ.get('HEROKU'): 
   from config_secret import ADMINS, GMAIL_USERNAME, GMAIL_PASSWORD
