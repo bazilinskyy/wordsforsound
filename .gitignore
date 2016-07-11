@@ -2,7 +2,7 @@ flask/
 db_repository/
 *.pyc
 *.db
-tmp/
+tmp/wordsforsound.log
 .idea/
 *.sublime-project
 *.sublime-workspace
