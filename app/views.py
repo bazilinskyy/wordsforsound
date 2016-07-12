@@ -1109,9 +1109,15 @@ def update_sounds_json():
                 json.dump(sounds_json, outfile)
 
 # Listen for GET requests for S3
-@app.route('/sign-s3/')
-def sign_s3():
-    S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')  
+@app.route('/sign-s3/<type>')
+def sign_s3(type):
+    # Load necessary information into the application
+    if type == "sound":
+        S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
+    elif type == "attachment":
+        S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
+    else:
+        S3_BUCKET = "N/A"   
 
     # Load required data from the request
     file_name = request.args.get('file-name')
