@@ -91,6 +91,9 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if g.user.is_authenticated:
+        flash('Please logout first.')
+        return redirect(url_for('index'))
     form = RegisterForm()
     if form.validate_on_submit():
         if form.user_type.data == '1':
@@ -1125,7 +1128,6 @@ def sign_s3(type):
 
     # Initialise the S3 client
     s3 = boto3.client('s3')
-    print 11111
 
     # Generate and return the presigned URL
     presigned_post = s3.generate_presigned_post(
