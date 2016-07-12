@@ -1125,6 +1125,7 @@ def sign_s3(type):
 
     # Initialise the S3 client
     s3 = boto3.client('s3')
+    print 11111
 
     # Generate and return the presigned URL
     presigned_post = s3.generate_presigned_post(
