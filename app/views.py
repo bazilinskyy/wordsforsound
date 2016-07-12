@@ -551,9 +551,7 @@ def add_sound():
             sound.filename = filename
         else:
             sound.filename = request.form["file-url"]
-            print "File in S3: " + sound.filename
 
-        
         db.session.add(sound)
         db.session.commit()
 
