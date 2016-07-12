@@ -554,6 +554,7 @@ def add_sound():
             sound.filename = filename
         else:
             sound.filename = request.form["file-url"]
+            print 
 
         db.session.add(sound)
         db.session.commit()

@@ -35,7 +35,10 @@ ONGOING_ASSETS_MENU = 5
 FINISHED_ASSETS_MENU= 5
 
 # uploading sounds
-SOUND_UPLOAD_FOLDER = 'static/sound_uploads/'
+if not os.environ.get('HEROKU'):
+	SOUND_UPLOAD_FOLDER = 'static/sound_uploads/'
+else:
+	SOUND_UPLOAD_FOLDER = ''
 SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a']
 
 # uploading attachments
