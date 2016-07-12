@@ -554,7 +554,6 @@ def add_sound():
             sound.filename = filename
         else:
             sound.filename = request.form["file-url"]
-            print 
 
         db.session.add(sound)
         db.session.commit()
@@ -661,7 +660,7 @@ def add_asset():
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        asset.filename = filename
         else:
-            pass # Add file upload for Heroku
+            asset.filename = request.form["file-url"]
 
         db.session.add(asset)
         db.session.commit()    
@@ -812,7 +811,7 @@ def describe(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        description.filename = filename
         else:
-            pass # Add file upload for Heroku
+            description.filename = request.form["file-url"]
 
         # Add tags
         description.tags = []
@@ -877,7 +876,7 @@ def verify(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        verification.filename = filename
         else:
-            pass # Add file upload for Heroku
+            verification.filename = request.form["file-url"]
 
         # asset.description = form.description.data
         if request.method == 'POST':
@@ -954,7 +953,7 @@ def iterate(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        iteration.filename = filename
         else:
-            pass # Add file upload for Heroku
+            iteration.filename = request.form["file-url"]
 
         asset.iteration_number = asset.iteration_number+1
         # asset.description = form.description.data

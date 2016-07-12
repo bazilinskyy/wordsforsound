@@ -36,14 +36,17 @@ FINISHED_ASSETS_MENU= 5
 
 # uploading sounds
 if not os.environ.get('HEROKU'):
-	SOUND_UPLOAD_FOLDER = 'static/sound_uploads/'
+	SOUND_UPLOAD_FOLDER = '/static/sound_uploads/'
 else:
 	SOUND_UPLOAD_FOLDER = ''
 SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a']
 
 # uploading attachments
-ATACHMENT_UPLOAD_FOLDER = 'static/attachment_uploads/'
-
+if not os.environ.get('HEROKU'):
+	ATACHMENT_UPLOAD_FOLDER = '/static/attachment_uploads/'
+else:
+	ATACHMENT_UPLOAD_FOLDER = ''
+	
 # json files for tags and sounds
 TAGS_FILE = '/static/tags.json'
 SOUNDS_FILE = '/static/sounds.json'
