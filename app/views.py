@@ -68,9 +68,9 @@ def internal_error(error):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    session.pop('_flashes', None)
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('index'))
-    error = None
     form = LoginForm()
     if request.method == 'POST':
       if form.validate_on_submit():
@@ -80,12 +80,13 @@ def login():
               session['remember_me'] = form.remember_me.data
               return redirect(url_for('index'))
           else:
-              error = 'Invalid username or password.'
-    return render_template('login.html', 
-                            form=form, 
-                            error=error,
-                            title='Sign In',
-                            )
+              flash('Invalid username or password.')
+    return render_template('login.html', form=form, title='Login')
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -110,32 +111,6 @@ def register():
         login_user(user)
         return redirect(url_for('index'))
     return render_template('register.html', form=form)
-
-def after_login(resp):
-    if resp.email is None or resp.email == "":
-        flash('Invalid login. Please try again.')
-        return redirect(url_for('login'))
-    user = User.query.filter_by(email=resp.email).first()
-    if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
-        nickname = User.make_valid_nickname(nickname)
-        nickname = User.make_unique_nickname(nickname)
-        user = User(nickname=nickname, email=resp.email)
-        db.session.add(user)
-        db.session.commit()
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-    login_user(user, remember=remember_me)
-    return redirect(request.args.get('next') or url_for('index'))
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    return redirect(url_for('index'))
 
 @app.route('/reset', methods=["GET", "POST"])
 def reset():
