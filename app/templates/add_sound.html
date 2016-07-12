@@ -84,7 +84,7 @@
         }
       });
     </script>
-    <input type="hidden" id="avatar-url" name="avatar-url" value="/static/media/default.png">
+    <input type="hidden" id="file-url" name="file-url">
     <fieldset class="form-group">
       <label for="upload_file">Upload file</label>
 
@@ -98,7 +98,7 @@
   </form>
 </div>
 
-<!-- <script type="text/javascript">
+<script type="text/javascript">
 
 /*
   Function to carry out the actual POST request to S3 using the signed request from the Python app.
@@ -116,7 +116,7 @@ function uploadFile(file, s3Data, url){
     if(xhr.readyState === 4){
       if(xhr.status === 200 || xhr.status === 204){
         document.getElementById('preview').src = url;
-        document.getElementById('avatar-url').value = url;
+        document.getElementById('file-url').value = url;
       }
       else{
         alert('Could not upload file.');
@@ -164,7 +164,7 @@ function initUpload(){
 (() => {
   document.getElementById('file-input').onchange = initUpload;
 })();
-</script> -->
+</script>
 
 
 {% endblock %}

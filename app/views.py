@@ -21,7 +21,7 @@ from flask_wtf.file import FileField
 import os
 import time
 import json
-# import boto3
+import boto3
 
 def redirect_url(default='index'):
     return request.args.get('next') or \
@@ -550,7 +550,8 @@ def add_sound():
             form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
             sound.filename = filename
         else:
-            pass # Add file upload for Heroku
+            sound.filename = request.form["file-url"]
+            print "File in S3: " + sound.filename
 
         db.session.add(sound)
         db.session.commit()
@@ -1108,41 +1109,38 @@ def update_sounds_json():
             with open('app/' + SOUNDS_FILE, 'w') as outfile:
                 json.dump(sounds_json, outfile)
 
-# Listen for GET requests to yourdomain.com/sign_s3/
-#
-# Please see https://gist.github.com/RyanBalfanz/f07d827a4818fda0db81 for an example using
-# Python 3 for this view.
-# @app.route('/sign-s3/<type>')
-# def sign_s3(type):
-#     # Load necessary information into the application
-#     if type == "sound":
-#         S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
-#     elif type == "attachment":
-#         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
-#     else:
-#         S3_BUCKET = "N/A"   
+# Listen for GET requests for S3
+@app.route('/sign-s3/<type>')
+def sign_s3(type):
+    # Load necessary information into the application
+    if type == "sound":
+        S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
+    elif type == "attachment":
+        S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
+    else:
+        S3_BUCKET = "N/A"   
 
-#     # Load required data from the request
-#     file_name = request.args.get('file-name')
-#     file_type = request.args.get('file-type')
+    # Load required data from the request
+    file_name = request.args.get('file-name')
+    file_type = request.args.get('file-type')
 
-#     # Initialise the S3 client
-#     s3 = boto3.client('s3')
+    # Initialise the S3 client
+    s3 = boto3.client('s3')
 
-#     # Generate and return the presigned URL
-#     presigned_post = s3.generate_presigned_post(
-#     Bucket = S3_BUCKET,
-#     Key = file_name,
-#     Fields = {"acl": "public-read", "Content-Type": file_type},
-#     Conditions = [
-#       {"acl": "public-read"},
-#       {"Content-Type": file_type}
-#     ],
-#     ExpiresIn = 3600
-#     )
+    # Generate and return the presigned URL
+    presigned_post = s3.generate_presigned_post(
+    Bucket = S3_BUCKET,
+    Key = file_name,
+    Fields = {"acl": "public-read", "Content-Type": file_type},
+    Conditions = [
+      {"acl": "public-read"},
+      {"Content-Type": file_type}
+    ],
+    ExpiresIn = 3600
+    )
 
-#     # Return the data to the client
-#     return json.dumps({
-#     'data': presigned_post,
-#     'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
-#     })
+    # Return the data to the client
+    return json.dumps({
+    'data': presigned_post,
+    'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
+    })
