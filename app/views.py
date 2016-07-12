@@ -1120,6 +1120,8 @@ def sign_s3(type):
         S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
+    else:
+        S3_BUCKET = "N/A"   
 
     # Load required data from the request
     file_name = request.args.get('file-name')
