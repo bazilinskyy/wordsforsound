@@ -27,7 +27,7 @@ def send_email(subject, recipient, body):
       yag = yagmail.SMTP(GMAIL_USERNAME, GMAIL_PASSWORD)
       yag.send(str(recipient), subject, body)
     except:
-      pass
+      flash('The email notification could not be sent.', 'error')
 
 def description_notification(user, asset):
   if user.receive_emails and asset.notify_by_email:
@@ -37,7 +37,6 @@ def description_notification(user, asset):
       user_type = "supplier"
     else:
       user_type = "N/A"
-    print GMAIL_USERNAME + " " + GMAIL_PASSWORD
     send_email("Description for asset " + asset.name + " is ready.",
                user.email,
                str(render_template("description_email.html",
