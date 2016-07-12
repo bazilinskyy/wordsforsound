@@ -550,6 +550,10 @@ def add_sound():
             form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
             sound.filename = filename
         else:
+            s3 = boto.connect_s3()
+            bucket = s3.create_bucket(os.environ.get('S3_BUCKET_SOUNDS'))
+            key = bucket.new_key(filename)
+            key.set_contents_from_file(file, headers=None, replace=True, cb=None, num_cb=10, policy=None, md5=None) 
             sound.filename = request.form["file-url"]
             print "File in S3: " + sound.filename
 
@@ -1115,9 +1119,6 @@ def sign_s3(type):
     # Load necessary information into the application
     if type == "sound":
         S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
-        print S3_BUCKET
-        print os.environ.get('AWS_ACCESS_KEY_ID')
-        print os.environ.get('AWS_SECRET_ACCESS_KEY')
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
     else:
