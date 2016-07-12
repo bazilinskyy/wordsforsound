@@ -48,7 +48,7 @@ def before_request():
 @app.after_request
 def after_request(response):
     g.user = current_user
-    if not app.debug and g.user.is_authenticated:
+    if not app.debug and g.user.is_authenticated and "/static/" not in str(request.url):
         app.logger.info("USER %s visited URL %s" % (str(g.user.nickname), str(request.url)))
     for query in get_debug_queries():
         if query.duration >= DATABASE_QUERY_TIMEOUT:
@@ -1116,8 +1116,8 @@ def sign_s3(type):
     if type == "sound":
         S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
         print S3_BUCKET
-        print AWS_ACCESS_KEY_ID
-        print AWS_SECRET_ACCESS_KEY
+        print os.environ.get('AWS_ACCESS_KEY_ID')
+        print os.environ.get('AWS_SECRET_ACCESS_KEY')
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
     else:
