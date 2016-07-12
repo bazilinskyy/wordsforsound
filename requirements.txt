@@ -1,6 +1,4 @@
 Babel==2.3.4
-boto3==1.3.1
-botocore==1.4.36
 blinker==1.4
 appnope==0.1.0
 backports.shutil-get-terminal-size==1.0.0
