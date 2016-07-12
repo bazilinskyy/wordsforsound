@@ -1115,6 +1115,9 @@ def sign_s3(type):
     # Load necessary information into the application
     if type == "sound":
         S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
+        print S3_BUCKET
+        print AWS_ACCESS_KEY_ID
+        print AWS_SECRET_ACCESS_KEY
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
     else:
