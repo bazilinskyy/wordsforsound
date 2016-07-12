@@ -19,11 +19,11 @@
                         height: 50,
                         hideScrollbar: true
                     });
-                    wavesurfer_{{ iteration.id }}.load("/{{ attachment_location }}{{ iteration.filename }}");
+                    wavesurfer_{{ iteration.id }}.load("{{ attachment_location }}{{ iteration.filename }}");
                 </script>
             </td>
             <td width="80px">
-                <a href="/{{ attachment_location }}{{ iteration.filename }}">Download</a>
+                <a href="{{ attachment_location }}{{ iteration.filename }}">Download</a>
             </td>
         {% endif %}
     </tr>
