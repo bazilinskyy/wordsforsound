@@ -4,7 +4,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Verification {{ verification.id }}</h1>
+<h1>Verification {{ verification.id }} for asset <a href="{{ url_for('asset', asset_id=verification.asset.id) }}">{{{ description.asset.name }}</a></h1>
 
 <!-- verification form -->
 <div class="well">

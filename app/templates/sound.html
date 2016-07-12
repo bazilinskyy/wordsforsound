@@ -8,7 +8,7 @@
 <!-- Description form -->
 <div class="well">
 
-	<h4>ID <span class="label label-default">{{ sound.id }}</span> Name <span class="label label-default">{{ sound.name }}</span> Type <span class="label label-default">{{ sound.sound_type }}</span> Family <span class="label label-default">{{ sound.sound_family }}</span> Legal rights <span class="label label-default">{{ sound.rights }}</span>
+	<h4>ID <span class="badge">{{ sound.id }}</span> Name <span class="badge">{{ sound.name }}</span> Type <span class="badge">{{ sound.sound_type }}</span> Family <span class="badge">{{ sound.sound_family }}</span> Legal rights <span class="badge">{{ sound.rights }}</span>
 
 	{% for tag in sound.tags.all() %}
       {% include 'tag_entry.html' %}

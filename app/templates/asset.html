@@ -5,23 +5,23 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Asset {{ asset.name }}</h1>
+<h1>Asset {{ asset.name }} for project <a href="{{ url_for('project', project_id=asset.project.id) }}">{{ asset.project.name }}</a></h1>
 
 <!-- Description form -->
 <div class="well">
 
-	<h4>ID <span class="label label-default">{{ asset.id }}</span> Name <span class="label label-default">{{ asset.name }}</span> Status <span class="label label-default">{{ asset.status }}</span> Finished <span class="label label-default">{{ asset.finished }}</span>
+	<h4>ID <span class="badge">{{ asset.id }}</span> Name <span class="badge">{{ asset.name }}</span> Status <span class="badge">{{ asset.status }}</span> Finished <span class="badge">{{ asset.finished }}</span>
 		Clients:
 			{% for client in asset.clients[:-1] %}
-		      <span class="label label-default"><a href="{{ url_for('user', nickname=client.nickname) }}" class="white_text">{{ client.nickname }}</a> </span>, 
+		      <span class="badge"><a href="{{ url_for('user', nickname=client.nickname) }}" class="white_text">{{ client.nickname }}</a> </span>, 
 		    {% endfor %}
-		      <span class="label label-default"><a href="{{ url_for('user', nickname=asset.clients[-1].nickname) }}" class="white_text">{{ asset.clients[-1].nickname }}</a></span>&nbsp;
+		      <span class="badge"><a href="{{ url_for('user', nickname=asset.clients[-1].nickname) }}" class="white_text">{{ asset.clients[-1].nickname }}</a></span>&nbsp;
 		Suppliers:
 			{% for supplier in asset.suppliers[:-1] %}
-		      <span class="label label-default"><a href="{{ url_for('user', nickname=supplier.nickname) }}" class="white_text">{{ supplier.nickname }}</a></span>, 
+		      <span class="badge"><a href="{{ url_for('user', nickname=supplier.nickname) }}" class="white_text">{{ supplier.nickname }}</a></span>, 
 		    {% endfor %}
-		      <span class="label label-default"><a href="{{ url_for('user', nickname=asset.suppliers[-1].nickname) }}" class="white_text">{{ asset.suppliers[-1].nickname }}</a> </span>&nbsp;
-		In hands of: <span class="label label-default"><a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}" class="white_text">{{ asset.user_in_hands.nickname }}</a></span> {% if asset.finished != True %}
+		      <span class="badge"><a href="{{ url_for('user', nickname=asset.suppliers[-1].nickname) }}" class="white_text">{{ asset.suppliers[-1].nickname }}</a> </span>&nbsp;
+		In hands of: <span class="badge"><a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}" class="white_text">{{ asset.user_in_hands.nickname }}</a></span> {% if asset.finished != True %}
 		<a href="{{ url_for('edit_asset', asset_id=asset.id) }}">Edit</a>
 	{% endif %}
 	</h4>

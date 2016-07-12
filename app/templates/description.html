@@ -4,7 +4,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Description {{ description.id }}</h1>
+<h1>Description {{ description.id }} for asset <a href="{{ url_for('asset', asset_id=description.asset.id) }}">{{ description.asset.name}}</a></h1>
 
 <!-- Description form -->
 <div class="well">
@@ -14,11 +14,8 @@
 	        <td width="80px">
 	            <a href="{{ url_for('user', nickname=description.user.nickname) }}"><img src="{{ description.user.avatar(70) }}" /></a>
 	        </td>
-	        <td width="70px">
-	            <p>{{ description.id }}</p>
-	        </td>
 	        <td>
-            	<p>{% if description.description|length != 0 %} {{ description.description }}. {% else %} No textual description was given. {% endif %} Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. </p>
+            	<p>{% if description.description|length != 0 %} {{ description.description }}. {% else %} No textual description was given. {% endif %} Duration: <span class="badge">{{ description.get_duration() }}</span>. Pitch: <span class="badge">{{ description.get_pitch() }}</span>. Type: <span class="badge">{{ description.get_sound_type() }}</span>. Family: <span class="badge">{{ description.get_sound_family() }}</span>. </p>
 	        </td>
 	        {% if description.filename != None %}
 		        <td>
