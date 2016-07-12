@@ -21,7 +21,7 @@ from flask_wtf.file import FileField
 import os
 import time
 import json
-import boto3
+# import boto3
 
 def redirect_url(default='index'):
     return request.args.get('next') or \
