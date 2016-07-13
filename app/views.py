@@ -810,7 +810,7 @@ def describe(asset_id):
         description.asset_id = asset.id
         description.user_id = g.user.id
 
-        # Found who needs to work on the asset next
+        # Find who needs to work on the asset next
         current_user_found  = False
         in_hands_found = False
         if len(asset.clients.all()) != 1:
@@ -915,10 +915,9 @@ def verify(asset_id):
         else:
             verification.filename = form.upload_file.data.filename
 
-        # asset.description = form.description.data
         if request.method == 'POST':
             if request.form['submit'] == 'iterate':
-                # Found who needs to work on the asset next
+                # Find who needs to work on the asset next
                 current_user_found  = False
                 in_hands_found = False
                 if len(asset.clients.all()) != 1:
@@ -937,7 +936,6 @@ def verify(asset_id):
                     if len(asset.suppliers.all()) < 1:
                         flash('No suppliers for the asset.')
                         return redirect(url_for('index'))    
-                    asset.in_hands_id = asset.suppliers[0].id
                     asset.status = AssetStatus.description.value
 
                     verification_notification(asset.user_in_hands, asset)
@@ -998,9 +996,8 @@ def iterate(asset_id):
             iteration.filename = form.upload_file.data.filename
 
         asset.iteration_number = asset.iteration_number+1
-        # asset.description = form.description.data
 
-        # Found who needs to work on the asset next
+        # Find who needs to work on the asset next
         current_user_found  = False
         in_hands_found = False
         if len(asset.suppliers.all()) != 1:
