@@ -22,7 +22,6 @@ import os
 import time
 import json
 import boto3
-from boto.s3.connection import S3Connection, Bucket, Key
 
 def redirect_url(default='index'):
     return request.args.get('next') or \
@@ -588,12 +587,8 @@ def delete_sound():
                 pass
         else:
             # Remove file stored in Heroku
-            conn = S3Connection(os.environ.get('AWS_ACCESS_KEY'), os.environ.get('AWS_SECRET_KEY'))
-            b = Bucket(conn, S3_BUCKET_NAME)
-            k = Key(b)
-            k.key = sound.filename
-            print sound.filename
-            b.delete_key(k)
+            cs3 = boto3.resource('s3')
+            s3.Object(os.environ.get('S3_BUCKET_SOUNDS',sound.filename).delete()
 
         db.session.delete(sound)
         db.session.commit()  
