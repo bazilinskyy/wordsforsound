@@ -1,8 +1,13 @@
 from flask import render_template
 from flask.ext.mail import Message
 from app import mail
+import os
 from .decorators import async
-from config_secret import ADMINS, GMAIL_USERNAME, GMAIL_PASSWORD
+if not os.environ.get('HEROKU'): 
+  from config_secret import GMAIL_USERNAME, GMAIL_PASSWORD
+else:
+  GMAIL_USERNAME=os.environ.get('GMAIL_USERNAME')
+  GMAIL_PASSWORD=os.environ.get('GMAIL_PASSWORD')
 from app import app
 import yagmail
 from models import ClientUser, SupplierUser, AssetStatus
@@ -18,13 +23,14 @@ def send_email(subject, recipient, body):
     # msg.body = text_body
     # msg.html = html_body
     # send_async_email(app, msg)
-
-    yag = yagmail.SMTP(GMAIL_USERNAME, GMAIL_PASSWORD)
-    yag.send(str(recipient), subject, body)
+    try:
+      yag = yagmail.SMTP(GMAIL_USERNAME, GMAIL_PASSWORD)
+      yag.send(str(recipient), subject, body)
+    except:
+      flash('The email notification could not be sent.', 'error')
 
 def description_notification(user, asset):
   if user.receive_emails and asset.notify_by_email:
-    print user.type
     if user.type == "client_user":
       user_type = "client"
     elif user.type == "supplier_user":

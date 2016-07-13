@@ -1,14 +1,16 @@
 <table class="table table-hover">
     <tr>
-        <td width="80px">
+        <td width="20px">
         	<a href="{{ url_for('verification', verification_id=verification.id) }}">ID:{{ verification.id }}</a>
         </td>
-        <td width="400px">
-        	{{ verification.description }} Time: {{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}
+        <td>
+            <p class="text-left">
+            	{% if verification.description|length != 0 %} {{ verification.description }} {% else %} No textual description was given. {% endif %} <strong>Time</strong>: <span class="badge">{{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+            </p>
         </td>
         {% if verification.filename != None %}
             <td>
-                <a href="/{{ attachment_location }}{{ verification.filename }}">{{ verification.filename }}</a>
+                <a href="{{ attachment_location }}{{ verification.filename }}">{{ verification.filename }}</a>
             </td>
         {% endif %}
     </tr>

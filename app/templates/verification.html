@@ -4,7 +4,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Verification {{ verification.id }}</h1>
+<h1>Verification {{ verification.id }} for asset <a href="{{ url_for('asset', asset_id=verification.asset.id) }}">{{ verification.asset.name }}</a></h1>
 
 <!-- verification form -->
 <div class="well">
@@ -14,15 +14,12 @@
 	        <td width="80px">
 	            <a href="{{ url_for('user', nickname=verification.user.nickname) }}"><img src="{{ verification.user.avatar(70) }}" /></a>
 	        </td>
-	        <td width="70px">
-	            <p>{{ verification.id }}</p>
-	        </td>
 	        <td>
-            	<p>{{ verification.description }}</p>
+            	<p class="text-left">{% if verification.description|length != 0 %} <strong>Description</strong> {{ verification.description }} {% else %} No textual description was given. {% endif %}</p>
 	        </td>
 	        {% if verification.filename != None %}
 		        <td>
-		            <a href="/{{ attachment_location }}{{ verification.filename }}">{{ verification.filename }}</a>
+		            <a href="{{ attachment_location }}{{ verification.filename }}">{{ verification.filename }}</a>
 		        </td>
 	        {% endif %}
 	    </tr>

@@ -96,7 +96,10 @@ class User(db.Model):
 
     @property
     def full_name(self):
-        return "%s %s"%(self.first_name, self.last_name)
+        if self.first_name and self.last_name:
+            return "%s %s"%(self.first_name, self.last_name)
+        else:
+            return "N/A"
 
     @staticmethod
     def make_valid_nickname(nickname):

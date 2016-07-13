@@ -8,11 +8,13 @@
 <!-- Description form -->
 <div class="well">
 
-	<h4>ID <span class="label label-default">{{ sound.id }}</span> Name <span class="label label-default">{{ sound.name }}</span> Type <span class="label label-default">{{ sound.sound_type }}</span> Family <span class="label label-default">{{ sound.sound_family }}</span> Legal rights <span class="label label-default">{{ sound.rights }}</span>
+	<h4>ID <span class="badge">{{ sound.id }}</span> Name <span class="badge">{{ sound.name }}</span> Type <span class="badge">{{ sound.sound_type }}</span> Family <span class="badge">{{ sound.sound_family }}</span> Legal rights <span class="badge">{{ sound.rights }}</span>
 
 	{% for tag in sound.tags.all() %}
-      {% include 'tag_entry.html' %}
+      {% include 'tag_entry_no_numbers.html' %}
     {% endfor %}
+
+    <a href="{{ url_for('edit_sound', sound_id=sound.id) }}"  type="button" class="btn btn-warning btn-sm">Edit</a> <a href="{{ url_for('delete_sound', sound_id=sound.id) }}" type="button" class="btn btn-danger btn-sm">Delete</a>
    	</h4>
 
 	<strong>Description</strong> {{ sound.description }}
@@ -27,7 +29,7 @@
 	        progressColor: '#3B8686',
 	        backend: 'MediaElement'
 		});
-		wavesurfer.load("/{{ sound_location }}{{ sound.filename }}");
+		wavesurfer.load("{{ sound_location }}{{ sound.filename }}");
 	</script>
 
 	<div style="text-align: center">

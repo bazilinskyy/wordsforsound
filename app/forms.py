@@ -89,12 +89,12 @@ class DescriptionForm(Form):
     description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
     duration = StringField('duration', validators=[Optional()])
     pitch = StringField('pitch', validators=[Optional()])
-    # form.area.choices = [(a.id, a.name) for a in Area.objects.all()]
     sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
     sound_family = SelectField('sound_family', choices=sound_families)
     upload_file = FileField('upload_file')
     notify_by_email = BooleanField('remember_me', default=False)
-
+    tags = StringField('tags')
+    sounds = StringField('sounds')
 
 class VerificationForm(Form):
     description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
@@ -116,9 +116,15 @@ class NewAssetForm(Form):
     sound_family = SelectField('sound_family', choices=sound_families)
     upload_file = FileField('upload_file')
     tags = StringField('tags')
-    sounds = SelectMultipleField('sounds')
+    sounds = StringField('sounds')
     clients = SelectMultipleField('clients', validators=[DataRequired()])
     suppliers = SelectMultipleField('suppliers', validators=[DataRequired()])
+    notify_by_email = BooleanField('remember_me', default=True)
+
+class EditAssetForm(Form):
+    name = StringField('name', validators=[DataRequired()])
+    description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
+    upload_file = FileField('upload_file')
     notify_by_email = BooleanField('remember_me', default=True)
 
 class NewProjectForm(Form):
@@ -143,12 +149,12 @@ class AddSoundForm(Form):
 	upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
 	tags = StringField('tags')
 	rights = StringField('rights')
-	# upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(audio, 'Sounds only!')])
 
 class EditSoundForm(Form):
-	name = StringField('name', validators=[DataRequired()])
-	description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
-	sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
-	sound_family = SelectField('sound_family', choices=sound_families)
-	upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
-	tags = StringField('tags')
+    name = StringField('name', validators=[DataRequired()])
+    description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
+    sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
+    sound_family = SelectField('sound_family', choices=sound_families)
+    upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
+    tags = StringField('tags')
+    rights = StringField('rights')

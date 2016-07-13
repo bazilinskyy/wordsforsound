@@ -4,7 +4,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Description {{ description.id }}</h1>
+<h1>Description {{ description.id }} for asset <a href="{{ url_for('asset', asset_id=description.asset.id) }}">{{ description.asset.name}}</a></h1>
 
 <!-- Description form -->
 <div class="well">
@@ -14,31 +14,32 @@
 	        <td width="80px">
 	            <a href="{{ url_for('user', nickname=description.user.nickname) }}"><img src="{{ description.user.avatar(70) }}" /></a>
 	        </td>
-	        <td width="70px">
-	            <p>{{ description.id }}</p>
-	        </td>
 	        <td>
-            	<p>{{ description.description }}. Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. </p>
+		        </p class="text-left">
+	            	<h4>Duration: <span class="badge">{{ description.get_duration() }}</span>. Pitch: <span class="badge">{{ description.get_pitch() }}</span>. Type: <span class="badge">{{ description.get_sound_type() }}</span>. Family: <span class="badge">{{ description.get_sound_family() }}</span>
+	 
+	            	{% for tag in description.tags.all() %}
+	      				{% include 'tag_entry_no_numbers.html' %}
+	    			{% endfor %}
+	            	</h4>
+
+	            	{% if description.description|length != 0 %} <strong>Description</strong> {{ description.description }} {% else %} No textual description was given. {% endif %}
+            	</p>
 	        </td>
 	        {% if description.filename != None %}
 		        <td>
-		            <a href="/{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
+		            <a href="{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
 		        </td>
 	        {% endif %}
 	    </tr>
 	</table>
 
-	<h3>Tags:</h3>
-	{% for tag in description.tags.all() %}
-	  {% include 'tag_entry.html' %}
-	{% endfor %} 
-
-	<h3>Sounds:</h3>
-	<div class="list-group">
-	    {% for sound in description.sounds.items %}
-	        {% include 'sound_entry.html' %}
-	    {% endfor %}
-	</div>
+	{% if description.sounds.count() > 0 %}
+		<p><strong>Sounds:</strong></p>
+		{% for sound in description.sounds.all() %}
+		  {% include 'sound_entry.html' %}
+		{% endfor %}
+	{% endif %}
 
 </div>
 {% endblock %}

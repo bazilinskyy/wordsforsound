@@ -68,10 +68,84 @@
         {% endfor %}
 
       </fieldset>
+
+      <link href="/static/css/bootstrap-tagsinput.css" rel="stylesheet">
+      <link href="/static/css/bootstrap-tagsinput-additional.css" rel="stylesheet">
+      <script src="/static/js/bootstrap-tagsinput.min.js"></script>
+      <script src="/static/js/typeahead.bundle.js"></script>
+
+      <fieldset class="form-group">
+
+        {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
+        {% for error in form.tags.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+
+      <script>
+        var tags = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          prefetch: '/static/tags.json'
+        });
+        tags.initialize();
+
+        var elt = $('#tags');
+        elt.tagsinput({
+          itemValue: 'value',
+          itemText: 'text',
+          typeaheadjs: {
+            name: 'tags',
+            displayKey: 'text',
+            source: tags.ttAdapter()
+          }
+        });
+      </script>
+
+      {# <fieldset class="form-group">
+        <label for="sounds">Sounds</label>
+        {{ form.sounds(class_='form-control') }}
+        {% for error in form.sounds.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset> #}
+
+      <fieldset class="form-group">
+
+        {{ form.sounds(class_='form-control', id='sounds', placeholder='Add sounds', **{'data-role':'soundsinput'}) }}
+        {% for error in form.sounds.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+
+      <script>
+        var sounds = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          prefetch: '/static/sounds.json'
+        });
+        sounds.initialize();
+
+        var elt_sounds = $('#sounds');
+        elt_sounds.tagsinput({
+          itemValue: 'value',
+          itemText: 'text',
+          typeaheadjs: {
+            name: 'sounds',
+            displayKey: 'text',
+            source: sounds.ttAdapter()
+          }
+        });
+      </script>
+      
+      <input type="hidden" id="file-url" name="file-url">
       <fieldset class="form-group">
         <label for="upload_file">Supplementary attachment</label>
 
-        {{ form.upload_file(class_='form-control') }}
+        {{ form.upload_file(class_='form-control', id="file-input") }}
         {% for error in form.upload_file.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
@@ -102,4 +176,74 @@
     <button type="submit" class="btn btn-block btn-primary">Submit</button>
   </div>
 </form>
+
+{% if heroku_state %}
+  <script type="text/javascript">
+
+  /*
+    Function to carry out the actual POST request to S3 using the signed request from the Python app.
+  */
+  function uploadFile(file, s3Data, url){
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', s3Data.url);
+    xhr.setRequestHeader('x-amz-acl', 'public-read');
+    const postData = new FormData();
+    for(key in s3Data.fields){
+      postData.append(key, s3Data.fields[key]);
+    }
+    postData.append('file', file);
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200 || xhr.status === 204){
+          document.getElementById('file-url').value = url;
+        }
+        else{
+          alert('Could not upload file.');
+        }
+      }
+    };
+    xhr.send(postData);
+  }
+  /*
+    Function to get the temporary signed request from the Python app.
+    If request successful, continue to upload the file using this signed
+    request.
+  */
+  function getSignedRequest(file){
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `/sign-s3/attachment?file-name=${file.name}&file-type=${file.type}`);
+    xhr.onreadystatechange = () => {
+      if(xhr.readyState === 4){
+        if(xhr.status === 200){
+          const response = JSON.parse(xhr.responseText);
+          uploadFile(file, response.data, response.url);
+        }
+        else{
+          alert('Could not get signed URL.');
+        }
+      }
+    };
+    xhr.send();
+  }
+  /*
+     Function called when file input updated. If there is a file selected, then
+     start upload procedure by asking for a signed request from the app.
+  */
+  function initUpload(){
+    const files = document.getElementById('file-input').files;
+    const file = files[0];
+    if(!file){
+      return alert('No file selected.');
+    }
+    getSignedRequest(file);
+  }
+  /*
+     Bind listeners when the page loads.
+  */
+  (() => {
+    document.getElementById('file-input').onchange = initUpload;
+  })();
+  </script>
+{% endif %}
+
 {% endblock %}

@@ -1,11 +1,11 @@
 <table class="table table-hover">
     <tr>
-        <td width="80px">
+        <td width="20px">
         	<a href="{{ url_for('description', description_id=description.id) }}">ID:{{ description.id }}</a>
         </td>
-        <td width="400px">
-            <p>
-                {{ description.description }} Duration: <span class="label label-default">{{ description.get_duration() }}</span>. Pitch: <span class="label label-default">{{ description.get_pitch() }}</span>. Type: <span class="label label-default">{{ description.get_sound_type() }}</span>. Family: <span class="label label-default">{{ description.get_sound_family() }}</span>. Time: {{ description.timestamp.strftime('%Y-%m-%d %H:%M') }}
+        <td>
+            <p class="text-left">
+                {% if description.description|length != 0 %} {{ description.description }} {% else %} No textual description was given. {% endif %} <strong>Duration</strong>: <span class="badge">{{ description.get_duration() }}</span> <strong>Pitch</strong>: <span class="badge">{{ description.get_pitch() }}</span> <strong>Type</strong>: <span class="badge">{{ description.get_sound_type() }}</span> <strong>Family</strong>: <span class="badge">{{ description.get_sound_family() }}</span> <strong>Time</strong>: {{ description.timestamp.strftime('%Y-%m-%d %H:%M') }}
 
                 {% for tag in description.tags.all() %}
                   {% include 'tag_entry.html' %}
@@ -17,7 +17,7 @@
         </td>
         {% if description.filename != None %}
             <td>
-            	<a href="/{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
+            	<a href="{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
             </td>
         {% endif %}
     </tr>

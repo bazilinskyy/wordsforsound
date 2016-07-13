@@ -57,24 +57,11 @@
 	<!-- List of tags -->
 	<div class="row" style="margin-left: 0px">
         <div class="center-block">
-	        {% for tag in tags.items %}
+	        {% for tag in tags %}
 		      {% include 'tag_entry.html' %}
 		    {% endfor %}
         </div>
     </div>
-
-<!-- 	<ul class="pager">
-        {% if tags.has_prev %}
-        <li class="previous"><a href="{{ url_for('tags', page=tags.prev_num) }}">{{'Newer tags'}}</a></li>
-        {% else %}
-        <li class="previous disabled"><a href="#">{{'Newer tags'}}</a></li>
-        {% endif %}
-        {% if tags.has_next %}
-        <li class="next"><a href="{{ url_for('tags', page=tags.next_num) }}">{{'Older tags'}}</a></li>
-        {% else %}
-        <li class="next disabled"><a href="#">{{'Older tags'}}</a></li>
-        {% endif %}
-    </ul> -->
 
 </div>
 {% endblock %}
