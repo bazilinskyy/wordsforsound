@@ -551,7 +551,7 @@ def add_sound():
             form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
             sound.filename = filename
         else:
-            sound.filename = request.form["file-name"]
+            sound.filename = form.upload_file.data.filename
 
         db.session.add(sound)
         db.session.commit()
@@ -665,7 +665,7 @@ def add_asset():
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        asset.filename = filename
         else:
-            asset.filename = request.form["file-name"]
+            asset.filename = form.upload_file.data.filename
 
         db.session.add(asset)
         db.session.commit()    
@@ -816,7 +816,7 @@ def describe(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        description.filename = filename
         else:
-            description.filename = request.form["file-name"]
+            description.filename = form.upload_file.data.filename
 
         # Add tags
         description.tags = []
@@ -881,7 +881,7 @@ def verify(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        verification.filename = filename
         else:
-            verification.filename = request.form["file-name"]
+            verification.filename = form.upload_file.data.filename
 
         # asset.description = form.description.data
         if request.method == 'POST':
@@ -958,7 +958,7 @@ def iterate(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        iteration.filename = filename
         else:
-            iteration.filename = request.form["file-name"]
+            iteration.filename = form.upload_file.data.filename
 
         asset.iteration_number = asset.iteration_number+1
         # asset.description = form.description.data
