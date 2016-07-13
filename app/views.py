@@ -96,25 +96,32 @@ def register():
         return redirect(url_for('index'))
     form = RegisterForm()
     if form.validate_on_submit():
-        if form.user_type.data == '1':
-            user = ClientUser(
-                nickname=form.nickname.data,
-                email=form.email.data,
-                password=form.password.data,
-                receive_emails=True
-            )
+        # Check if provided email is not used by another
+        user_email = User.query.filter_by(email=form.email.data).first()
+        user_nickname = User.query.filter_by(nickname=form.nickname.data).first()
+        if user_email is not None or user_nickname is not None:
+            # flash('Email ' + form.email.data + ' is used in another account. Please use another one.')
+            pass
         else:
-            user = SupplierUser(
-                nickname=form.nickname.data,
-                email=form.email.data,
-                password=form.password.data,
-                receive_emails=True
-            )
-        db.session.add(user)
-        db.session.commit()
-        login_user(user)
-        return redirect(url_for('index'))
-    return render_template('register.html', form=form)
+            if form.user_type.data == '1':
+                user = ClientUser(
+                    nickname=form.nickname.data,
+                    email=form.email.data,
+                    password=form.password.data,
+                    receive_emails=True
+                )
+            else:
+                user = SupplierUser(
+                    nickname=form.nickname.data,
+                    email=form.email.data,
+                    password=form.password.data,
+                    receive_emails=True
+                )
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            return redirect(url_for('index'))
+    return render_template('register.html', form=form, title='Register')
 
 @app.route('/reset', methods=["GET", "POST"])
 def reset():

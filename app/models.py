@@ -198,6 +198,21 @@ class Sound(db.Model):
     sound_family = db.Column(db.String(20))
     rights = db.Column(db.String(200)) # To use enum instead
 
+    def tag_add(self, tag):
+        if tag not in self.tags.all():
+            self.tags.append(tag)
+            logging.debug("Sound %s added tag %s" % (str(self), str(tag)))
+            return self
+        else:
+            logging.debug("Sound %s already has tag %s: " % (str(self), str(tag)))
+
+    def tag_remove(self, tag):
+        if tag in self.tags.all():
+            self.tags.remove(tag)
+            logging.debug("Sound %s removed tag %s" % (str(self), str(tag)))
+        else:
+            logging.debug("Sound %s does not have tag %s: " % (str(self), str(tag)))
+
     def __repr__(self):
         return '<Sound %r>' % (self.name)
 

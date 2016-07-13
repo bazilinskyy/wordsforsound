@@ -72,7 +72,7 @@ class RegisterForm(Form):
         if User.query.filter(User.email == self.email.data).all():
             self.email.errors.append("User with this email already exists!")
         if User.query.filter(User.nickname == self.nickname.data).all():
-            self.email.errors.append("User with this nickname already exists!")
+            self.nickname.errors.append("User with this nickname already exists!")
         return True
 
 class EmailForm(Form):
