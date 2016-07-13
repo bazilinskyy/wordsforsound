@@ -586,7 +586,7 @@ def delete_sound():
         else:
             # Remove file stored in Heroku
             s3 = boto3.resource('s3')
-            s3.Object(os.environ.get('S3_BUCKET_SOUNDS',sound.filename).delete()
+            s3.Object(os.environ.get('S3_BUCKET_SOUNDS'), sound.filename).delete()
 
         db.session.delete(sound)
         db.session.commit()  
