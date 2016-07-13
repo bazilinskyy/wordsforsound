@@ -357,10 +357,14 @@ def sound_edit(sound_id):
             form.sound_type.data = sound.sound_type
             form.sound_family.data = sound.sound_family
             form.rights.data = sound.rights
-
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('edit_sound.html',
                            form=form,
-                           sound=sound)
+                           sound=sound,
+                           heroku_state=heroku_state)
 
 @app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
 @app.route('/sounds/<string:assets_type>/<int:page>', methods=['GET', 'POST'])
@@ -421,7 +425,7 @@ def edit_project(project_id):
                     project.filename = filename
               else:
                   project.filename = form.upload_file.data.filename
-                  
+
               flash('Project was edited successfully.')
 
             elif request.form['submit'] == 'finalise':
@@ -443,11 +447,15 @@ def edit_project(project_id):
         if project is not None:
           form.name.data = project.name
           form.description.data = project.description
-
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('edit_project.html',
                             form=form,
                             title='Edit project',
-                            project=project)
+                            project=project,
+                            heroku_state=heroku_state)
 
 @app.route('/descriptions', methods=['GET', 'POST'])
 @login_required
@@ -563,10 +571,15 @@ def add_sound():
         flash('New sound added.')
         return redirect(url_for('add_sound'))
     filename = None
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('add_sound.html',
                             form=form,
                             title='Add sound',
-                            filename=filename)
+                            filename=filename,
+                            heroku_state=heroku_state)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
 @login_required
@@ -699,9 +712,14 @@ def add_asset():
         description_notification(asset.user_in_hands, asset)
         flash('New asset description created.')
         return redirect(url_for('index'))
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('add_asset.html',
                             form=form,
-                            title='Add asset')
+                            title='Add asset',
+                            heroku_state=heroku_state)
 
 @app.route('/asset/edit', methods=['GET', 'POST'])
 @app.route('/asset/<int:asset_id>/edit', methods=['GET', 'POST'])
@@ -757,10 +775,15 @@ def edit_asset(asset_id):
           form.name.data = asset.name
           form.description.data = asset.description
 
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('edit_asset.html',
                             form=form,
                             title='Edit asset',
-                            asset=asset)
+                            asset=asset,
+                            heroku_state=heroku_state)
 
 @app.route('/describe', methods=['GET', 'POST'])
 @app.route('/describe/<int:asset_id>/', methods=['GET', 'POST'])
@@ -847,11 +870,17 @@ def describe(asset_id):
             form.pitch.data = description.pitch
             form.sound_type.data = description.sound_type
             form.sound_family.data = description.sound_family
+
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('describe.html',
                             form=form,
                             asset=asset,
                             verification=asset.get_last_verification(),
-                            title='Describe asset')
+                            title='Describe asset',
+                            heroku_state=heroku_state)
 
 @app.route('/verify', methods=['GET', 'POST'])
 @app.route('/verify/<int:asset_id>/', methods=['GET', 'POST'])
@@ -924,12 +953,17 @@ def verify(asset_id):
         db.session.commit()
        
         return redirect(url_for('index'))
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('verify.html',
                             form=form,
                             asset=asset,
                             iteration=asset.get_last_iteration(),
                             attachment_location=ATACHMENT_UPLOAD_FOLDER,
-                            title='Verify asset')
+                            title='Verify asset',
+                            heroku_state=heroku_state)
 
 @app.route('/iterate', methods=['GET', 'POST'])
 @app.route('/iterate/<int:asset_id>/', methods=['GET', 'POST'])
@@ -995,11 +1029,16 @@ def iterate(asset_id):
         flash('Iteration created.')
         return redirect(url_for('index'))
     description = asset.get_last_description()
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('iterate.html',
                             form=form,
                             asset=asset,
                             description=description,
-                            title='Iterate asset')
+                            title='Iterate asset',
+                            heroku_state=heroku_state)
 
 # Create new project with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_project', methods=['GET', 'POST'])
@@ -1034,9 +1073,14 @@ def add_project():
         
         flash('New project created.')
         return redirect(url_for('index'))
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     return render_template('add_project.html',
                             form=form,
-                            title='Add project')
+                            title='Add project',
+                            heroku_state=heroku_state)
 
 @app.route('/projects/<string:projects_type>', methods=['GET', 'POST'])
 @app.route('/projects/<string:projects_type>/<int:page>', methods=['GET', 'POST'])
