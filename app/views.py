@@ -217,18 +217,18 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
                            page_verification=page_verification,
                            page_otherhands=page_otherhands)
 
-@app.route('/tags', methods=['GET', 'POST'])
+@app.route('/tags', methods=['GET', 'OPST'])
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tags(page=1):
-    tags = Tag.query.paginate(page, TAGS_PER_PAGE, False)
+    tags = Tag.query.all()
     return render_template('tags.html',
                             title='Tags',
                             tags=tags)
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
 @login_required
-def tag(tag_id, page=1):
+def tag(tag_id=0, page=1):
     tag = Tag.query.filter_by(id=tag_id).first()
     if tag is None:
         flash('Tag not found.')
@@ -267,104 +267,33 @@ def add_tag():
                             title='Add tag')
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
+@app.route('/tag/<int:tag_id>/delete/', methods=['GET', 'POST'])
 @login_required
-def delete_tag():
+def delete_tag(tag_id=0):
     form = DeleteSoundForm()
-    if form.validate_on_submit():
-        tag = Tag.query.filter_by(name=form.name.data).first()
+    if form.validate_on_submit() or tag_id > 0:
+        if form.validate_on_submit():
+            tag = Tag.query.filter_by(name=form.name.data).first()
+        else:
+            tag = Tag.query.filter_by(id=tag_id).first()
+        
         if tag == None:
-            flash('Tag ' +  form.name.data + ' does not exist.')
+            if form.validate_on_submit():
+                flash('Tag ' +  form.name.data + ' does not exist.')
+            else:
+                flash('Tag with ID ' +  str(tag_id) + ' does not exist.')
             return redirect(url_for('delete_tag'))
+        
         db.session.delete(tag)
         db.session.commit()
 
         update_tags_json()  # for autofill for tags
         
-        flash('Tag ' +  form.name.data + ' was deleted.')
-        return redirect(url_for('delete_tag'))
+        flash('Tag ' +  tag.name + ' was deleted.')
+        return redirect(url_for('tags'))
     return render_template('delete_tag.html',
                             form=form,
                             title='Delete tag')
-
-@app.route('/sounds', methods=['GET', 'POST'])
-@app.route('/sounds/<int:page>', methods=['GET', 'POST'])
-@login_required
-def sounds(page=1):
-    sounds = Sound.query.paginate(page, SOUNDS_PER_PAGE, False)
-    return render_template('sounds.html',
-                            sounds=sounds,
-                            sound_location=SOUND_UPLOAD_FOLDER)
-
-@app.route('/sound', methods=['GET', 'POST'])
-@app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
-@login_required
-def sound(sound_id):
-    sound = Sound.query.filter_by(id=sound_id).first()
-    if sound is None:
-        flash('Sound not found.')
-        return redirect(url_for('index'))
-
-    if sound.description == '':
-    	sound.description = 'N/A'
-
-    return render_template('sound.html',
-                           sound=sound,
-                           sound_location=SOUND_UPLOAD_FOLDER)
-
-@app.route('/sound/edit', methods=['GET', 'POST'])
-@app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
-@login_required
-def sound_edit(sound_id):
-    sound = Sound.query.filter_by(id=sound_id).first()
-    form = EditSoundForm()
-
-    if form.validate_on_submit():
-        # check if sound woth the same name exists
-        sound = Sound.query.filter_by(id=sound_id).first()
-        sound.timestamp = datetime.now()
-        sound.name = form.name.data
-        sound.description = form.description.data
-        sound.sound_type = form.sound_type.data
-        sound.sound_family = form.sound_family.data
-        sound.rights = form.rights.data
-
-        # add tags
-        sound.ags = []
-        for tag in form.tags.data:
-            if tag != ',':
-                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
-
-        # Upload file
-        if not os.environ.get('HEROKU'):
-            filename = secure_filename(form.upload_file.data.filename)
-            if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
-                current_milli_time = lambda: int(round(time.time() * 1000))
-                filename = str(current_milli_time()) + filename
-            form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
-            sound.filename = filename
-        else:
-            sound.filename = form.upload_file.data.filename
-
-        db.session.commit()
-        
-        flash('Sound was edited.')
-        return redirect(url_for('index'))
-
-    elif request.method != "POST":
-        if sound is not None:
-            form.name.data = sound.name
-            form.description.data = sound.description
-            form.sound_type.data = sound.sound_type
-            form.sound_family.data = sound.sound_family
-            form.rights.data = sound.rights
-    if os.environ.get('HEROKU'):
-        heroku_state = 1
-    else:
-        heroku_state = 0
-    return render_template('edit_sound.html',
-                           form=form,
-                           sound=sound,
-                           heroku_state=heroku_state)
 
 @app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
 @app.route('/sounds/<string:assets_type>/<int:page>', methods=['GET', 'POST'])
@@ -383,7 +312,7 @@ def assets(assets_type, page=1):
 @app.route('/asset')
 @app.route('/asset/<int:asset_id>/')
 @login_required
-def asset(asset_id):
+def asset(asset_id=0):
     asset = Asset.query.filter_by(id=asset_id).first()
     if asset is None:
         flash('Asset not found.')
@@ -467,7 +396,7 @@ def descriptions():
 @app.route('/description', methods=['GET', 'POST'])
 @app.route('/description/<int:description_id>/', methods=['GET', 'POST'])
 @login_required
-def description(description_id):
+def description(description_id=0):
     description = Description.query.filter_by(id=description_id).first()
     if description is None:
         flash('Description not found.')
@@ -492,7 +421,7 @@ def iterations():
 @app.route('/iteration', methods=['GET', 'POST'])
 @app.route('/iteration/<int:iteration_id>/', methods=['GET', 'POST'])
 @login_required
-def iteration(iteration_id):
+def iteration(iteration_id=0):
     iteration = Iteration.query.filter_by(id=iteration_id).first()
     if iteration is None:
         flash('Itteration not found.')
@@ -512,7 +441,7 @@ def verifications():
 @app.route('/verification', methods=['GET', 'POST'])
 @app.route('/verification/<int:verification_id>/', methods=['GET', 'POST'])
 @login_required
-def verification(verification_id):
+def verification(verification_id=0):
     verification = Verification.query.filter_by(id=verification_id).first()
     if verification is None:
         flash('Verification not found.')
@@ -582,13 +511,21 @@ def add_sound():
                             heroku_state=heroku_state)
 
 @app.route('/delete_sound', methods=['GET', 'POST'])
+@app.route('/sound/<int:sound_id>/delete/', methods=['GET', 'POST'])
 @login_required
-def delete_sound():
+def delete_sound(sound_id=0):
     form = DeleteSoundForm()
-    if form.validate_on_submit():
-        sound = Sound.query.filter_by(name=form.name.data).first()
+    if form.validate_on_submit() or sound_id > 0:
+        if form.validate_on_submit():
+            sound = Sound.query.filter_by(name=form.name.data).first()
+        else:
+            sound = Sound.query.filter_by(id=sound_id).first()
+
         if sound == None:
-            flash('Sound ' +  form.name.data + ' does not exist.')
+            if form.validate_on_submit():
+                flash('Sound ' +  form.name.data + ' does not exist.')
+            else:
+                flash('Sound with ID ' +  str(sound_id) + ' does not exist.')
             return redirect(url_for('delete_sound'))
         if not os.environ.get('HEROKU'):
             try:
@@ -609,12 +546,93 @@ def delete_sound():
 
         update_sounds_json()  # for autofill for sounds
         update_tags_json()  # for autofill for sounds
-        
-        flash('Sound ' +  form.name.data + ' was deleted.')
-        return redirect(url_for('delete_sound'))
+
+        flash('Sound ' +  sound.name + ' was deleted.')
+        return redirect(url_for('sounds'))
     return render_template('delete_sound.html',
                             form=form,
                             title='Delete sound')
+
+@app.route('/sounds', methods=['GET', 'POST'])
+@app.route('/sounds/<int:page>', methods=['GET', 'POST'])
+@login_required
+def sounds(page=1):
+    sounds = Sound.query.paginate(page, SOUNDS_PER_PAGE, False)
+    return render_template('sounds.html',
+                            sounds=sounds,
+                            sound_location=SOUND_UPLOAD_FOLDER)
+
+@app.route('/sound', methods=['GET', 'POST'])
+@app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
+@login_required
+def sound(sound_id=0):
+    print sound_id
+    sound = Sound.query.filter_by(id=sound_id).first()
+    if sound is None:
+        flash('Sound not found.')
+        return redirect(url_for('index'))
+
+    if sound.description == '':
+        sound.description = 'N/A'
+
+    return render_template('sound.html',
+                           sound=sound,
+                           sound_location=SOUND_UPLOAD_FOLDER)
+
+@app.route('/sound/edit', methods=['GET', 'POST'])
+@app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
+@login_required
+def edit_sound(sound_id):
+    sound = Sound.query.filter_by(id=sound_id).first()
+    form = EditSoundForm()
+
+    if form.validate_on_submit():
+        # check if sound woth the same name exists
+        sound = Sound.query.filter_by(id=sound_id).first()
+        sound.timestamp = datetime.now()
+        sound.name = form.name.data
+        sound.description = form.description.data
+        sound.sound_type = form.sound_type.data
+        sound.sound_family = form.sound_family.data
+        sound.rights = form.rights.data
+
+        # add tags
+        sound.ags = []
+        for tag in form.tags.data:
+            if tag != ',':
+                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
+
+        # Upload file
+        if not os.environ.get('HEROKU'):
+            filename = secure_filename(form.upload_file.data.filename)
+            if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
+                current_milli_time = lambda: int(round(time.time() * 1000))
+                filename = str(current_milli_time()) + filename
+            form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
+            sound.filename = filename
+        else:
+            sound.filename = form.upload_file.data.filename
+
+        db.session.commit()
+        
+        flash('Sound was edited.')
+        return redirect(url_for('index'))
+
+    elif request.method != "POST":
+        if sound is not None:
+            form.name.data = sound.name
+            form.description.data = sound.description
+            form.sound_type.data = sound.sound_type
+            form.sound_family.data = sound.sound_family
+            form.rights.data = sound.rights
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
+    return render_template('edit_sound.html',
+                           form=form,
+                           sound=sound,
+                           heroku_state=heroku_state)
 
 # Create new asset with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_asset', methods=['GET', 'POST'])
@@ -1096,7 +1114,7 @@ def projects(projects_type, page=1):
 @app.route('/project')
 @app.route('/project/<int:project_id>/')
 @login_required
-def project(project_id):
+def project(project_id=0):
     project = Project.query.filter_by(id=project_id).first()
     if project is None:
         flash('Project not found.')
