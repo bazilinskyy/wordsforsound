@@ -343,7 +343,7 @@ def sound_edit(sound_id):
             form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
             sound.filename = filename
         else:
-            pass # add file upload for Heroku
+            sound.filename = form.upload_file.data.filename
 
         db.session.commit()
         
@@ -420,8 +420,8 @@ def edit_project(project_id):
                     form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
                     project.filename = filename
               else:
-                  pass # Add file upload for Heroku
-
+                  project.filename = form.upload_file.data.filename
+                  
               flash('Project was edited successfully.')
 
             elif request.form['submit'] == 'finalise':
@@ -582,11 +582,14 @@ def delete_sound():
                 # Removed file stored locally
                 os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
             except OSError:
-                pass
+                app.logger.error("Could not delete file %s." % str(sound.filename))
         else:
             # Remove file stored in Heroku
-            s3 = boto3.resource('s3')
-            s3.Object(os.environ.get('S3_BUCKET_SOUNDS'), sound.filename).delete()
+            try:
+                s3 = boto3.resource('s3')
+                s3.Object(os.environ.get('S3_BUCKET_SOUNDS'), sound.filename).delete()
+            except:
+                app.logger.error("Could not delete file %s from Heroku." % str(sound.filename))
 
         db.session.delete(sound)
         db.session.commit()  
@@ -730,7 +733,7 @@ def edit_asset(asset_id):
                     form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
                     asset.filename = filename
               else:
-                  pass # Add file upload for Heroku
+                  asset.filename = form.upload_file.data.filename
 
               flash('Asset was edited successfully.')
 
@@ -1024,7 +1027,7 @@ def add_project():
                 form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
                 project.filename = filename
         else:
-            pass # Add file upload for Heroku
+            project.filename = form.upload_file.data.filename
 
         db.session.add(project)
         db.session.commit()    
