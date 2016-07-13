@@ -11,7 +11,7 @@
 	<h4>ID <span class="badge">{{ sound.id }}</span> Name <span class="badge">{{ sound.name }}</span> Type <span class="badge">{{ sound.sound_type }}</span> Family <span class="badge">{{ sound.sound_family }}</span> Legal rights <span class="badge">{{ sound.rights }}</span>
 
 	{% for tag in sound.tags.all() %}
-      {% include 'tag_entry.html' %}
+      {% include 'tag_entry_no_numbers.html' %}
     {% endfor %}
    	</h4>
 

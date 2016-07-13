@@ -4,7 +4,7 @@
 {% block content %}
 {% include 'flash.html' %}
 
-<h1>Iteration {{ iteration.id }} for asset <a href="{{ url_for('asset', asset_id=iteration.asset.id) }}">{{ description.asset.name }}</a></h1>
+<h1>Iteration {{ iteration.id }} for asset <a href="{{ url_for('asset', asset_id=iteration.asset.id) }}">{{ iteration.asset.name }}</a></h1>
 
 <!-- iteration form -->
 <div class="well">
@@ -14,11 +14,8 @@
 	        <td width="80px">
 	            <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" /></a>
 	        </td>
-	        <td width="70px">
-	            <p>{{ iteration.id }}</p>
-	        </td>
 	        <td>
-            	<p>{% if iteration.description|length != 0 %} {{ iteration.description }}. {% else %} No textual description was given. {% endif %}</p>
+            	<p class="text-left">{% if iteration.description|length != 0 %} <strong>Description</strong> {{ iteration.description }} {% else %} No textual description was given. {% endif %}</p>
 	        </td>
 	        {% if iteration.filename != None %}
 		        <td width="400px">

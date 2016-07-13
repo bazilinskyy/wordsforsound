@@ -6,16 +6,13 @@
 
 <table class="table">
     <tr>
-        <td width="80px">
+        <td width="70px">
             <a href="{{ url_for('user', nickname=verification.user.nickname) }}"><img src="{{ verification.user.avatar(70) }}" /></a>
         </td>
-        <td width="70px">
-            <p>{{ verification.id }}</p>
+        <td>
+            <p class="text-left">{% if verification.description|length != 0 %} {{ verification.description }} {% else %} No textual description was given. {% endif %} <strong>Time:</strong>: <span class="badge">{{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
         </td>
         <td>
-            <p>{% if verification.description|length != 0 %} {{ verification.description }}. {% else %} No textual description was given. {% endif %} Time: {{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
-        </td>
-        <td width="80px">
             <p> Ver. {{ asset.iteration_number }}</p>
         </td>
         {% if verification.filename != None %}

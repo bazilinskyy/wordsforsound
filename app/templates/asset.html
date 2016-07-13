@@ -31,7 +31,7 @@
 	{% endif %}
 
 	{% if asset.descriptions.count() > 0 %}
-		<h4>Descriptions:</h4>
+		<p><strong>Descriptions:</strong></p>
 		<div class="list-group">
 		    {% for description in asset.descriptions %}
 		      {% include 'description_entry.html' %}
@@ -40,7 +40,7 @@
 	{% endif %}
 
 	{% if asset.iterations.count() > 0 %}
-		<h4>Iterations:</h4>
+		<p><strong>Iterations:</strong></p>
 		<div class="list-group">
 		    {% for iteration in asset.iterations %}
 		      {% include 'iteration_entry.html' %}
@@ -48,7 +48,7 @@
 		</div>
 	{% endif %}
 	{% if asset.verifications.count() > 0 %}
-		<h4>Verifications:</h4>
+		<p><strong>Verifications:</strong></p>
 		<div class="list-group">
 		    {% for verification in asset.verifications %}
 		      {% include 'verification_entry.html' %}

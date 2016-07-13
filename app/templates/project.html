@@ -15,15 +15,14 @@
 	{% endif %}
 	</h4>
 
-	<h4>Description:</h4>
-	<p>{{ project.description }}</p>
+	<strong>Description</strong> {{ project.description }}
 
 	{% if project.filename != None %}
 		<a href="{{ attachment_location }}{{ project.filename }}">Supplementary attachment ({{ project.filename }})</a> </br>
 	{% endif %}
 
-	{% if project.assets.count > 0 %}
-		<h4>Assets:</h4>
+	{% if project.assets.count() > 0 %}
+		<p><strong>Assets:</strong></p>
 		<div class="list-group">
 		    {% for asset in project.assets %}
 		      {% include 'asset_entry_in_other_hands.html' %}

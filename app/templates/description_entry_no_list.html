@@ -6,16 +6,13 @@
 
 <table class="table">
     <tr>
-        <td width="80px">
+        <td width="70px">
             <a href="{{ url_for('user', nickname=description.user.nickname) }}"><img src="{{ description.user.avatar(70) }}" /></a>
         </td>
-        <td width="70px">
-            <p>{{ description.id }}</p>
+        <td>
+            <p class="text-left">{% if description.description|length != 0 %} {{ description.description }} {% else %} No textual description was given. {% endif %} <strong>Duration:</strong>: <span class="badge">{{ description.get_duration() }}</span> <strong>Pitch:</strong> <span class="badge">{{ description.get_pitch() }}</span> <strong>Type:</strong> <span class="badge">{{ description.get_sound_type() }}</span> <strong>Family:</strong>: <span class="badge">{{ description.get_sound_family() }}</span> <strong>Time:</strong>: <span class="badge">{{ description.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
         </td>
-        <td width="200px">
-            <p>{% if description.description|length != 0 %} {{ description.description }}. {% else %} No textual description was given. {% endif %} Duration: <span class="badge">{{ description.get_duration() }}</span>. Pitch: <span class="badge">{{ description.get_pitch() }}</span>. Type: <span class="badge">{{ description.get_sound_type() }}</span>. Family: <span class="badge">{{ description.get_sound_family() }}</span>. Time: {{ description.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
-        </td>
-        <td width="80px">
+        <td>
             <p>Ver. {{ asset.iteration_number }}</p>
         </td>
         {% if description.filename != None %}
