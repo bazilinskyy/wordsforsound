@@ -38,14 +38,14 @@ FINISHED_ASSETS_MENU= 5
 if not os.environ.get('HEROKU'):
 	SOUND_UPLOAD_FOLDER = '/static/sound_uploads/'
 else:
-	SOUND_UPLOAD_FOLDER = ''
+	SOUND_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_SOUNDS'))
 SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a']
 
 # uploading attachments
 if not os.environ.get('HEROKU'):
 	ATACHMENT_UPLOAD_FOLDER = '/static/attachment_uploads/'
 else:
-	ATACHMENT_UPLOAD_FOLDER = ''
+	ATACHMENT_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_ATTACHMENTS'))
 	
 # json files for tags and sounds
 TAGS_FILE = '/static/tags.json'

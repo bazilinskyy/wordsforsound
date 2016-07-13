@@ -266,8 +266,6 @@ def add_tag():
                             form=form,
                             title='Add tag')
 
-
-
 @app.route('/delete_tag', methods=['GET', 'POST'])
 @login_required
 def delete_tag():
@@ -553,7 +551,7 @@ def add_sound():
             form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
             sound.filename = filename
         else:
-            sound.filename = request.form["file-url"]
+            sound.filename = request.form["file-name"]
 
         db.session.add(sound)
         db.session.commit()
@@ -587,7 +585,7 @@ def delete_sound():
                 pass
         else:
             # Remove file stored in Heroku
-            cs3 = boto3.resource('s3')
+            s3 = boto3.resource('s3')
             s3.Object(os.environ.get('S3_BUCKET_SOUNDS',sound.filename).delete()
 
         db.session.delete(sound)
@@ -667,7 +665,7 @@ def add_asset():
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        asset.filename = filename
         else:
-            asset.filename = request.form["file-url"]
+            asset.filename = request.form["file-name"]
 
         db.session.add(asset)
         db.session.commit()    
@@ -818,7 +816,7 @@ def describe(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        description.filename = filename
         else:
-            description.filename = request.form["file-url"]
+            description.filename = request.form["file-name"]
 
         # Add tags
         description.tags = []
@@ -883,7 +881,7 @@ def verify(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        verification.filename = filename
         else:
-            verification.filename = request.form["file-url"]
+            verification.filename = request.form["file-name"]
 
         # asset.description = form.description.data
         if request.method == 'POST':
@@ -960,7 +958,7 @@ def iterate(asset_id):
     	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
     	        iteration.filename = filename
         else:
-            iteration.filename = request.form["file-url"]
+            iteration.filename = request.form["file-name"]
 
         asset.iteration_number = asset.iteration_number+1
         # asset.description = form.description.data
