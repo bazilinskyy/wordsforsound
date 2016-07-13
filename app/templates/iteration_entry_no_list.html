@@ -10,7 +10,7 @@
             <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" /></a>
         </td>
         <td>
-            <p class="text-left">{% if iteration.description|length != 0 %} {{ iteration.description }} {% else %} No textual description was given. {% endif %} <strong>Time</strong>: <span class="badge">{{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
+            <p class="text-left">{% if iteration.description|length != 0 %} {{ iteration.description }} {% else %} No textual description was given. {% endif %} <strong>Time</strong> <span class="badge">{{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
         </td>
         <td width="80px">
             <p>Ver. {{ asset.iteration_number }}</p>
