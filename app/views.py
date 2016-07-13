@@ -592,6 +592,7 @@ def delete_sound():
             b = Bucket(conn, S3_BUCKET_NAME)
             k = Key(b)
             k.key = sound.filename
+            print sound.filename
             b.delete_key(k)
 
         db.session.delete(sound)
