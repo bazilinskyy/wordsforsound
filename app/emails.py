@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, flash
 from flask.ext.mail import Message
 from app import mail
 import os

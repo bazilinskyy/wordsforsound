@@ -39,7 +39,7 @@
         <li {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tags <span class="caret"></span></a>
           <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
-            <li {% if request.path=="/tags" %} class="active"{% endif %}><a href="{{ url_for('tags') }}">Tags</a></li>
+            <li {% if request.path=="/tags" %} class="active"{% endif %}><a href="{{ url_for('tags') }}">All tags</a></li>
             <li {% if request.path=="/add_tag" %} class="active"{% endif %}><a href="{{ url_for('add_tag') }}">Add tag</a></li>
             <li {% if request.path=="/delete_tag" %} class="active"{% endif %}><a href="{{ url_for('delete_tag') }}">Delete tag</a></li>
           </ul>
@@ -48,7 +48,7 @@
         <li {% if request.path=="/sounds" or request.path=="/add_sound" or request.path=="/delete_sound"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sounds <span class="caret"></span></a>
           <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
-            <li {% if request.path=="/sounds" %} class="active"{% endif %}><a href="{{ url_for('sounds') }}">Sounds</a></li>
+            <li {% if request.path=="/sounds" %} class="active"{% endif %}><a href="{{ url_for('sounds') }}">All sounds</a></li>
             <li {% if request.path=="/add_sound" %} class="active"{% endif %}><a href="{{ url_for('add_sound') }}">Add sound</a></li>
             <li {% if request.path=="/delete_sound" %} class="active"{% endif %}><a href="{{ url_for('delete_sound') }}">Delete sound</a></li>
           </ul>
