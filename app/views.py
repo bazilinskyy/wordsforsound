@@ -366,7 +366,7 @@ def edit_project(project_id):
 
             elif request.form['submit'] == 'finalise':
               project.finished = True
-              for asset in project:
+              for asset in project.assets:
                 asset.finished = True
               flash('Project and assets in project were marked as finished.')
 
