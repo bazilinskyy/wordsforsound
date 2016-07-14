@@ -9,7 +9,7 @@
 <!-- Description form -->
 <div class="well">
 
-    <h4>ID <span class="badge">{{ tag.id }}</span> Name <span class="badge">{{ tag.name }}</span> <a href="{{ url_for('delete_tag', tag_id=tag.id) }}"  type="button" class="btn btn-danger btn-xs">Delete</a></h4>
+    <h4>ID <span class="badge">{{ tag.id }}</span> Name <span class="badge">{{ tag.name }}</span> <a href="{{ url_for('edit_tag', tag_id=tag.id) }}"  type="button" class="btn btn-warning btn-xs">Edit</a> <a href="{{ url_for('delete_tag', tag_id=tag.id) }}" type="button" class="btn btn-danger btn-xs">Delete</a></h4>
 
     <div class="list-group">
 

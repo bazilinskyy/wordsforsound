@@ -8,7 +8,7 @@ from datetime import datetime
 from app import app, db, lm, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
-    RegisterForm, SearchForm, EditForm, EditAssetForm
+    RegisterForm, SearchForm, EditForm, EditAssetForm, EditTagForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
 from .emails import description_notification, iteration_notification, verification_notification
@@ -228,7 +228,7 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tags(page=1):
-    tags = Tag.query.all()
+    tags = Tag.query.order_by(Tag.name.asc()).all()
     return render_template('tags.html',
                             title='Tags',
                             tags=tags)
@@ -256,7 +256,7 @@ def add_tag():
         # check if tag woth the same name exists
         tag = Tag.query.filter_by(name=form.name.data).first()
         if tag is not None:
-            flash('This tag already exists.')
+            flash('Tag with the same name already exists.')
             return render_template('add_tag.html',
                             form=form,
                             title='Add tag')
@@ -272,6 +272,37 @@ def add_tag():
     return render_template('add_tag.html',
                             form=form,
                             title='Add tag')
+
+@app.route('/tag/edit', methods=['GET', 'POST'])
+@app.route('/tag/<int:tag_id>/edit/', methods=['GET', 'POST'])
+@login_required
+def edit_tag(tag_id):
+    tag = Tag.query.filter_by(id=tag_id).first()
+    form = EditTagForm()
+    if form.validate_on_submit():
+        # check if tag woth the same name exists
+        tag = Tag.query.filter_by(name=form.name.data).first()
+        if tag is not None:
+            flash('Tag with the same name already exists.')
+            return render_template('edit_tag.html',
+                            form=form,
+                            title='Edit tag')
+        tag = Tag()
+        tag.name = form.name.data
+        tag.timestamp = datetime.now()
+        db.session.add(tag)
+        db.session.commit()
+        update_tags_json() # For autofill for tags and tag cloud
+        
+        flash('Tag was edited successfully.')
+        return redirect(url_for('tag', tag_id=tag_id))
+    elif request.method != "POST":
+        if tag is not None:
+            form.name.data = tag.name
+    return render_template('edit_tag.html',
+                            form=form,
+                            tag=tag,
+                            title='Edit tag')
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 @app.route('/tag/<int:tag_id>/delete/', methods=['GET', 'POST'])
@@ -334,6 +365,10 @@ def asset(asset_id=0):
 @app.route('/project/<int:project_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_project(project_id):
+    if g.user.type == "supplier_user":
+        flash('You do not have permissions to edit projects.')
+        return redirect(url_for('index'))
+
     project = Project.query.filter_by(id=project_id).first()
     if project is None:
         flash('Project not found.')
@@ -346,12 +381,20 @@ def edit_project(project_id):
     if form.validate_on_submit():
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
-              project.timestamp = datetime.now()
-              project.name = form.name.data
-              project.description = form.description.data
-              
-              # Upload file
-              if not os.environ.get('HEROKU'):
+                # check if tag woth the same name exists
+                project = Project.query.filter_by(name=form.name.data).first()
+                if project is not None:
+                    flash('Project with the same name already exists.')
+                    return render_template('edit_project.html',
+                                    form=form,
+                                    project=project,
+                                    title='Edit project')
+                project.timestamp = datetime.now()
+                project.name = form.name.data
+                project.description = form.description.data
+
+                # Upload file
+                if not os.environ.get('HEROKU'):
                   if form.upload_file.data.filename:
                     filename = secure_filename(form.upload_file.data.filename)
                     if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
@@ -359,10 +402,10 @@ def edit_project(project_id):
                         filename = str(current_milli_time()) + filename
                     form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
                     project.filename = filename
-              else:
+                else:
                   project.filename = form.upload_file.data.filename
 
-              flash('Project was edited successfully.')
+                flash('Project was edited successfully.')
 
             elif request.form['submit'] == 'finalise':
               project.finished = True
@@ -603,7 +646,7 @@ def edit_sound(sound_id):
 
     if form.validate_on_submit():
         # check if sound woth the same name exists
-        sound = Sound.query.filter_by(id=sound_id).first()
+        sound = Sound.query.filter_by(name=form.name.data).first()
         if sound is not None:
             flash('Sound with the same name already exists.')
             return render_template('edit_sound.html',
@@ -637,8 +680,8 @@ def edit_sound(sound_id):
 
         db.session.commit()
         
-        flash('Sound was edited.')
-        return redirect(url_for('index'))
+        flash('Sound was edited successfully.')
+        return redirect(url_for('sound', sound_id=sound_id))
 
     elif request.method != "POST":
         if sound is not None:

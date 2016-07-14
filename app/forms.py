@@ -135,6 +135,9 @@ class NewProjectForm(Form):
 class AddTagForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 
+class EditTagForm(Form):
+    name = StringField('name', validators=[DataRequired()])
+
 class DeleteTagForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 
