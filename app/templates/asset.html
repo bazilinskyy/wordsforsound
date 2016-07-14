@@ -22,7 +22,7 @@
 		    {% endfor %}
 		      <span class="badge"><a href="{{ url_for('user', nickname=asset.suppliers[-1].nickname) }}" class="white_text">{{ asset.suppliers[-1].nickname }}</a> </span>&nbsp;
 		In hands of: <span class="badge"><a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}" class="white_text">{{ asset.user_in_hands.nickname }}</a></span> {% if asset.finished != True %}
-		<a href="{{ url_for('edit_asset', asset_id=asset.id) }}" type="button" class="btn btn-warning btn-sm">Edit</a>
+		<a href="{{ url_for('edit_asset', asset_id=asset.id) }}" type="button" class="btn btn-warning btn-xs">Edit</a>
 	{% endif %}
 	</h4>
 
