@@ -155,6 +155,6 @@ class EditSoundForm(Form):
     description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
     sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
     sound_family = SelectField('sound_family', choices=sound_families)
-    upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
+    upload_file = FileField('upload_file', validators=[FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
     tags = StringField('tags')
     rights = StringField('rights')

@@ -596,10 +596,21 @@ def sound(sound_id=0):
 def edit_sound(sound_id):
     sound = Sound.query.filter_by(id=sound_id).first()
     form = EditSoundForm()
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
 
     if form.validate_on_submit():
         # check if sound woth the same name exists
         sound = Sound.query.filter_by(id=sound_id).first()
+        if sound is not None:
+            flash('Sound with the same name already exists.')
+            return render_template('edit_sound.html',
+                            form=form,
+                            sound=sound,
+                            title='Edit sound',
+                            heroku_state=heroku_state)
         sound.timestamp = datetime.now()
         sound.name = form.name.data
         sound.description = form.description.data
@@ -636,12 +647,10 @@ def edit_sound(sound_id):
             form.sound_type.data = sound.sound_type
             form.sound_family.data = sound.sound_family
             form.rights.data = sound.rights
-    if os.environ.get('HEROKU'):
-        heroku_state = 1
-    else:
-        heroku_state = 0
+            form.upload_file.data = sound.filename
     return render_template('edit_sound.html',
                            form=form,
+                           title='Edit sound',
                            sound=sound,
                            heroku_state=heroku_state)
 
@@ -1074,9 +1083,20 @@ def add_project():
     if g.user.type == "supplier_user":
         flash('You do not have permissions to create new projects.')
         return redirect(url_for('index'))
-
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     form = NewProjectForm()
     if form.validate_on_submit():
+        # check if tag woth the same name exists
+        project = Project.query.filter_by(name=form.name.data).first()
+        if project is not None:
+            flash('Project with such name already exists.')
+            return render_template('add_project.html',
+                            form=form,
+                            title='Add project',
+                            heroku_state=heroku_state)
         project = Project()
         project.timestamp = datetime.now()
         project.name = form.name.data
@@ -1100,10 +1120,6 @@ def add_project():
         
         flash('New project created.')
         return redirect(url_for('index'))
-    if os.environ.get('HEROKU'):
-        heroku_state = 1
-    else:
-        heroku_state = 0
     return render_template('add_project.html',
                             form=form,
                             title='Add project',
