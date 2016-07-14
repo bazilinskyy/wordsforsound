@@ -16,7 +16,7 @@
             <p>Ver. {{ asset.iteration_number }}</p>
         </td>
         {% if iteration.filename != None %}
-            <td>
+            <td width="200px">
                 <script src="/static/js/wavesurfer.min.js"></script>
                 <div id="waveform_{{ iteration.id }}" onclick="wavesurfer_{{ iteration.id }}.playPause()"></div>
                 <script>

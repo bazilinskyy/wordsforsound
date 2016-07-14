@@ -411,6 +411,34 @@ class Description(db.Model):
         else:
             return 'N/A'
 
+    def sound_add(self, sound):
+        if sound not in self.sounds.all():
+            self.sounds.append(sound)
+            logging.debug("Description %s added sound %s" % (str(self), str(sound)))
+        else:
+            logging.debug("Description %s already has sound %s: " % (str(self), str(sound)))
+
+    def sound_remove(self, sound):
+        if sound in self.sounds.all():
+            self.sounds.remove(sound)
+            logging.debug("Description %s removed sound %s" % (str(self), str(sound)))
+        else:
+            logging.debug("Description %s does not haee sound %s: " % (str(self), str(sound)))
+
+    def tag_add(self, tag):
+        if tag not in self.tags.all():
+            self.tags.append(tag)
+            logging.debug("Description %s added tag %s" % (str(self), str(tag)))
+        else:
+            logging.debug("Description %s already has tag %s: " % (str(self), str(tag)))
+
+    def tag_remove(self, tag):
+        if tag in self.tags.all():
+            self.tags.remove(tag)
+            logging.debug("Description %s removed tag %s" % (str(self), str(tag)))
+        else:
+            logging.debug("Description %s does not haee tag %s: " % (str(self), str(tag)))
+
     def __repr__(self):
         return '<Description %r>' % (self.description[0:50])
 
