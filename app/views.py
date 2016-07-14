@@ -410,9 +410,13 @@ def description(description_id=0):
         return redirect(url_for('index'))
     attachment_location = ATACHMENT_UPLOAD_FOLDER
 
+    # Check if attachment is a videofile
+    attachment_is_video = check_if_video(description.filename)
+
     return render_template('description.html',
                            description=description,
-                           attachment_location=attachment_location)
+                           attachment_location=attachment_location,
+                           attachment_is_video=attachment_is_video)
 
 @app.route('/iterations', methods=['GET', 'POST'])
 @login_required
@@ -695,22 +699,9 @@ def add_asset():
         for supplier in form.suppliers.data:
             asset.supplier_add(SupplierUser.query.filter_by(id=int(supplier)).first())
         asset.init_in_hands()
-                
-        # Upload file
-        if not os.environ.get('HEROKU'):
-            if form.upload_file.data.filename:
-    	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-    	            current_milli_time = lambda: int(round(time.time() * 1000))
-    	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-    	        asset.filename = filename
-        else:
-            asset.filename = form.upload_file.data.filename
 
         db.session.add(asset)
-        db.session.commit()    
-        
+
         description = Description()
         description.description = form.description.data
         description.duration = form.duration.data
@@ -720,6 +711,20 @@ def add_asset():
         description.timestamp = datetime.now()
         description.asset_id = asset.id
         description.user_id = g.user.id
+
+        # Upload file
+        if not os.environ.get('HEROKU'):
+            if form.upload_file.data.filename:
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                asset.filename = filename
+                description.filename = filename
+        else:
+            asset.filename = form.upload_file.data.filename
+            description.filename = form.upload_file.data.filename
 
         # Change tags
         for tag in form.tags.data:
@@ -1220,3 +1225,8 @@ def sign_s3(type):
     'data': presigned_post,
     'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
     })
+
+def check_if_video(filename):
+    if filename.lower().endswith(('.avi', '.mpeg', '.mp4')):
+        return True
+    return False
