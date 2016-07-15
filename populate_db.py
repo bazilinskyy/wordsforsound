@@ -1,5 +1,14 @@
 from app import db, models, views
 from datetime import datetime
+import shutil
+
+# Delete old database and create a new one
+try:
+	shutil.rmtree('db_repository')
+	shutil.rmtree('app.db')
+except:
+	pass
+import db_create
 
 # Add tags
 tag_beep = models.Tag(name="beep")
