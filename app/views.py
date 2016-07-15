@@ -14,7 +14,7 @@ from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Veri
 from .emails import description_notification, iteration_notification, verification_notification
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
-    ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
+    ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
     TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
@@ -355,7 +355,7 @@ def asset(asset_id=0):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('asset.html',
                            asset=asset,
                            attachment_location = attachment_location)
@@ -397,10 +397,10 @@ def edit_project(project_id):
                 if not os.environ.get('HEROKU'):
                   if form.upload_file.data.filename:
                     filename = secure_filename(form.upload_file.data.filename)
-                    if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                    if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
                         current_milli_time = lambda: int(round(time.time() * 1000))
                         filename = str(current_milli_time()) + filename
-                    form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                    form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
                     project.filename = filename
                 else:
                   project.filename = form.upload_file.data.filename
@@ -451,7 +451,7 @@ def description(description_id=0):
     if description is None:
         flash('Description not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
 
     # Check if attachment is a videofile
     attachment_is_video = check_if_video(description.filename)
@@ -480,7 +480,7 @@ def iteration(iteration_id=0):
     if iteration is None:
         flash('Itteration not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = SOUND_UPLOAD_FOLDER
     return render_template('iteration.html',
                            iteration=iteration,
                            attachment_location=attachment_location)
@@ -500,7 +500,7 @@ def verification(verification_id=0):
     if verification is None:
         flash('Verification not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('verification.html',
                            verification=verification,
                            attachment_location=attachment_location)
@@ -768,10 +768,10 @@ def add_asset():
         if not os.environ.get('HEROKU'):
             if form.upload_file.data.filename:
                 filename = secure_filename(form.upload_file.data.filename)
-                if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
                     current_milli_time = lambda: int(round(time.time() * 1000))
                     filename = str(current_milli_time()) + filename
-                form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
                 asset.filename = filename
                 description.filename = filename
         else:
@@ -827,10 +827,10 @@ def edit_asset(asset_id):
               if not os.environ.get('HEROKU'):
                   if form.upload_file.data.filename:
                     filename = secure_filename(form.upload_file.data.filename)
-                    if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                    if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
                         current_milli_time = lambda: int(round(time.time() * 1000))
                         filename = str(current_milli_time()) + filename
-                    form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                    form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
                     asset.filename = filename
               else:
                   asset.filename = form.upload_file.data.filename
@@ -918,10 +918,10 @@ def describe(asset_id):
         if not os.environ.get('HEROKU'):
             if form.upload_file.data:
     	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	        if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
     	            current_milli_time = lambda: int(round(time.time() * 1000))
     	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
     	        description.filename = filename
         else:
             description.filename = form.upload_file.data.filename
@@ -989,10 +989,10 @@ def verify(asset_id):
         if not os.environ.get('HEROKU'):
             if form.upload_file.data:
     	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	        if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
     	            current_milli_time = lambda: int(round(time.time() * 1000))
     	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
     	        verification.filename = filename
         else:
             verification.filename = form.upload_file.data.filename
@@ -1041,7 +1041,7 @@ def verify(asset_id):
                             form=form,
                             asset=asset,
                             iteration=asset.get_last_iteration(),
-                            attachment_location=ATACHMENT_UPLOAD_FOLDER,
+                            attachment_location=SOUND_UPLOAD_FOLDER,
                             title='Verify asset',
                             heroku_state=heroku_state)
 
@@ -1064,20 +1064,27 @@ def iterate(asset_id):
         iteration.timestamp = datetime.now()
         iteration.asset_id = asset.id
         iteration.user_id = g.user.id
-
+        asset.iteration_number = asset.iteration_number+1
+        
         # Upload file
+        sound = Sound()
+        sound.timestamp = datetime.now()
+        sound.name = "Asset-" + str(asset.id) + "_ver-" + str(asset.iteration_number)
+        sound.description = "Iteration for asset " + str(asset.id) + " ver. " \
+            + str(asset.iteration_number) + "."
         if not os.environ.get('HEROKU'):
             if form.upload_file.data:
     	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	        if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
     	            current_milli_time = lambda: int(round(time.time() * 1000))
     	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
     	        iteration.filename = filename
+                sound.filename = filename
         else:
             iteration.filename = form.upload_file.data.filename
-
-        asset.iteration_number = asset.iteration_number+1
+            sound.filename = form.upload_file.data.filename
+        db.session.add(sound)
 
         # Find who needs to work on the asset next
         current_user_found  = False
@@ -1150,10 +1157,10 @@ def add_project():
         if not os.environ.get('HEROKU'):
             if form.upload_file.data.filename:
                 filename = secure_filename(form.upload_file.data.filename)
-                if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
                     current_milli_time = lambda: int(round(time.time() * 1000))
                     filename = str(current_milli_time()) + filename
-                form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
                 project.filename = filename
         else:
             project.filename = form.upload_file.data.filename
@@ -1190,7 +1197,7 @@ def project(project_id=0):
     if project is None:
         flash('Project not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('project.html',
                            project=project,
                            attachment_location=attachment_location)

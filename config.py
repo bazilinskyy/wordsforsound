@@ -43,9 +43,9 @@ SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a', 'w
 
 # uploading attachments
 if not os.environ.get('HEROKU'):
-	ATACHMENT_UPLOAD_FOLDER = '/static/attachment_uploads/'
+	ATTACHMENT_UPLOAD_FOLDER = '/static/attachment_uploads/'
 else:
-	ATACHMENT_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_ATTACHMENTS'))
+	ATTACHMENT_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_ATTACHMENTS'))
 	
 # json files for tags and sounds
 TAGS_FILE = '/static/tags.json'
