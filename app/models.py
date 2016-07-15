@@ -6,7 +6,7 @@ from enum import Enum
 import logging
 import re
 import sys
-from config import WHOOSH_ENABLED
+from config import WHOOSH_ENABLED, AVATAR_UPLOAD_FOLDER
 
 # import flask_whooshalchemyplus as whooshalchemy
 
@@ -93,6 +93,7 @@ class User(db.Model):
     iterations = db.relationship('Iteration', backref='user', lazy='dynamic')
     verifications = db.relationship('Verification', backref='user', lazy='dynamic')
     projects = db.relationship('Project', backref='user', lazy='dynamic')
+    avatar_filename = db.Column(db.String(200))
 
     @property
     def full_name(self):
@@ -136,8 +137,11 @@ class User(db.Model):
             return str(self.id)  # python 3
 
     def avatar(self, size):
-        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % \
-            (md5(self.email.encode('utf-8')).hexdigest(), size)
+        if self.avatar_filename is not None:
+            return AVATAR_UPLOAD_FOLDER + self.avatar_filename
+        else:
+            return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % \
+                (md5(self.email.encode('utf-8')).hexdigest(), size)
 
     def __repr__(self):  # pragma: no cover
         return '<User %r>' % (self.nickname)

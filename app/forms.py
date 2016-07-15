@@ -21,6 +21,7 @@ class EditForm(Form):
     last_name = StringField('last_name', validators=[DataRequired()])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
     receive_emails = BooleanField('receive_emails', default=True)
+    upload_file = FileField('upload_file')
 
     def __init__(self, original_nickname, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)

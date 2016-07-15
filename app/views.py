@@ -15,7 +15,7 @@ from .emails import description_notification, iteration_notification, verificati
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
-    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE
+    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE, AVATAR_UPLOAD_FOLDER
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -192,6 +192,18 @@ def edit():
         g.user.first_name = form.first_name.data
         g.user.last_name = form.last_name.data
         g.user.receive_emails = form.receive_emails.data
+
+        if not os.environ.get('HEROKU'):
+          if form.upload_file.data.filename:
+            filename = secure_filename(form.upload_file.data.filename)
+            if os.path.isfile('app/' + AVATAR_UPLOAD_FOLDER + filename):
+                current_milli_time = lambda: int(round(time.time() * 1000))
+                filename = str(current_milli_time()) + filename
+            form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
+            g.user.avatar_filename = filename
+        else:
+          g.user.avatar_filename = form.upload_file.data.filename
+
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
@@ -202,6 +214,7 @@ def edit():
         form.first_name.data = g.user.first_name 
         form.last_name.data = g.user.last_name
         form.receive_emails.data = g.user.receive_emails
+        form.upload_file.data = g.user.avatar_filename
     return render_template('edit.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -212,7 +225,11 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
     assets_description = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_iteration = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_verification = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).paginate(page_verification, ASSETS_PER_PAGE, False)
-    assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+    if g.user.type == "client_user":
+        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).filter(Asset.clients.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+    else:
+        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).filter(Asset.suppliers.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+
     return render_template('index.html',
                            title='Home',
                            assets_otherhands=assets_otherhands,
@@ -452,13 +469,17 @@ def description(description_id=0):
         flash('Description not found.')
         return redirect(url_for('index'))
     attachment_location = ATTACHMENT_UPLOAD_FOLDER
+    sound_location = SOUND_UPLOAD_FOLDER
 
     # Check if attachment is a videofile
-    attachment_is_video = check_if_video(description.filename)
+    attachment_is_video = False
+    if description.filename is not None:
+        attachment_is_video = check_if_video(description.filename)
 
     return render_template('description.html',
                            description=description,
                            attachment_location=attachment_location,
+                           sound_location=sound_location,
                            attachment_is_video=attachment_is_video)
 
 @app.route('/iterations', methods=['GET', 'POST'])
@@ -1264,6 +1285,8 @@ def sign_s3(type):
         S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
+    elif type == "image":
+        S3_BUCKET = os.environ.get('S3_BUCKET_IMAGES')
     else:
         S3_BUCKET = "N/A"   
 

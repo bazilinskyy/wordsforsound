@@ -29,21 +29,20 @@
 	        
 	    </tr>
 	</table>
-
-	<p><strong>Attachment:</strong></p>
 	{% if description.filename != None %}
+		<p><strong>Attachment:</strong></p>
 		<a href="{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
-	{% endif %}
 
-	{% if attachment_is_video %}
-		</br>
+		{% if attachment_is_video %}
+			</br>
 
 
-		<div align="center" class="embed-responsive embed-responsive-16by9">
-		    <video controls class="embed-responsive-item">
-		        <source src="{{ attachment_location }}{{ description.filename }}" type="video/mp4">
-		    </video>
-		</div>
+			<div align="center" class="embed-responsive embed-responsive-16by9">
+			    <video controls class="embed-responsive-item">
+			        <source src="{{ attachment_location }}{{ description.filename }}" type="video/mp4">
+			    </video>
+			</div>
+		{% endif %}
 	{% endif %}
 
 	{% if description.sounds.count() > 0 %}

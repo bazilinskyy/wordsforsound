@@ -46,6 +46,12 @@ if not os.environ.get('HEROKU'):
 	ATTACHMENT_UPLOAD_FOLDER = '/static/attachment_uploads/'
 else:
 	ATTACHMENT_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_ATTACHMENTS'))
+
+# uploading avatars
+if not os.environ.get('HEROKU'):
+	AVATAR_UPLOAD_FOLDER = '/static/avatar_uploads/'
+else:
+	AVATAR_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_IMAGES'))
 	
 # json files for tags and sounds
 TAGS_FILE = '/static/tags.json'
