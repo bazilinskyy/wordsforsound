@@ -14,7 +14,7 @@
       {% include 'tag_entry_no_numbers.html' %}
     {% endfor %}
 
-    <a href="{{ url_for('edit_sound', sound_id=sound.id) }}"  type="button" class="btn btn-warning btn-xs">Edit</a> <a href="{{ url_for('delete_sound', sound_id=sound.id) }}" type="button" class="btn btn-danger btn-xs">Delete</a>
+    <a href="{{ sound_location }}{{ sound.filename }}" target="_blank" type="button" class="btn btn-success btn-xs">Download</a> <a href="{{ url_for('edit_sound', sound_id=sound.id) }}"  type="button" class="btn btn-warning btn-xs">Edit</a> <a href="{{ url_for('delete_sound', sound_id=sound.id) }}" type="button" class="btn btn-danger btn-xs">Delete</a>
    	</h4>
 
 	<strong>Description</strong> {{ sound.description }}
