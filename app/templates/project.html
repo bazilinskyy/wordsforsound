@@ -18,7 +18,7 @@
 	<strong>Description</strong> {{ project.description }}
 
 	{% if project.filename != None %}
-		<a href="{{ attachment_location }}{{ project.filename }}">Supplementary attachment ({{ project.filename }})</a> </br>
+		<a target="_blank" href="{{ attachment_location }}{{ project.filename }}">Supplementary attachment ({{ project.filename }})</a> </br>
 	{% endif %}
 
 	{% if project.assets.count() > 0 %}

@@ -31,7 +31,7 @@
 	</table>
 	{% if description.filename != None %}
 		<p><strong>Attachment:</strong></p>
-		<a href="{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
+		<a target="_blank" href="{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
 
 		{% if attachment_is_video %}
 			</br>

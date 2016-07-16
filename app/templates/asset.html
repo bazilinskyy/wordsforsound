@@ -27,7 +27,7 @@
 	</h4>
 
 	{% if asset.filename != None %}
-		<a href="{{ attachment_location }}{{ asset.filename }}">Supplementary attachment ({{ asset.filename }})</a></br>
+		<a target="_blank" href="{{ attachment_location }}{{ asset.filename }}">Supplementary attachment ({{ asset.filename }})</a></br>
 	{% endif %}
 
 	{% if asset.descriptions.count() > 0 %}
