@@ -1774,3 +1774,259 @@ asset2.init_in_hands()
 project_auditory_test.asset_add(asset1)
 project_auditory_test.asset_add(asset2)
 db.session.commit()
+
+################## Tester 9 ##################
+# Add users
+test_user = models.ClientUser(nickname="george_dialynas",
+				first_name="George",
+				last_name="Dialynas",
+                email="g.dialynas@tudelft.nl",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True)
+jim = models.ClientUser(nickname="jim_clark9",
+				first_name="Jim",
+				last_name="Clark",
+                email="wordsforsound.jim9@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="jim_70.jpg")
+ayrton = models.SupplierUser(nickname="ayrton_senna9",
+				first_name="Ayrton",
+				last_name="Senna",
+                email="wordsforsound.ayrton9@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="ayrton_70.jpg")
+michael = models.SupplierUser(nickname="michael_schumacher9",
+				first_name="Michael",
+				last_name="Schumacher",
+                email="wordsforsound.michael9@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="michael_70.jpg")
+niki = models.SupplierUser(nickname="niki_lauda9",
+				first_name="Niki",
+				last_name="Lauda",
+                email="wordsforsound.niki9@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=False,
+                avatar_filename="niki_70.jpg")
+db.session.add(test_user)
+db.session.add(jim)
+db.session.add(ayrton)
+db.session.add(michael)
+db.session.add(niki)
+db.session.commit()
+
+# Add projects
+project_auditory_test = models.Project(name="AD overtaking 9",
+				description="In this we will be developing auditory assets for take-over requests during highly automated driving.",
+				filename="icad 2015.pdf",
+				finished=False,
+				user=test_user,
+				timestamp=datetime.now())
+db.session.add(project_auditory_test)
+db.session.commit()
+
+# Add assets
+asset1 = models.Asset(name="Beep for left overtaking",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than 3 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, happy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). Input: speed of automated car, TTC, safest maneuver trajectory.",
+        		status=models.AssetStatus.iteration.value,
+        		project=project_auditory_test,
+        		finished=False,
+        		iteration_number=0,
+        		timestamp=datetime.now(),
+        		notify_by_email=True)
+asset2 = models.Asset(name="Beep for right overtaking",
+				description="Non-urgent take-over request (TTC less than 10 sec) with information on an object in the blind-spot in the left lane, behind the automated car (driving on the middle lane). It should sound non-intrusive, worthy, modern and electric, similar to sounds employed by Volvo in their newest cars. Input: speed of automated car, TTC, location of object in blind spot relative to automated car. Could involve speech by a female actor with US English accent.",
+                status=models.AssetStatus.iteration.value,
+                project=project_auditory_test,
+                finished=False,
+                iteration_number=0,
+                timestamp=datetime.now(),
+                notify_by_email=True)
+description1 = models.Description(duration="200",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than 3 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, happy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). Input: speed of automated car, TTC, safest maneuver trajectory.",
+        		sound_type=1,
+                sound_family=1,
+        		pitch="B#",
+        		user=test_user,
+        		timestamp=datetime.now())
+description1.tag_add(tag_beep)
+description1.tag_add(tag_urgent4)
+description1.tag_add(tag_warning)
+description1.tag_add(tag_positive)
+description1.tag_add(tag_metallic)
+description1.sound_add(sound_beep_freezman)
+description1.sound_add(sound_uc2_system_error)
+description1.sound_add(sound_b19)
+description2 = models.Description(duration="65",
+				description="Non-urgent take-over request (TTC less than 10 sec) with information on an object in the blind-spot in the left lane, behind the automated car (driving on the middle lane). It should sound non-intrusive, worthy, modern and electric, similar to sounds employed by Volvo in their newest cars. Input: speed of automated car, TTC, location of object in blind spot relative to automated car. Could involve speech by a female actor with US English accent.",
+                sound_type=1,
+                sound_family=1,
+                pitch="A",
+                user=test_user,
+                timestamp=datetime.now())
+description2.tag_add(tag_beep)
+description2.tag_add(tag_urgent2)
+description2.tag_add(tag_warning)
+description2.tag_add(tag_negative)
+description2.tag_add(tag_wooden)
+description2.tag_add(tag_worthy)
+description2.sound_add(sound_beep_freezman)
+description2.sound_add(sound_b13)
+description2.sound_add(sound_a16)
+description2.sound_add(sound_b17)
+db.session.add(asset1)
+db.session.add(asset2)
+
+asset1.description_add(description1)
+asset2.description_add(description2)
+
+asset1.client_add(test_user)
+asset1.client_add(jim)
+asset1.supplier_add(michael)
+asset1.supplier_add(niki)
+
+asset2.client_add(test_user)
+asset2.supplier_add(ayrton)
+
+asset1.init_in_hands()
+asset2.init_in_hands()
+
+project_auditory_test.asset_add(asset1)
+project_auditory_test.asset_add(asset2)
+db.session.commit()
+
+################## Tester 10 ##################
+# Add users
+test_user = models.ClientUser(nickname="natalia_rovacsova",
+				first_name="Natalia",
+				last_name="Kovacsova",
+                email="N.Kovacsova@tudelft.nl",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True)
+jim = models.ClientUser(nickname="jim_clark10",
+				first_name="Jim",
+				last_name="Clark",
+                email="wordsforsound.jim10@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="jim_70.jpg")
+ayrton = models.SupplierUser(nickname="ayrton_senna10",
+				first_name="Ayrton",
+				last_name="Senna",
+                email="wordsforsound.ayrton10@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="ayrton_70.jpg")
+michael = models.SupplierUser(nickname="michael_schumacher10",
+				first_name="Michael",
+				last_name="Schumacher",
+                email="wordsforsound.michael10@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="michael_70.jpg")
+niki = models.SupplierUser(nickname="niki_lauda10",
+				first_name="Niki",
+				last_name="Lauda",
+                email="wordsforsound.niki10@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=False,
+                avatar_filename="niki_70.jpg")
+db.session.add(test_user)
+db.session.add(jim)
+db.session.add(ayrton)
+db.session.add(michael)
+db.session.add(niki)
+db.session.commit()
+
+# Add projects
+project_auditory_test = models.Project(name="AD overtaking 10",
+				description="In this we will be developing auditory assets for take-over requests during highly automated driving.",
+				filename="icad 2015.pdf",
+				finished=False,
+				user=test_user,
+				timestamp=datetime.now())
+db.session.add(project_auditory_test)
+db.session.commit()
+
+# Add assets
+asset1 = models.Asset(name="Beep for left overtaking",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than 3 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, happy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). Input: speed of automated car, TTC, safest maneuver trajectory.",
+        		status=models.AssetStatus.iteration.value,
+        		project=project_auditory_test,
+        		finished=False,
+        		iteration_number=0,
+        		timestamp=datetime.now(),
+        		notify_by_email=True)
+asset2 = models.Asset(name="Beep for right overtaking",
+				description="Non-urgent take-over request (TTC less than 10 sec) with information on an object in the blind-spot in the left lane, behind the automated car (driving on the middle lane). It should sound non-intrusive, worthy, modern and electric, similar to sounds employed by Volvo in their newest cars. Input: speed of automated car, TTC, location of object in blind spot relative to automated car. Could involve speech by a female actor with US English accent.",
+                status=models.AssetStatus.iteration.value,
+                project=project_auditory_test,
+                finished=False,
+                iteration_number=0,
+                timestamp=datetime.now(),
+                notify_by_email=True)
+description1 = models.Description(duration="200",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than 3 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, happy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). Input: speed of automated car, TTC, safest maneuver trajectory.",
+        		sound_type=1,
+                sound_family=1,
+        		pitch="B#",
+        		user=test_user,
+        		timestamp=datetime.now())
+description1.tag_add(tag_beep)
+description1.tag_add(tag_urgent4)
+description1.tag_add(tag_warning)
+description1.tag_add(tag_positive)
+description1.tag_add(tag_metallic)
+description1.sound_add(sound_beep_freezman)
+description1.sound_add(sound_uc2_system_error)
+description1.sound_add(sound_b19)
+description2 = models.Description(duration="65",
+				description="Non-urgent take-over request (TTC less than 10 sec) with information on an object in the blind-spot in the left lane, behind the automated car (driving on the middle lane). It should sound non-intrusive, worthy, modern and electric, similar to sounds employed by Volvo in their newest cars. Input: speed of automated car, TTC, location of object in blind spot relative to automated car. Could involve speech by a female actor with US English accent.",
+                sound_type=1,
+                sound_family=1,
+                pitch="A",
+                user=test_user,
+                timestamp=datetime.now())
+description2.tag_add(tag_beep)
+description2.tag_add(tag_urgent2)
+description2.tag_add(tag_warning)
+description2.tag_add(tag_negative)
+description2.tag_add(tag_wooden)
+description2.tag_add(tag_worthy)
+description2.sound_add(sound_beep_freezman)
+description2.sound_add(sound_b13)
+description2.sound_add(sound_a16)
+description2.sound_add(sound_b17)
+db.session.add(asset1)
+db.session.add(asset2)
+
+asset1.description_add(description1)
+asset2.description_add(description2)
+
+asset1.client_add(test_user)
+asset1.client_add(jim)
+asset1.supplier_add(michael)
+asset1.supplier_add(niki)
+
+asset2.client_add(test_user)
+asset2.supplier_add(ayrton)
+
+asset1.init_in_hands()
+asset2.init_in_hands()
+
+project_auditory_test.asset_add(asset1)
+project_auditory_test.asset_add(asset2)
+db.session.commit()
