@@ -1905,7 +1905,7 @@ db.session.commit()
 
 ################## Tester 10 ##################
 # Add users
-test_user = models.ClientUser(nickname="natalia_rovacsova",
+test_user = models.ClientUser(nickname="natalia_kovacsova",
 				first_name="Natalia",
 				last_name="Kovacsova",
                 email="N.Kovacsova@tudelft.nl",
