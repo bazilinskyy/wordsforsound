@@ -19,25 +19,25 @@ virtualenv flask
 
 If you are on Linux, OS X or Cygwin, install flask and extensions by entering the following commands, one after another:
 
-```bash
+```
 $ flask/bin/pip install -r requirements.txt
 ```
 
 If you are on Windows the commands are slightly different:
 
-```bash
+```
 $ flask\Scripts\pip.exe install -r requirements.txt
 ```
 
 Then, a database needs to be initialised:
 
-```bash
+```
 $ flask/bin/python db_create.py
 ```
 
 On Windows:
 
-```bash
+```
 $ flask\Scripts\python.exe db_create.py
 ```
 
@@ -45,13 +45,13 @@ Running
 -------
 To run the application, after initial setup as explained in the section above, simply run the command (on Unix-based system):
 
-```bash
+```
 $ flask/bin/python run.py
 ```
 
 Or on Windows:
 
-```bash
+```
 $ flask\Scripts\pyhton.exe run.py
 ```
 
