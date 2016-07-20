@@ -125,7 +125,7 @@ def register():
 
 @app.route('/readme', methods=["GET", "POST"])
 def readme():
-      content = """
+    content = """
             Chapter
             =======
 
@@ -135,7 +135,7 @@ def readme():
             * Item 1
             * Item 2
             """
-  content = Markup(markdown.markdown(content))
+    content = Markup(markdown.markdown(content))
     return render_template('README.md', **locals())
 
 @app.route('/reset', methods=["GET", "POST"])
