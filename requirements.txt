@@ -26,6 +26,7 @@ itsdangerous==0.24
 Jinja2==2.8
 jmespath==0.9.0
 keyring==9.3
+Markdown==2.6.6
 MarkupSafe==0.23
 pathlib2==2.1.0
 pbr==1.8.1
