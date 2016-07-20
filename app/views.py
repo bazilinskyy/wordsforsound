@@ -123,6 +123,10 @@ def register():
             return redirect(url_for('index'))
     return render_template('register.html', form=form, title='Register')
 
+@app.route('/readme', methods=["GET", "POST"])
+def readme():
+    return render_template('README.md')
+
 @app.route('/reset', methods=["GET", "POST"])
 def reset():
     form = EmailForm()
