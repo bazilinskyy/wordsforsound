@@ -1,6 +1,6 @@
 # By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
 from __future__ import division
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, flash, redirect, session, url_for, request, g, Markup
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.mail import Message
@@ -125,7 +125,18 @@ def register():
 
 @app.route('/readme', methods=["GET", "POST"])
 def readme():
-    return render_template('README.md')
+      content = """
+            Chapter
+            =======
+
+            Section
+            -------
+
+            * Item 1
+            * Item 2
+            """
+  content = Markup(markdown.markdown(content))
+    return render_template('README.md', **locals())
 
 @app.route('/reset', methods=["GET", "POST"])
 def reset():
