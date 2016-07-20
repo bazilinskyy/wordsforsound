@@ -124,21 +124,6 @@ def register():
             return redirect(url_for('index'))
     return render_template('register.html', form=form, title='Register')
 
-@app.route('/readme', methods=["GET", "POST"])
-def readme():
-    content = """
-            Chapter
-            =======
-
-            Section
-            -------
-
-            * Item 1
-            * Item 2
-            """
-    content = Markup(markdown.markdown(content))
-    return render_template('README.md', **locals())
-
 @app.route('/reset', methods=["GET", "POST"])
 def reset():
     form = EmailForm()
@@ -1264,6 +1249,14 @@ def search_results(query):
                            projects_results=projects_results,
                            assets_results=assets_results,
                            sound_location=SOUND_UPLOAD_FOLDER)
+
+@app.route('/readme', methods=["GET", "POST"])
+def readme():
+    with open('README.md', 'r') as myfile:
+        readme_content=myfile.read()
+    readme_content = Markup(markdown.markdown(readme_content))
+    return render_template('readme.html',
+        readme_content=readme_content)
 
 # For autofill for tags and tag cloud
 def update_tags_json():
