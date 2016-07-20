@@ -17,7 +17,6 @@ Flask-WTF==0.12
 flipflop==1.0
 futures==3.0.5
 gnureadline==6.3.3
-guess-language==0.2
 gunicorn==19.6.0
 ipdb==0.10.0
 ipython==4.2.0
