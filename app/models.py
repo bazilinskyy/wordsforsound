@@ -6,7 +6,7 @@ from enum import Enum
 import logging
 import re
 import sys
-from config import WHOOSH_ENABLED
+from config import WHOOSH_ENABLED, AVATAR_UPLOAD_FOLDER
 
 # import flask_whooshalchemyplus as whooshalchemy
 
@@ -93,6 +93,7 @@ class User(db.Model):
     iterations = db.relationship('Iteration', backref='user', lazy='dynamic')
     verifications = db.relationship('Verification', backref='user', lazy='dynamic')
     projects = db.relationship('Project', backref='user', lazy='dynamic')
+    avatar_filename = db.Column(db.String(200))
 
     @property
     def full_name(self):
@@ -136,8 +137,11 @@ class User(db.Model):
             return str(self.id)  # python 3
 
     def avatar(self, size):
-        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % \
-            (md5(self.email.encode('utf-8')).hexdigest(), size)
+        if self.avatar_filename is not None:
+            return AVATAR_UPLOAD_FOLDER + self.avatar_filename
+        else:
+            return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' % \
+                (md5(self.email.encode('utf-8')).hexdigest(), size)
 
     def __repr__(self):  # pragma: no cover
         return '<User %r>' % (self.nickname)
@@ -197,6 +201,21 @@ class Sound(db.Model):
     sound_type = db.Column(db.String(20))
     sound_family = db.Column(db.String(20))
     rights = db.Column(db.String(200)) # To use enum instead
+
+    def tag_add(self, tag):
+        if tag not in self.tags.all():
+            self.tags.append(tag)
+            logging.debug("Sound %s added tag %s" % (str(self), str(tag)))
+            return self
+        else:
+            logging.debug("Sound %s already has tag %s: " % (str(self), str(tag)))
+
+    def tag_remove(self, tag):
+        if tag in self.tags.all():
+            self.tags.remove(tag)
+            logging.debug("Sound %s removed tag %s" % (str(self), str(tag)))
+        else:
+            logging.debug("Sound %s does not have tag %s: " % (str(self), str(tag)))
 
     def __repr__(self):
         return '<Sound %r>' % (self.name)
@@ -395,6 +414,34 @@ class Description(db.Model):
             return self.duration
         else:
             return 'N/A'
+
+    def sound_add(self, sound):
+        if sound not in self.sounds.all():
+            self.sounds.append(sound)
+            logging.debug("Description %s added sound %s" % (str(self), str(sound)))
+        else:
+            logging.debug("Description %s already has sound %s: " % (str(self), str(sound)))
+
+    def sound_remove(self, sound):
+        if sound in self.sounds.all():
+            self.sounds.remove(sound)
+            logging.debug("Description %s removed sound %s" % (str(self), str(sound)))
+        else:
+            logging.debug("Description %s does not haee sound %s: " % (str(self), str(sound)))
+
+    def tag_add(self, tag):
+        if tag not in self.tags.all():
+            self.tags.append(tag)
+            logging.debug("Description %s added tag %s" % (str(self), str(tag)))
+        else:
+            logging.debug("Description %s already has tag %s: " % (str(self), str(tag)))
+
+    def tag_remove(self, tag):
+        if tag in self.tags.all():
+            self.tags.remove(tag)
+            logging.debug("Description %s removed tag %s" % (str(self), str(tag)))
+        else:
+            logging.debug("Description %s does not haee tag %s: " % (str(self), str(tag)))
 
     def __repr__(self):
         return '<Description %r>' % (self.description[0:50])

@@ -21,6 +21,7 @@ class EditForm(Form):
     last_name = StringField('last_name', validators=[DataRequired()])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
     receive_emails = BooleanField('receive_emails', default=True)
+    upload_file = FileField('upload_file')
 
     def __init__(self, original_nickname, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -72,7 +73,7 @@ class RegisterForm(Form):
         if User.query.filter(User.email == self.email.data).all():
             self.email.errors.append("User with this email already exists!")
         if User.query.filter(User.nickname == self.nickname.data).all():
-            self.email.errors.append("User with this nickname already exists!")
+            self.nickname.errors.append("User with this nickname already exists!")
         return True
 
 class EmailForm(Form):
@@ -135,6 +136,9 @@ class NewProjectForm(Form):
 class AddTagForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 
+class EditTagForm(Form):
+    name = StringField('name', validators=[DataRequired()])
+
 class DeleteTagForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 
@@ -155,6 +159,6 @@ class EditSoundForm(Form):
     description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
     sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
     sound_family = SelectField('sound_family', choices=sound_families)
-    upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
+    upload_file = FileField('upload_file', validators=[FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
     tags = StringField('tags')
     rights = StringField('rights')

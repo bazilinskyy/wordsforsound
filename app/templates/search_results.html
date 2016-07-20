@@ -7,24 +7,32 @@
 		<h1>Search results for <i>{{ query }}</i>.</h1>
 		{% include 'flash.html' %}
 
-		<h3>Tags:</h3>
-		{% for tag in tags_results %}
-		    {% include 'tag_entry.html' %}
-		{% endfor %}
+		{% if tags_results|length > 0 %}
+			<h3>Tags:</h3>
+			{% for tag in tags_results %}
+			    {% include 'tag_entry.html' %}
+			{% endfor %}
+		{% endif %}
 
-		<h3>Sounds:</h3>
-		{% for sound in sounds_results %}
-		    {% include 'sound_entry.html' %}
-		{% endfor %}
+		{% if sounds_results|length > 0 %}
+			<h3>Sounds:</h3>
+			{% for sound in sounds_results %}
+			    {% include 'sound_entry.html' %}
+			{% endfor %}
+		{% endif %}
 
-		<h3>Projects:</h3>
-		{% for project in projects_results %}
-		    {% include 'project_entry.html' %}
-		{% endfor %}
+		{% if projects_results|length > 0 %}
+			<h3>Projects:</h3>
+			{% for project in projects_results %}
+			    {% include 'project_entry.html' %}
+			{% endfor %}
+		{% endif %}
 
-		<h3>Assets:</h3>
-		{% for asset in assets_results %}
-		    {% include 'asset_entry_in_other_hands.html' %}
-		{% endfor %}
+		{% if assets_results|length > 0 %}
+			<h3>Assets:</h3>
+			{% for asset in assets_results %}
+			    {% include 'asset_entry_in_other_hands.html' %}
+			{% endfor %}
+		{% endif %}
 	</div>
 {% endblock %}

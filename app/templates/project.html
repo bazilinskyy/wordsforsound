@@ -11,14 +11,14 @@
 
 	<h4>ID <span class="badge">{{ project.id }}</span> Name <span class="badge">{{ project.name }}</span>
 	{% if project.finished != True %}
-		<a href="{{ url_for('edit_project', project_id=project.id) }}" type="button" class="btn btn-warning btn-sm">Edit</a>
+		<a href="{{ url_for('edit_project', project_id=project.id) }}" type="button" class="btn btn-warning btn-xs">Edit</a>
 	{% endif %}
 	</h4>
 
 	<strong>Description</strong> {{ project.description }}
 
 	{% if project.filename != None %}
-		<a href="{{ attachment_location }}{{ project.filename }}">Supplementary attachment ({{ project.filename }})</a> </br>
+		<a target="_blank" href="{{ attachment_location }}{{ project.filename }}">Supplementary attachment ({{ project.filename }})</a> </br>
 	{% endif %}
 
 	{% if project.assets.count() > 0 %}

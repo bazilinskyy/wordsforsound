@@ -6,7 +6,7 @@
     {% include 'flash.html' %}
 
     <div class="well">
-    <form action="" method="post" name="edit_user">
+    <form action="" method="post" name="edit_user" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
       <div class="row" style="margin-left: -15px">
         <div class="col-md-4">
@@ -48,8 +48,24 @@
         {{ form.receive_emails(type='checkbox') }} Receive emails
       </fieldset>
 
+      </fieldset>
+      <input type="hidden" id="file-url" name="file-url">
+      <fieldset class="form-group">
+        <label for="upload_file">Avatar image</label>
+
+        {{ form.upload_file(class_='form-control', id="file-input") }}
+        {% for error in form.upload_file.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+        {% endfor %}
+
+      </fieldset>
+
       <button type="submit" class="btn btn-block btn-primary">Submit</button>
     </form>
     </div>
+
+{% if heroku_state %}
+  <script src="/static/js/upload_image.js"></script>
+{% endif %}
 
 {% endblock %}

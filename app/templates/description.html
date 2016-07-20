@@ -16,7 +16,7 @@
 	        </td>
 	        <td>
 		        </p class="text-left">
-	            	<h4>Duration: <span class="badge">{{ description.get_duration() }}</span>. Pitch: <span class="badge">{{ description.get_pitch() }}</span>. Type: <span class="badge">{{ description.get_sound_type() }}</span>. Family: <span class="badge">{{ description.get_sound_family() }}</span>
+	            	<h4>Duration: <span class="badge">{{ description.get_duration() }}</span> Pitch: <span class="badge">{{ description.get_pitch() }}</span> Type: <span class="badge">{{ description.get_sound_type() }}</span> Family: <span class="badge">{{ description.get_sound_family() }}</span>
 	 
 	            	{% for tag in description.tags.all() %}
 	      				{% include 'tag_entry_no_numbers.html' %}
@@ -26,13 +26,24 @@
 	            	{% if description.description|length != 0 %} <strong>Description</strong> {{ description.description }} {% else %} No textual description was given. {% endif %}
             	</p>
 	        </td>
-	        {% if description.filename != None %}
-		        <td>
-		            <a href="{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
-		        </td>
-	        {% endif %}
+	        
 	    </tr>
 	</table>
+	{% if description.filename != None %}
+		<p><strong>Attachment:</strong></p>
+		<a target="_blank" href="{{ attachment_location }}{{ description.filename }}">{{ description.filename }}</a>
+
+		{% if attachment_is_video %}
+			</br>
+
+
+			<div align="center" class="embed-responsive embed-responsive-16by9">
+			    <video controls class="embed-responsive-item">
+			        <source src="{{ attachment_location }}{{ description.filename }}" type="video/mp4">
+			    </video>
+			</div>
+		{% endif %}
+	{% endif %}
 
 	{% if description.sounds.count() > 0 %}
 		<p><strong>Sounds:</strong></p>

@@ -1,4 +1,4 @@
-<table class="table table-hover">
+<table class="table table-hover" style="margin-bottom: 4px">
     <tr>
         <td width="170x">
         	<a href="{{ url_for('sound') }}/{{ sound.id }}">{{ sound.name }}</a>
@@ -17,7 +17,7 @@
 				    waveColor: '#A8DBA8',
 			        progressColor: '#3B8686',
 			        backend: 'MediaElement',
-			        height: 50,
+			        height: 30,
 			        hideScrollbar: true
 				});
 				wavesurfer_{{ sound.id }}.load("{{ sound_location }}{{ sound.filename }}");

@@ -10,13 +10,13 @@
             <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" /></a>
         </td>
         <td>
-            <p class="text-left">{% if iteration.description|length != 0 %} {{ iteration.description }} {% else %} No textual description was given. {% endif %} <strong>Time</strong>: <span class="badge">{{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
+            <p class="text-left">{% if iteration.description|length != 0 %} {{ iteration.description }} {% else %} No textual description was given. {% endif %} <strong>Time</strong> <span class="badge">{{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
         </td>
         <td width="80px">
             <p>Ver. {{ asset.iteration_number }}</p>
         </td>
         {% if iteration.filename != None %}
-            <td>
+            <td width="200px">
                 <script src="/static/js/wavesurfer.min.js"></script>
                 <div id="waveform_{{ iteration.id }}" onclick="wavesurfer_{{ iteration.id }}.playPause()"></div>
                 <script>

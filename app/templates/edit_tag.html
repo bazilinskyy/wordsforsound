@@ -1,0 +1,23 @@
+<!-- By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> -->
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+{% include 'flash.html' %}
+
+<h1>Edit existing tag</h1>
+
+<!-- Description form -->
+<div class="well">
+<form action="" method="post" name="add_tag">
+{{ form.hidden_tag() }}
+  <fieldset class="form-group">
+    {{ form.name(class_='form-control', placeholder='Name of tag') }}
+    {% for error in form.name.errors %}
+        <span class="help-inline">[{{ error }}]</span><br>
+    {% endfor %}
+  </fieldset>
+  <button type="submit" class="btn btn-block btn-success">Edit</button>
+</form>
+</div>
+{% endblock %}

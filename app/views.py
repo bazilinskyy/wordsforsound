@@ -1,6 +1,6 @@
 # By Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
 from __future__ import division
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, flash, redirect, session, url_for, request, g, Markup
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.sqlalchemy import get_debug_queries
 from flask.ext.mail import Message
@@ -8,20 +8,21 @@ from datetime import datetime
 from app import app, db, lm, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
-    RegisterForm, SearchForm, EditForm, EditAssetForm
+    RegisterForm, SearchForm, EditForm, EditAssetForm, EditTagForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
 from .emails import description_notification, iteration_notification, verification_notification
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
-    ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
-    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE
+    ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
+    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE, AVATAR_UPLOAD_FOLDER
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
 import time
 import json
 import boto3
+import markdown
 
 def redirect_url(default='index'):
     return request.args.get('next') or \
@@ -96,25 +97,32 @@ def register():
         return redirect(url_for('index'))
     form = RegisterForm()
     if form.validate_on_submit():
-        if form.user_type.data == '1':
-            user = ClientUser(
-                nickname=form.nickname.data,
-                email=form.email.data,
-                password=form.password.data,
-                receive_emails=True
-            )
+        # Check if provided email is not used by another
+        user_email = User.query.filter_by(email=form.email.data).first()
+        user_nickname = User.query.filter_by(nickname=form.nickname.data).first()
+        if user_email is not None or user_nickname is not None:
+            # flash('Email ' + form.email.data + ' is used in another account. Please use another one.')
+            pass
         else:
-            user = SupplierUser(
-                nickname=form.nickname.data,
-                email=form.email.data,
-                password=form.password.data,
-                receive_emails=True
-            )
-        db.session.add(user)
-        db.session.commit()
-        login_user(user)
-        return redirect(url_for('index'))
-    return render_template('register.html', form=form)
+            if form.user_type.data == '1':
+                user = ClientUser(
+                    nickname=form.nickname.data,
+                    email=form.email.data,
+                    password=form.password.data,
+                    receive_emails=True
+                )
+            else:
+                user = SupplierUser(
+                    nickname=form.nickname.data,
+                    email=form.email.data,
+                    password=form.password.data,
+                    receive_emails=True
+                )
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            return redirect(url_for('index'))
+    return render_template('register.html', form=form, title='Register')
 
 @app.route('/reset', methods=["GET", "POST"])
 def reset():
@@ -185,6 +193,18 @@ def edit():
         g.user.first_name = form.first_name.data
         g.user.last_name = form.last_name.data
         g.user.receive_emails = form.receive_emails.data
+
+        if not os.environ.get('HEROKU'):
+          if form.upload_file.data.filename:
+            filename = secure_filename(form.upload_file.data.filename)
+            if os.path.isfile('app/' + AVATAR_UPLOAD_FOLDER + filename):
+                current_milli_time = lambda: int(round(time.time() * 1000))
+                filename = str(current_milli_time()) + filename
+            form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
+            g.user.avatar_filename = filename
+        else:
+          g.user.avatar_filename = form.upload_file.data.filename
+
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
@@ -195,6 +215,7 @@ def edit():
         form.first_name.data = g.user.first_name 
         form.last_name.data = g.user.last_name
         form.receive_emails.data = g.user.receive_emails
+        form.upload_file.data = g.user.avatar_filename
     return render_template('edit.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -205,7 +226,11 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
     assets_description = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_iteration = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).paginate(page_verification, ASSETS_PER_PAGE, False)
     assets_verification = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).paginate(page_verification, ASSETS_PER_PAGE, False)
-    assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+    if g.user.type == "client_user":
+        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).filter(Asset.clients.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+    else:
+        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).filter(Asset.suppliers.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+
     return render_template('index.html',
                            title='Home',
                            assets_otherhands=assets_otherhands,
@@ -221,7 +246,7 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tags(page=1):
-    tags = Tag.query.all()
+    tags = Tag.query.order_by(Tag.name.asc()).all()
     return render_template('tags.html',
                             title='Tags',
                             tags=tags)
@@ -249,7 +274,7 @@ def add_tag():
         # check if tag woth the same name exists
         tag = Tag.query.filter_by(name=form.name.data).first()
         if tag is not None:
-            flash('This tag already exists.')
+            flash('Tag with the same name already exists.')
             return render_template('add_tag.html',
                             form=form,
                             title='Add tag')
@@ -265,6 +290,37 @@ def add_tag():
     return render_template('add_tag.html',
                             form=form,
                             title='Add tag')
+
+@app.route('/tag/edit', methods=['GET', 'POST'])
+@app.route('/tag/<int:tag_id>/edit/', methods=['GET', 'POST'])
+@login_required
+def edit_tag(tag_id):
+    tag = Tag.query.filter_by(id=tag_id).first()
+    form = EditTagForm()
+    if form.validate_on_submit():
+        # check if tag woth the same name exists
+        tag = Tag.query.filter_by(name=form.name.data).first()
+        if tag is not None:
+            flash('Tag with the same name already exists.')
+            return render_template('edit_tag.html',
+                            form=form,
+                            title='Edit tag')
+        tag = Tag()
+        tag.name = form.name.data
+        tag.timestamp = datetime.now()
+        db.session.add(tag)
+        db.session.commit()
+        update_tags_json() # For autofill for tags and tag cloud
+        
+        flash('Tag was edited successfully.')
+        return redirect(url_for('tag', tag_id=tag_id))
+    elif request.method != "POST":
+        if tag is not None:
+            form.name.data = tag.name
+    return render_template('edit_tag.html',
+                            form=form,
+                            tag=tag,
+                            title='Edit tag')
 
 @app.route('/delete_tag', methods=['GET', 'POST'])
 @app.route('/tag/<int:tag_id>/delete/', methods=['GET', 'POST'])
@@ -317,7 +373,7 @@ def asset(asset_id=0):
     if asset is None:
         flash('Asset not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('asset.html',
                            asset=asset,
                            attachment_location = attachment_location)
@@ -327,6 +383,10 @@ def asset(asset_id=0):
 @app.route('/project/<int:project_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_project(project_id):
+    if g.user.type == "supplier_user":
+        flash('You do not have permissions to edit projects.')
+        return redirect(url_for('index'))
+
     project = Project.query.filter_by(id=project_id).first()
     if project is None:
         flash('Project not found.')
@@ -339,27 +399,35 @@ def edit_project(project_id):
     if form.validate_on_submit():
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
-              project.timestamp = datetime.now()
-              project.name = form.name.data
-              project.description = form.description.data
-              
-              # Upload file
-              if not os.environ.get('HEROKU'):
+                # check if tag woth the same name exists
+                project = Project.query.filter_by(name=form.name.data).first()
+                if project is not None:
+                    flash('Project with the same name already exists.')
+                    return render_template('edit_project.html',
+                                    form=form,
+                                    project=project,
+                                    title='Edit project')
+                project.timestamp = datetime.now()
+                project.name = form.name.data
+                project.description = form.description.data
+
+                # Upload file
+                if not os.environ.get('HEROKU'):
                   if form.upload_file.data.filename:
                     filename = secure_filename(form.upload_file.data.filename)
-                    if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                    if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
                         current_milli_time = lambda: int(round(time.time() * 1000))
                         filename = str(current_milli_time()) + filename
-                    form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                    form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
                     project.filename = filename
-              else:
+                else:
                   project.filename = form.upload_file.data.filename
 
-              flash('Project was edited successfully.')
+                flash('Project was edited successfully.')
 
             elif request.form['submit'] == 'finalise':
               project.finished = True
-              for asset in project:
+              for asset in project.assets:
                 asset.finished = True
               flash('Project and assets in project were marked as finished.')
 
@@ -401,11 +469,19 @@ def description(description_id=0):
     if description is None:
         flash('Description not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
+    sound_location = SOUND_UPLOAD_FOLDER
+
+    # Check if attachment is a videofile
+    attachment_is_video = False
+    if description.filename is not None:
+        attachment_is_video = check_if_video(description.filename)
 
     return render_template('description.html',
                            description=description,
-                           attachment_location=attachment_location)
+                           attachment_location=attachment_location,
+                           sound_location=sound_location,
+                           attachment_is_video=attachment_is_video)
 
 @app.route('/iterations', methods=['GET', 'POST'])
 @login_required
@@ -426,7 +502,7 @@ def iteration(iteration_id=0):
     if iteration is None:
         flash('Itteration not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = SOUND_UPLOAD_FOLDER
     return render_template('iteration.html',
                            iteration=iteration,
                            attachment_location=attachment_location)
@@ -446,7 +522,7 @@ def verification(verification_id=0):
     if verification is None:
         flash('Verification not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('verification.html',
                            verification=verification,
                            attachment_location=attachment_location)
@@ -585,10 +661,21 @@ def sound(sound_id=0):
 def edit_sound(sound_id):
     sound = Sound.query.filter_by(id=sound_id).first()
     form = EditSoundForm()
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
 
     if form.validate_on_submit():
         # check if sound woth the same name exists
-        sound = Sound.query.filter_by(id=sound_id).first()
+        sound = Sound.query.filter_by(name=form.name.data).first()
+        if sound is not None:
+            flash('Sound with the same name already exists.')
+            return render_template('edit_sound.html',
+                            form=form,
+                            sound=sound,
+                            title='Edit sound',
+                            heroku_state=heroku_state)
         sound.timestamp = datetime.now()
         sound.name = form.name.data
         sound.description = form.description.data
@@ -615,8 +702,8 @@ def edit_sound(sound_id):
 
         db.session.commit()
         
-        flash('Sound was edited.')
-        return redirect(url_for('index'))
+        flash('Sound was edited successfully.')
+        return redirect(url_for('sound', sound_id=sound_id))
 
     elif request.method != "POST":
         if sound is not None:
@@ -625,12 +712,10 @@ def edit_sound(sound_id):
             form.sound_type.data = sound.sound_type
             form.sound_family.data = sound.sound_family
             form.rights.data = sound.rights
-    if os.environ.get('HEROKU'):
-        heroku_state = 1
-    else:
-        heroku_state = 0
+            form.upload_file.data = sound.filename
     return render_template('edit_sound.html',
                            form=form,
+                           title='Edit sound',
                            sound=sound,
                            heroku_state=heroku_state)
 
@@ -688,22 +773,9 @@ def add_asset():
         for supplier in form.suppliers.data:
             asset.supplier_add(SupplierUser.query.filter_by(id=int(supplier)).first())
         asset.init_in_hands()
-                
-        # Upload file
-        if not os.environ.get('HEROKU'):
-            if form.upload_file.data.filename:
-    	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
-    	            current_milli_time = lambda: int(round(time.time() * 1000))
-    	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
-    	        asset.filename = filename
-        else:
-            asset.filename = form.upload_file.data.filename
 
         db.session.add(asset)
-        db.session.commit()    
-        
+
         description = Description()
         description.description = form.description.data
         description.duration = form.duration.data
@@ -713,6 +785,20 @@ def add_asset():
         description.timestamp = datetime.now()
         description.asset_id = asset.id
         description.user_id = g.user.id
+
+        # Upload file
+        if not os.environ.get('HEROKU'):
+            if form.upload_file.data.filename:
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
+                asset.filename = filename
+                description.filename = filename
+        else:
+            asset.filename = form.upload_file.data.filename
+            description.filename = form.upload_file.data.filename
 
         # Change tags
         for tag in form.tags.data:
@@ -763,10 +849,10 @@ def edit_asset(asset_id):
               if not os.environ.get('HEROKU'):
                   if form.upload_file.data.filename:
                     filename = secure_filename(form.upload_file.data.filename)
-                    if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                    if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
                         current_milli_time = lambda: int(round(time.time() * 1000))
                         filename = str(current_milli_time()) + filename
-                    form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                    form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
                     asset.filename = filename
               else:
                   asset.filename = form.upload_file.data.filename
@@ -854,10 +940,10 @@ def describe(asset_id):
         if not os.environ.get('HEROKU'):
             if form.upload_file.data:
     	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	        if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
     	            current_milli_time = lambda: int(round(time.time() * 1000))
     	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
     	        description.filename = filename
         else:
             description.filename = form.upload_file.data.filename
@@ -925,10 +1011,10 @@ def verify(asset_id):
         if not os.environ.get('HEROKU'):
             if form.upload_file.data:
     	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	        if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
     	            current_milli_time = lambda: int(round(time.time() * 1000))
     	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
     	        verification.filename = filename
         else:
             verification.filename = form.upload_file.data.filename
@@ -977,7 +1063,7 @@ def verify(asset_id):
                             form=form,
                             asset=asset,
                             iteration=asset.get_last_iteration(),
-                            attachment_location=ATACHMENT_UPLOAD_FOLDER,
+                            attachment_location=SOUND_UPLOAD_FOLDER,
                             title='Verify asset',
                             heroku_state=heroku_state)
 
@@ -1000,20 +1086,27 @@ def iterate(asset_id):
         iteration.timestamp = datetime.now()
         iteration.asset_id = asset.id
         iteration.user_id = g.user.id
-
+        asset.iteration_number = asset.iteration_number+1
+        
         # Upload file
+        sound = Sound()
+        sound.timestamp = datetime.now()
+        sound.name = "Asset-" + str(asset.id) + "_ver-" + str(asset.iteration_number)
+        sound.description = "Iteration for asset " + str(asset.id) + " ver. " \
+            + str(asset.iteration_number) + "."
         if not os.environ.get('HEROKU'):
             if form.upload_file.data:
     	        filename = secure_filename(form.upload_file.data.filename)
-    	        if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+    	        if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
     	            current_milli_time = lambda: int(round(time.time() * 1000))
     	            filename = str(current_milli_time()) + filename
-    	        form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+    	        form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
     	        iteration.filename = filename
+                sound.filename = filename
         else:
             iteration.filename = form.upload_file.data.filename
-
-        asset.iteration_number = asset.iteration_number+1
+            sound.filename = form.upload_file.data.filename
+        db.session.add(sound)
 
         # Find who needs to work on the asset next
         current_user_found  = False
@@ -1062,9 +1155,20 @@ def add_project():
     if g.user.type == "supplier_user":
         flash('You do not have permissions to create new projects.')
         return redirect(url_for('index'))
-
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
     form = NewProjectForm()
     if form.validate_on_submit():
+        # check if tag woth the same name exists
+        project = Project.query.filter_by(name=form.name.data).first()
+        if project is not None:
+            flash('Project with such name already exists.')
+            return render_template('add_project.html',
+                            form=form,
+                            title='Add project',
+                            heroku_state=heroku_state)
         project = Project()
         project.timestamp = datetime.now()
         project.name = form.name.data
@@ -1075,10 +1179,10 @@ def add_project():
         if not os.environ.get('HEROKU'):
             if form.upload_file.data.filename:
                 filename = secure_filename(form.upload_file.data.filename)
-                if os.path.isfile('app/' + ATACHMENT_UPLOAD_FOLDER + filename):
+                if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
                     current_milli_time = lambda: int(round(time.time() * 1000))
                     filename = str(current_milli_time()) + filename
-                form.upload_file.data.save('app/' + ATACHMENT_UPLOAD_FOLDER + filename)
+                form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
                 project.filename = filename
         else:
             project.filename = form.upload_file.data.filename
@@ -1088,10 +1192,6 @@ def add_project():
         
         flash('New project created.')
         return redirect(url_for('index'))
-    if os.environ.get('HEROKU'):
-        heroku_state = 1
-    else:
-        heroku_state = 0
     return render_template('add_project.html',
                             form=form,
                             title='Add project',
@@ -1119,7 +1219,7 @@ def project(project_id=0):
     if project is None:
         flash('Project not found.')
         return redirect(url_for('index'))
-    attachment_location = ATACHMENT_UPLOAD_FOLDER
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('project.html',
                            project=project,
                            attachment_location=attachment_location)
@@ -1149,6 +1249,14 @@ def search_results(query):
                            projects_results=projects_results,
                            assets_results=assets_results,
                            sound_location=SOUND_UPLOAD_FOLDER)
+
+@app.route('/readme', methods=["GET", "POST"])
+def readme():
+    with open('README.md', 'r') as myfile:
+        readme_content=myfile.read()
+    readme_content = Markup(markdown.markdown(readme_content))
+    return render_template('readme.html',
+        readme_content=readme_content)
 
 # For autofill for tags and tag cloud
 def update_tags_json():
@@ -1186,6 +1294,8 @@ def sign_s3(type):
         S3_BUCKET = os.environ.get('S3_BUCKET_SOUNDS')
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
+    elif type == "image":
+        S3_BUCKET = os.environ.get('S3_BUCKET_IMAGES')
     else:
         S3_BUCKET = "N/A"   
 
@@ -1213,3 +1323,8 @@ def sign_s3(type):
     'data': presigned_post,
     'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
     })
+
+def check_if_video(filename):
+    if filename.lower().endswith(('.avi', '.mpeg', '.mp4')):
+        return True
+    return False

@@ -6,60 +6,12 @@ This application is meant to support the process of creation/design of auditory 
 Installation
 ------------
 
-Whith pip install virtual environment in the project folder: 
-```
-pip install virtualenv
-```
-
-Then install [flask](http://flask.pocoo.org/ "flask") framework in the folder:
-
-```
-virtualenv flask
-```
-
-If you are on Linux, OS X or Cygwin, install flask and extensions by entering the following commands, one after another:
-
-```
-$ flask/bin/pip install -r requirements.txt
-```
-
-If you are on Windows the commands are slightly different:
-
-```
-$ flask\Scripts\pip.exe install -r requirements.txt
-```
-
-Then, a database needs to be initialised:
-
-```
-$ flask/bin/python db_create.py
-```
-
-On Windows:
-
-```
-$ flask\Scripts\python.exe db_create.py
-```
+Coming soon
 
 Running
 -------
-To run the application, after initial setup as explained in the section above, simply run the command (on Unix-based system):
 
-```
-$ flask/bin/python run.py
-```
-
-Or on Windows:
-
-```
-$ flask\Scripts\pyhton.exe run.py
-```
-
-After the server initializes it will listen on port 5000 waiting for connections:
-
-```
-http://localhost:5000
-```
+Coming soon
 
 Use
 -------
