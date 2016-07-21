@@ -1296,6 +1296,8 @@ def sign_s3(type):
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
     elif type == "image":
+        print "image detected"
+        print os.environ.get('S3_BUCKET_IMAGES')
         S3_BUCKET = os.environ.get('S3_BUCKET_IMAGES')
     else:
         S3_BUCKET = "N/A"   
