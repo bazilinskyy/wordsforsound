@@ -201,6 +201,7 @@ def edit():
                 current_milli_time = lambda: int(round(time.time() * 1000))
                 filename = str(current_milli_time()) + filename
             form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
+            print filename
             g.user.avatar_filename = filename
         else:
           g.user.avatar_filename = form.upload_file.data.filename

@@ -48,7 +48,6 @@
         {{ form.receive_emails(type='checkbox') }} Receive emails
       </fieldset>
 
-      </fieldset>
       <input type="hidden" id="file-url" name="file-url">
       <fieldset class="form-group">
         <label for="upload_file">Avatar image</label>
@@ -67,5 +66,4 @@
 {% if heroku_state %}
   <script src="/static/js/upload_image.js"></script>
 {% endif %}
-
 {% endblock %}
