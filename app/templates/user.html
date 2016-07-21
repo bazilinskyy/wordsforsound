@@ -5,7 +5,7 @@
     {% include 'flash.html' %}
     <div class="well well-large">
         <div class="pull-right">
-            <img src="{{ user.avatar(128) }}" class="img-polaroid">
+            <img src="{{ user.avatar(128) }}" class="img-polaroid" width="128">
         </div>
         <h1>{{ user.nickname }}{% if user.full_name != "N/A" %} - {{ user.full_name }} {% endif %}</h1>
         {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}

@@ -203,7 +203,7 @@ def edit():
             form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
             g.user.avatar_filename = filename
         else:
-          print filename
+          print form.upload_file.data.filename
           g.user.avatar_filename = form.upload_file.data.filename
 
         db.session.add(g.user)
