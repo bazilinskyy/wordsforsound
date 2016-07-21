@@ -203,7 +203,6 @@ def edit():
             form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
             g.user.avatar_filename = filename
         else:
-          print form.upload_file.data.filename
           g.user.avatar_filename = form.upload_file.data.filename
 
         db.session.add(g.user)
@@ -217,7 +216,13 @@ def edit():
         form.last_name.data = g.user.last_name
         form.receive_emails.data = g.user.receive_emails
         form.upload_file.data = g.user.avatar_filename
-    return render_template('edit.html', form=form)
+    if os.environ.get('HEROKU'):
+        heroku_state = 1
+    else:
+        heroku_state = 0
+    return render_template('edit.html',
+        form=form,
+        heroku_state=heroku_state)
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -1296,8 +1301,6 @@ def sign_s3(type):
     elif type == "attachment":
         S3_BUCKET = os.environ.get('S3_BUCKET_ATTACHMENTS')
     elif type == "image":
-        print "image detected"
-        print os.environ.get('S3_BUCKET_IMAGES')
         S3_BUCKET = os.environ.get('S3_BUCKET_IMAGES')
     else:
         S3_BUCKET = "N/A"   
