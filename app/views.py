@@ -380,9 +380,11 @@ def asset(asset_id=0):
         flash('Asset not found.')
         return redirect(url_for('index'))
     attachment_location = ATTACHMENT_UPLOAD_FOLDER
+    sound_location = SOUND_UPLOAD_FOLDER
     return render_template('asset.html',
                            asset=asset,
-                           attachment_location = attachment_location)
+                           attachment_location = attachment_location,
+                           sound_location=sound_location)
 
 
 @app.route('/project/edit', methods=['GET', 'POST'])
@@ -508,10 +510,10 @@ def iteration(iteration_id=0):
     if iteration is None:
         flash('Itteration not found.')
         return redirect(url_for('index'))
-    attachment_location = SOUND_UPLOAD_FOLDER
+    sound_location = SOUND_UPLOAD_FOLDER
     return render_template('iteration.html',
                            iteration=iteration,
-                           attachment_location=attachment_location)
+                           sound_location=sound_location)
 
 @app.route('/verifications', methods=['GET', 'POST'])
 @login_required
