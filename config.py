@@ -39,7 +39,7 @@ if not os.environ.get('HEROKU'):
 	SOUND_UPLOAD_FOLDER = '/static/sound_uploads/'
 else:
 	SOUND_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_SOUNDS'))
-SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a', 'wwise']
+SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a', 'wwise', 'aiff']
 
 # uploading attachments
 if not os.environ.get('HEROKU'):

@@ -77,7 +77,7 @@ After logging in the user it redirected to the home page at `index`. This page c
 New projects can be added at `add_project`. Project cannot be deleted.
 
 #### Assets
-New asset can be added at `add_asset`. Assets cannot be deleted, but they can be marked as finished at the verification stage.
+New asset can be added at `add_asset`. Assets cannot be deleted, but they can be marked as finished at the verification stage. In the asset creation page, a client can specify pitch, which take any input (e.g. "A#").
 
 #### Tags
 The database contains tags, which can be used for descriptions of assets and tagging sounds. A list of all tags is available at `tags`. New tag can be added at `add_tag`. Tags can be deleted at `delete_tag`.
