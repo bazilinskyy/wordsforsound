@@ -21,6 +21,8 @@
             		Iteration
             	{% elif asset.status==3 %}
             		Verification
+                {% elif asset.status==4 %}
+                    Finished
             	{% else %}
             		In work
             	{% endif %}
