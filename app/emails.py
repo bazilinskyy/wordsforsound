@@ -37,7 +37,7 @@ def description_notification(user, asset):
       user_type = "supplier"
     else:
       user_type = "N/A"
-    send_email("Description for asset " + asset.name + " is ready.",
+    send_email("Description for asset " + asset.name + " is ready",
                user.email,
                str(render_template("description_email.html",
                                user=user,
@@ -52,7 +52,7 @@ def iteration_notification(user, asset):
       user_type = "supplier"
     else:
       user_type = "N/A"
-    send_email("Iteration for asset " + asset.name + " is ready.",
+    send_email("Iteration for asset " + asset.name + " is ready",
                user.email,
                str(render_template("iteration_email.html",
                                user=user,
@@ -63,9 +63,16 @@ def verification_notification(user, asset):
   if user.receive_emails and asset.notify_by_email:
     if user.type == "client_user" and asset.status == AssetStatus.verification:
       user_type = "client"
-      send_email("Verificartion for asset " + asset.name + " is ready.",
+      send_email("Verificartion for asset " + asset.name + " is ready",
                user.email,
                str(render_template("verification_email.html",
                                user=user,
                                asset=asset,
                                user_type=user_type)))
+
+def share_sound(user, sound, email):
+    send_email("User " + user.nickname + " shared a sound with you",
+             email,
+             str(render_template("share_sound_email.html",
+                             user=user,
+                             sound=sound)))

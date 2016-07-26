@@ -12,7 +12,7 @@ from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, Dele
     RegisterForm, SearchForm, EditUserForm, EditAssetForm, EditTagForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
-from .emails import description_notification, iteration_notification, verification_notification
+from .emails import description_notification, iteration_notification, verification_notification, share_sound
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
@@ -774,18 +774,23 @@ def sounds(page=1):
 @app.route('/sound/<int:sound_id>/', methods=['GET', 'POST'])
 @login_required
 def sound(sound_id=0):
-    print sound_id
     sound = Sound.query.filter_by(id=sound_id).first()
+    print sound_id
     if sound is None:
         flash('Sound not found.')
         return redirect(url_for('index'))
-
     if sound.description == '':
         sound.description = 'N/A'
 
+    form = EmailForm()
+    if form.validate_on_submit():
+        share_sound(g.user, sound, form.email.data)
+        flash('Sound was shared by email.')
+
     return render_template('sound.html',
                            sound=sound,
-                           sound_location=SOUND_UPLOAD_FOLDER)
+                           sound_location=SOUND_UPLOAD_FOLDER,
+                           form=form)
 
 @app.route('/sound/edit', methods=['GET', 'POST'])
 @app.route('/sound/<int:sound_id>/edit/', methods=['GET', 'POST'])
