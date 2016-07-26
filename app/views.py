@@ -3,6 +3,7 @@ from __future__ import division
 from flask import render_template, flash, redirect, session, url_for, request, g, Markup
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.sqlalchemy import get_debug_queries
+from flask.ext.paginate import Pagination
 from flask.ext.mail import Message
 from datetime import datetime
 from app import app, db, lm, mail
@@ -359,20 +360,36 @@ def delete_tag(tag_id=0):
                             form=form,
                             title='Delete tag')
 
+@app.route('/assets', methods=['GET', 'POST'])
 @app.route('/assets/<string:assets_type>', methods=['GET', 'POST'])
-@app.route('/sounds/<string:assets_type>/<int:page>', methods=['GET', 'POST'])
+@app.route('/assets/<string:assets_type>/<int:page>', methods=['GET', 'POST'])
 @login_required
-def assets(assets_type, page=1):
+def assets(assets_type="all", page=1):
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
     if assets_type == 'ongoing':
         assets = Asset.query.filter_by(finished=False).paginate(page, ASSETS_PER_PAGE, False)
+        total_count = len(Asset.query.filter_by(finished=False).all())
     elif assets_type == 'finished':
         assets = Asset.query.filter_by(finished=True).paginate(page, ASSETS_PER_PAGE, False)
+        total_count = len(Asset.query.filter_by(finished=True).all())
     else:
         assets = Asset.query.paginate(page, ASSETS_PER_PAGE, False)
+        total_count = len(Asset.query.all())
+    pagination = Pagination(page=page,
+                            per_page=ASSETS_PER_PAGE,
+                            total=total_count,
+                            search=search,
+                            record_name='assets',
+                            css_framework='foundation')
     return render_template('assets.html',
                             assets=assets,
                             assets_type=assets_type,
-                            page=page)
+                            pagination=pagination)
+
 @app.route('/asset')
 @app.route('/asset/<int:asset_id>/')
 @login_required
@@ -643,9 +660,21 @@ def delete_sound(sound_id=0):
 @app.route('/sounds/<int:page>', methods=['GET', 'POST'])
 @login_required
 def sounds(page=1):
-    sounds = Sound.query.paginate(page, SOUNDS_PER_PAGE, False)
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
+    sounds = Sound.query.order_by(Sound.timestamp.desc()).paginate(page, SOUNDS_PER_PAGE, False)
+    total_count = len(Sound.query.all())
+    pagination = Pagination(page=page,
+                            per_page=5,
+                            total=len(sounds.items),
+                            search=search,
+                            css_framework='foundation')
     return render_template('sounds.html',
                             sounds=sounds,
+                            pagination=pagination,
                             sound_location=SOUND_UPLOAD_FOLDER)
 
 @app.route('/sound', methods=['GET', 'POST'])
