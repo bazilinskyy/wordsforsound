@@ -15,13 +15,14 @@ class LoginForm(Form):
     username = StringField('Username')
     password = StringField('Password')
 
-class EditForm(Form):
+class EditUserForm(Form):
     nickname = StringField('nickname', validators=[DataRequired()])
     first_name = StringField('first_name', validators=[DataRequired()])
     last_name = StringField('last_name', validators=[DataRequired()])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
     receive_emails = BooleanField('receive_emails', default=True)
     upload_file = FileField('upload_file')
+    email = StringField('email', validators=[DataRequired(), Email(message=None)])
 
     def __init__(self, original_nickname, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)

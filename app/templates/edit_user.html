@@ -9,15 +9,15 @@
     <form action="" method="post" name="edit_user" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
       <div class="row" style="margin-left: -15px">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <fieldset class="form-group">
-            {{ form.nickname(maxlength=64, class_='form-control', placeholder='Your username') }}
+            {{ form.nickname(maxlength=64, class_='form-control', placeholder='Username') }}
             {% for error in form.nickname.errors %}
                 <span class="help-inline">[{{ error }}]</span><br>
             {% endfor %}
           </fieldset>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <fieldset class="form-group">
             {{ form.first_name(maxlength=64, class_='form-control', placeholder='First name') }}
             {% for error in form.first_name.errors %}
@@ -25,10 +25,25 @@
             {% endfor %}
           </fieldset>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <fieldset class="form-group">
             {{ form.last_name(maxlength=64, class_='form-control', placeholder='Last name') }}
             {% for error in form.last_name.errors %}
+                <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+        </div>
+        <div class="col-md-3">
+          <fieldset class="form-group">
+            {{ form.email(class_='form-control', type='email', placeholder='Email', required="") }}
+            <span class="error">
+              {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                  {{ error }}
+                {% endfor %}
+              {% endif %}
+            </span>
+            {% for error in form.nickname.errors %}
                 <span class="help-inline">[{{ error }}]</span><br>
             {% endfor %}
           </fieldset>

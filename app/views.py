@@ -8,7 +8,7 @@ from datetime import datetime
 from app import app, db, lm, mail
 from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, DeleteTagForm, DeleteSoundForm, \
     VerificationForm, IterationForm, NewProjectForm, EditSoundForm, LoginForm, PasswordForm, EmailForm, \
-    RegisterForm, SearchForm, EditForm, EditAssetForm, EditTagForm
+    RegisterForm, SearchForm, EditUserForm, EditAssetForm, EditTagForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
 from .emails import description_notification, iteration_notification, verification_notification
@@ -183,16 +183,17 @@ def user(nickname, page=1):
                            user_assets=user_assets)
 
 
-@app.route('/edit', methods=['GET', 'POST'])
+@app.route('/user/edit', methods=['GET', 'POST'])
 @login_required
-def edit():
-    form = EditForm(g.user.nickname)
+def edit_user():
+    form = EditUserForm(g.user.nickname)
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
         g.user.first_name = form.first_name.data
         g.user.last_name = form.last_name.data
         g.user.receive_emails = form.receive_emails.data
+        g.user.email = form.email.data
 
         if not os.environ.get('HEROKU'):
           if form.upload_file.data.filename:
@@ -208,7 +209,7 @@ def edit():
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('edit'))
+        return redirect(url_for('edit_user'))
     elif request.method != "POST":
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
@@ -216,11 +217,12 @@ def edit():
         form.last_name.data = g.user.last_name
         form.receive_emails.data = g.user.receive_emails
         form.upload_file.data = g.user.avatar_filename
+        form.email.data = g.user.email
     if os.environ.get('HEROKU'):
         heroku_state = 1
     else:
         heroku_state = 0
-    return render_template('edit.html',
+    return render_template('edit_user.html',
         form=form,
         heroku_state=heroku_state)
 
