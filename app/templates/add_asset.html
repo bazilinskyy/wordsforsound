@@ -90,7 +90,10 @@
         var tags = new Bloodhound({
           datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
-          prefetch: '/static/tags.json'
+          prefetch: {
+              url: '/static/tags.json',
+              cache: false
+          }
         });
         tags.initialize();
 
@@ -128,7 +131,10 @@
         var sounds = new Bloodhound({
           datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
-          prefetch: '/static/sounds.json'
+          prefetch: {
+              url: '/static/sounds.json',
+              cache: false
+          }
         });
         sounds.initialize();
 
