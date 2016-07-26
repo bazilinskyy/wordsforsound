@@ -335,10 +335,23 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tags(page=1):
-    tags = Tag.query.order_by(Tag.name.asc()).all()
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
+    tags = Tag.query.order_by(Tag.name.asc()).paginate(page, TAGS_PER_PAGE, False)
+    total_count = len(Tag.query.all())
+    pagination = Pagination(page=page,
+                            per_page=TAGS_PER_PAGE,
+                            total=total_count,
+                            search=search,
+                            css_framework='foundation')
     return render_template('tags.html',
                             title='Tags',
-                            tags=tags)
+                            tags=tags,
+                            pagination=pagination)
+
 @app.route('/tag')
 @app.route('/tag/<int:tag_id>/')
 @login_required
