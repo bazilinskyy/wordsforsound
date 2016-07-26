@@ -16,7 +16,8 @@ from .emails import description_notification, iteration_notification, verificati
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
-    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE, AVATAR_UPLOAD_FOLDER
+    TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE, AVATAR_UPLOAD_FOLDER, \
+    ASSETS_PER_PAGE_INDEX
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -232,46 +233,13 @@ def edit_user():
 @app.route('/index/<int:page_description>/<int:page_iteration>/<int:page_verification>/<int:page_otherhands>', methods=['GET', 'POST'])
 @login_required
 def index(page_description=1, page_iteration=1, page_verification=1, page_otherhands=1):
-
-
-    search = False
-    q = request.args.get('q')
-    if q:
-        search = True
-
-    assets_description = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).paginate(page_verification, ASSETS_PER_PAGE, False)
-    total_count_description = len(Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).all())
-    assets_iteration = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).paginate(page_verification, ASSETS_PER_PAGE, False)
-    total_count_iteration = len(Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).all())
-    assets_verification = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).paginate(page_verification, ASSETS_PER_PAGE, False)
-    total_count_verification = len(Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).all())
+    assets_description = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).order_by(Asset.timestamp.desc()).paginate(page_verification, ASSETS_PER_PAGE_INDEX, False)
+    assets_iteration = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).order_by(Asset.timestamp.desc()).paginate(page_verification, ASSETS_PER_PAGE_INDEX, False)
+    assets_verification = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).order_by(Asset.timestamp.desc()).paginate(page_verification, ASSETS_PER_PAGE_INDEX, False)
     if g.user.type == "client_user":
-        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
-        total_count_otherhands = len(Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).all())
+        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).order_by(Asset.timestamp.desc()).paginate(page_otherhands, ASSETS_PER_PAGE_INDEX, False)
     else:
-        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.suppliers.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
-        total_count_otherhands = len(Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.suppliers.contains(g.user)).all())
-
-    pagination_description = Pagination(page=page_description,
-                    per_page=ASSETS_PER_PAGE,
-                    total=total_count_description,
-                    search=search,
-                    css_framework='foundation')
-    pagination_iteration = Pagination(page=page_iteration,
-                        per_page=ASSETS_PER_PAGE,
-                        total=total_count_iteration,
-                        search=search,
-                        css_framework='foundation')
-    pagination_verification = Pagination(page=page_verification,
-                        per_page=ASSETS_PER_PAGE,
-                        total=total_count_verification,
-                        search=search,
-                        css_framework='foundation')
-    pagination_otherhands = Pagination(page=page_otherhands,
-                        per_page=ASSETS_PER_PAGE,
-                        total=total_count_otherhands,
-                        search=search,
-                        css_framework='foundation')
+        assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.suppliers.contains(g.user)).order_by(Asset.timestamp.desc()).paginate(page_otherhands, ASSETS_PER_PAGE_INDEX, False)
 
     return render_template('index.html',
                            title='Home',
@@ -282,11 +250,86 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
                            page_description=page_description,
                            page_iteration=page_iteration,
                            page_verification=page_verification,
-                           page_otherhands=page_otherhands,
-                           pagination_description=pagination_description,
-                           pagination_iteration=pagination_iteration,
-                           pagination_verification=pagination_verification,
-                           pagination_otherhands=pagination_otherhands)
+                           page_otherhands=page_otherhands)
+
+# @app.route('/', methods=['GET', 'POST'])
+# @app.route('/index', methods=['GET', 'POST'])
+# @login_required
+# def index():
+#     search = False
+#     q = request.args.get('q')
+#     if q:
+#         search = True
+
+#     try:
+#         page_description = int(request.args.get('page_description'))
+#     except:
+#         page_description=1
+#     try:
+#         page_iteration = int(request.args.get('page_iteration'))
+#     except:
+#         page_iteration=1
+#     try:
+#         page_verification = int(request.args.get('page_verification'))
+#     except:
+#         page_verification=1
+#     try:
+#         page_otherhands = int(request.args.get('page_otherhands'))
+#     except:
+#         page_otherhands=1
+
+#     assets_description = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).paginate(page_verification, ASSETS_PER_PAGE, False)
+#     total_count_description = len(Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 1).all())
+#     assets_iteration = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).paginate(page_verification, ASSETS_PER_PAGE, False)
+#     total_count_iteration = len(Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 2).all())
+#     assets_verification = Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).paginate(page_verification, ASSETS_PER_PAGE, False)
+#     total_count_verification = len(Asset.query.join(User).filter(Asset.in_hands_id == g.user.id).filter(Asset.status == 3).all())
+#     if g.user.type == "client_user":
+#         assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+#         total_count_otherhands = len(Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.clients.contains(g.user)).all())
+#     else:
+#         assets_otherhands = Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.suppliers.contains(g.user)).paginate(page_otherhands, ASSETS_PER_PAGE, False)
+#         total_count_otherhands = len(Asset.query.filter(Asset.in_hands_id != g.user.id).filter(Asset.finished != True).filter(Asset.suppliers.contains(g.user)).all())
+
+#     pagination_description = Pagination(page=page_description,
+#                         per_page=ASSETS_PER_PAGE,
+#                         total=total_count_description,
+#                         search=search,
+#                         css_framework='foundation',
+#                         page_parameter='page_description')
+#     pagination_iteration = Pagination(page=page_iteration,
+#                         per_page=ASSETS_PER_PAGE,
+#                         total=total_count_iteration,
+#                         search=search,
+#                         css_framework='foundation',
+#                         page_parameter='page_iteration')
+#     pagination_verification = Pagination(page=page_verification,
+#                         per_page=ASSETS_PER_PAGE,
+#                         total=total_count_verification,
+#                         search=search,
+#                         css_framework='foundation',
+#                         page_parameter='page_verification')
+#     pagination_otherhands = Pagination(page=page_otherhands,
+#                         per_page=ASSETS_PER_PAGE,
+#                         total=total_count_otherhands,
+#                         search=search,
+#                         css_framework='foundation',
+#                         page_parameter='page_otherhands')
+#     print page_description
+#     print page_iteration
+#     print page_verification
+#     print page_otherhands
+#     print pagination_otherhands.info
+#     return render_template('index.html',
+#                            title='Home',
+#                            assets_otherhands=assets_otherhands,
+#                            assets_description=assets_description,
+#                            assets_iteration=assets_iteration,
+#                            assets_verification=assets_verification,
+#                            pagination_description=pagination_description,
+#                            pagination_iteration=pagination_iteration,
+#                            pagination_verification=pagination_verification,
+#                            pagination_otherhands=pagination_otherhands)
 
 @app.route('/tags', methods=['GET', 'OPST'])
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
