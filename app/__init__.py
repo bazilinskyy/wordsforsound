@@ -8,7 +8,7 @@ from config import basedir
 
 app = Flask(__name__)
 app.config.from_object('config')
-app.config['MAX_CONTENT_LENGTH'] = 512 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 512 * 1024 * 1024 # Max file upload size
 db = SQLAlchemy(app)
 lm = LoginManager()
 lm.init_app(app)
