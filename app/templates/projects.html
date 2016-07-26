@@ -18,11 +18,6 @@
 
 <!-- Description form -->
 <div class="well">
-  <!-- <form>
-    <fieldset class="form-group">
-      <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Your search phrase">
-    </fieldset>
-  </form> -->
 
   <div class="list-group">
     {% for project in projects.items %}
@@ -30,20 +25,7 @@
     {% endfor %}
   </div>
 
-    {% if projects.items|length > 0 %}
-      <ul class="pager">
-        {% if projects.has_prev %}
-          <li class="previous"><a href="{{ url_for('projects', page=projects.prev_num, projects_type=projects_type) }}">{{'Older projects'}}</a></li>
-          {% else %}
-          <li class="previous disabled"><a href="#">{{'Older projects'}}</a></li>
-          {% endif %}
-          {% if projects.has_next %}
-          <li class="next"><a href="{{ url_for('projects', page=projects.next_num, projects_type=projects_type) }}">{{'Newer projects'}}</a></li>
-          {% else %}
-          <li class="next disabled"><a href="#">{{'Newer projects'}}</a></li>
-        {% endif %}
-      </ul>
-    {% endif %}
+  {{ pagination.links }}
 
 </div>
 {% endblock %}

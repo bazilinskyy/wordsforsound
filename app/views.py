@@ -668,8 +668,8 @@ def sounds(page=1):
     sounds = Sound.query.order_by(Sound.timestamp.desc()).paginate(page, SOUNDS_PER_PAGE, False)
     total_count = len(Sound.query.all())
     pagination = Pagination(page=page,
-                            per_page=5,
-                            total=len(sounds.items),
+                            per_page=SOUNDS_PER_PAGE,
+                            total=total_count,
                             search=search,
                             css_framework='foundation')
     return render_template('sounds.html',
@@ -1236,20 +1236,34 @@ def add_project():
                             title='Add project',
                             heroku_state=heroku_state)
 
+@app.route('/projects', methods=['GET', 'POST'])
 @app.route('/projects/<string:projects_type>', methods=['GET', 'POST'])
 @app.route('/projects/<string:projects_type>/<int:page>', methods=['GET', 'POST'])
 @login_required
-def projects(projects_type, page=1):
+def projects(projects_type='all', page=1):
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
     if projects_type == 'ongoing':
         projects = Project.query.filter_by(finished=False).paginate(page, PROJECTS_PER_PAGE, False)
+        total_count = len(Project.query.filter_by(finished=False).all())
     elif projects_type == 'finished':
         projects = Project.query.filter_by(finished=True).paginate(page, PROJECTS_PER_PAGE, False)
+        total_count = len(Project.query.filter_by(finished=True).all())
     else:
         projects = Project.query.paginate(page, PROJECTS_PER_PAGE, False)
+        total_count = len(Project.query.all())
+    pagination = Pagination(page=page,
+                            per_page=PROJECTS_PER_PAGE,
+                            total=total_count,
+                            search=search,
+                            css_framework='foundation')
     return render_template('projects.html',
                             projects=projects,
                             projects_type=projects_type,
-                            page=page)
+                            pagination=pagination)
 @app.route('/project')
 @app.route('/project/<int:project_id>/')
 @login_required
