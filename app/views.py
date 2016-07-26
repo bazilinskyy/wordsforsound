@@ -211,7 +211,7 @@ def edit_user():
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('edit_user'))
+        return redirect(url_for('user', nickname=g.user.nickname))
     elif request.method != "POST":
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
@@ -692,9 +692,11 @@ def add_sound():
         # Upate json files for autofill
         update_sounds_json()
         update_tags_json()
-        
         flash('New sound added.')
-        return redirect(url_for('add_sound'))
+        if form.add_more.data == True:
+            return redirect(url_for('add_sound'))
+        else:
+            return redirect(url_for('index'))
     filename = None
     if os.environ.get('HEROKU'):
         heroku_state = 1

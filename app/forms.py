@@ -147,13 +147,14 @@ class DeleteSoundForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 
 class AddSoundForm(Form):
-	name = StringField('name', validators=[DataRequired()])
-	description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
-	sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
-	sound_family = SelectField('sound_family', choices=sound_families)
-	upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
-	tags = StringField('tags')
-	rights = StringField('rights')
+    name = StringField('name', validators=[DataRequired()])
+    description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
+    sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
+    sound_family = SelectField('sound_family', choices=sound_families)
+    upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
+    tags = StringField('tags')
+    rights = StringField('rights')
+    add_more = BooleanField('add_more', default=True)
 
 class EditSoundForm(Form):
     name = StringField('name', validators=[DataRequired()])
