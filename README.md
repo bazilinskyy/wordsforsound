@@ -85,7 +85,7 @@ After logging in the user it redirected to the home page at `index`. This page c
 [sound_design_img]: /static/img/sound_design_process.png "Sound design process"
 <p align="center">*Figure 1*. Sound design process.</p>
 
-Please refer to Fig. 2 for an example of the homepage as seen by a client that requests four assets to be made: 1) The asset **Spearcon for activation 01** requires a new descriptions, since the iteration of version 1 was not accepted as final; 2) The asset **Beep for right overtaking** needs to be verified, because the supplier working on the asset provided the first iteration; 3-4) The assets **Earcon for TOR** abd **Beep for left overtaking** are **In other hands**, meaning that the client, who’s homepage you may see on the figure, does not have to take any actions for the assets in question at the moment, i.e. in this case these two assets need to be supplied with iterations by assigned suppliers.
+Please refer to Fig. 2 for an example of the homepage as seen by a client that requests four assets to be made: 1) The asset **Spearcon for activation 01** requires a new descriptions, since the iteration of version 1 was not accepted as final; 2) The asset **Beep for right overtaking** needs to be verified, because the supplier working on the asset provided the first iteration; 3-4) The assets **Earcon for TOR** abd **Beep for left overtaking** are **In other hands**, meaning that the client, who's homepage you may see on the figure, does not have to take any actions for the assets in question at the moment, i.e. in this case these two assets need to be supplied with iterations by assigned suppliers.
 
 ![alt text][index_img]
 [index_img]: /static/img/screenshot_index.png "Homepage of client"
