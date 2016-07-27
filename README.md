@@ -91,6 +91,8 @@ Please refer to Fig. 2 for an example of the homepage as seen by a client that r
 [index_img]: /static/img/screenshot_index.png "Homepage of client"
 <p align="center">*Figure 2*. Example of homepage of client.</p>
 
+The horizontal menu contains the search input field. The input becomes hidden on small window sizes.
+
 #### Projects
 New projects can be added at `add_project`. Project cannot be deleted.
 
