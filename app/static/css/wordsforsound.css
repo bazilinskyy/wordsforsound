@@ -2,5 +2,9 @@
   color: white
 }
 
-span.label_span{
+span.label_span {
+}
+
+span.error, span.help-inline {
+	color: red;
 }
