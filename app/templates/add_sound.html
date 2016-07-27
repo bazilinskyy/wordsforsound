@@ -69,7 +69,10 @@
       var tags = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: '/static/tags.json'
+        prefetch: {
+              url: '/static/tags.json',
+              cache: false
+          }
       });
       tags.initialize();
 
@@ -94,6 +97,10 @@
       {% endfor %}
 
     </fieldset>
+
+    <label>
+      {{ form.add_more(type='checkbox', id='remember_me_field') }} Add more sounds
+    </label>
     <button type="submit" class="btn btn-block btn-success">Add</button>
   </form>
 </div>

@@ -1,0 +1,1 @@
+<p>Hello,</p><p>User <a href="{{ url_for('user', nickname=user.nickname, _external=True)}}">{{ user.nickname}}</a> shared sound <strong>{{ sound.name }}</strong> with you on wordsforsound. Click on the following link to view the sound <a href="{{ url_for('sound', sound_id=sound.id, _external=True)}}">{{ sound.name }}</a>.</p><p>Regards,</br>The wordsforsound admin</p>

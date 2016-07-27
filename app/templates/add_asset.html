@@ -30,18 +30,6 @@
 
       </fieldset>
       <fieldset class="form-group">
-        {{ form.duration(class_='form-control', placeholder='Duration') }}
-        {% for error in form.duration.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
-        {% endfor %}
-      </fieldset>
-      <fieldset class="form-group">
-        {{ form.pitch(class_='form-control', placeholder='Pitch') }}
-        {% for error in form.pitch.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
-        {% endfor %}
-      </fieldset>
-      <fieldset class="form-group">
 
         {% for radio_item in form.sound_type %}
         <label class="radio-inline">
@@ -90,7 +78,10 @@
         var tags = new Bloodhound({
           datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
-          prefetch: '/static/tags.json'
+          prefetch: {
+              url: '/static/tags.json',
+              cache: false
+          }
         });
         tags.initialize();
 
@@ -128,7 +119,10 @@
         var sounds = new Bloodhound({
           datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
-          prefetch: '/static/sounds.json'
+          prefetch: {
+              url: '/static/sounds.json',
+              cache: false
+          }
         });
         sounds.initialize();
 
@@ -186,7 +180,20 @@
         </h3>
       </div>
       <div id="collapse1" class="panel-collapse collapse">
-        <div class="panel-body">Coming soon</div>
+        <div class="panel-body">
+          <fieldset class="form-group">
+            {{ form.duration(class_='form-control', placeholder='Duration') }}
+            {% for error in form.duration.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+          <fieldset class="form-group">
+            {{ form.pitch(class_='form-control', placeholder='Pitch') }}
+            {% for error in form.pitch.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+        </div>
       </div>
     </div>
   </div>

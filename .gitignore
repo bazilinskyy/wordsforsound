@@ -7,5 +7,4 @@ tmp/
 *.sublime-project
 *.sublime-workspace
 tests/
-app/static/*.json
 config_secret.py

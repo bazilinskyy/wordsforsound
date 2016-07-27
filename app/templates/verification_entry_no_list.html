@@ -7,7 +7,7 @@
 <table class="table">
     <tr>
         <td width="70px">
-            <a href="{{ url_for('user', nickname=verification.user.nickname) }}"><img src="{{ verification.user.avatar(70) }}" /></a>
+            <a href="{{ url_for('user', nickname=verification.user.nickname) }}"><img src="{{ verification.user.avatar(70) }}" width="70" /></a>
         </td>
         <td>
             <p class="text-left">{% if verification.description|length != 0 %} {{ verification.description }} {% else %} No textual description was given. {% endif %} <strong>Time</strong> <span class="badge">{{ verification.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>

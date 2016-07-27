@@ -1,7 +1,7 @@
 <table class="table table-hover">
     <tr>
         <td width="70px">
-        	<a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}"><img src="{{ asset.user_in_hands.avatar(70) }}" /></a>
+        	<a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}"><img src="{{ asset.user_in_hands.avatar(70) }}" width="70" /></a>
         </td>
         <td width="120px">
             {# <p>{% if asset.active==1 or asset.active==2 %} <strong> {% endif %} {{ asset.name }}{% if asset.active==1 %} </strong> {% endif %}</p> #}
@@ -21,6 +21,8 @@
             		Iteration
             	{% elif asset.status==3 %}
             		Verification
+                {% elif asset.status==4 %}
+                    Finished
             	{% else %}
             		In work
             	{% endif %}

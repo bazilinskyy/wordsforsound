@@ -17,7 +17,7 @@
           document.getElementById('file-url').value = url;
         }
         else{
-          alert('Could not upload file.');
+          // alert('Could not upload file.');
         }
       }
     };
@@ -38,7 +38,7 @@
           uploadFile(file, response.data, response.url);
         }
         else{
-          alert('Could not get signed URL.');
+          // alert('Could not get signed URL.');
         }
       }
     };
@@ -52,7 +52,8 @@
     const files = document.getElementById('file-input').files;
     const file = files[0];
     if(!file){
-      return alert('No file selected.');
+      // return alert('No file selected.');
+      return 0;
     }
     getSignedRequest(file);
   }

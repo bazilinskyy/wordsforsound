@@ -3,16 +3,16 @@
         <td width="70px">
             {% if asset.status==1 %}
                 {% if asset.get_last_verification() != None %}
-                    <a href="{{ url_for('user', nickname=asset.get_last_verification().user.nickname) }}"><img src="{{ asset.get_last_verification().user.avatar(70) }}" /></a>
+                    <a href="{{ url_for('user', nickname=asset.get_last_verification().user.nickname) }}"><img src="{{ asset.get_last_verification().user.avatar(70) }}" width="70"/></a>
                 {% else %}
-                    <a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}"><img src="{{ asset.user_in_hands.avatar(70) }}" /></a>
+                    <a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}"><img src="{{ asset.user_in_hands.avatar(70) }}" width="70"/></a>
                 {% endif %}
             {% elif asset.status==2 %} 
-                <a href="{{ url_for('user', nickname=asset.get_last_description().user.nickname) }}"><img src="{{ asset.get_last_description().user.avatar(70) }}" /></a>
+                <a href="{{ url_for('user', nickname=asset.get_last_description().user.nickname) }}"><img src="{{ asset.get_last_description().user.avatar(70) }}" width="70"/></a>
             {% elif asset.status==3 %}
-                <a href="{{ url_for('user', nickname=asset.get_last_iteration().user.nickname) }}"><img src="{{ asset.get_last_iteration().user.avatar(70) }}" /></a>
+                <a href="{{ url_for('user', nickname=asset.get_last_iteration().user.nickname) }}"><img src="{{ asset.get_last_iteration().user.avatar(70) }}" width="70"/></a>
             {% else %}
-                <a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}"><img src="{{ asset.user_in_hands.avatar(70) }}" /></a>
+                <a href="{{ url_for('user', nickname=asset.user_in_hands.nickname) }}"><img src="{{ asset.user_in_hands.avatar(70) }}" width="70"/></a>
             {% endif %}	
         </td>
         <td width="120px">

@@ -22,10 +22,11 @@ DATABASE_QUERY_TIMEOUT = 0.5
 WHOOSH_ENABLED = os.environ.get('HEROKU') is None
 
 # pagination
-TAGS_PER_PAGE = 10
+TAGS_PER_PAGE = 200
 SOUNDS_PER_PAGE = 10
-ASSETS_PER_PAGE = 5
-PROJECTS_PER_PAGE = 5
+ASSETS_PER_PAGE = 10
+ASSETS_PER_PAGE_INDEX = 5
+PROJECTS_PER_PAGE = 10
 MAX_SEARCH_RESULTS = 50
 
 # horizontal menu
@@ -39,7 +40,7 @@ if not os.environ.get('HEROKU'):
 	SOUND_UPLOAD_FOLDER = '/static/sound_uploads/'
 else:
 	SOUND_UPLOAD_FOLDER = 'https://%s.s3.amazonaws.com/' % (os.environ.get('S3_BUCKET_SOUNDS'))
-SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a', 'wwise']
+SOUND_ALLOWED_EXTENSIONS = ['wav', 'mp3', 'aac', 'ogg', 'oga', 'flac', 'm4a', 'wwise', 'aiff']
 
 # uploading attachments
 if not os.environ.get('HEROKU'):

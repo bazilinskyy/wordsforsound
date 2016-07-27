@@ -15,13 +15,14 @@ class LoginForm(Form):
     username = StringField('Username')
     password = StringField('Password')
 
-class EditForm(Form):
+class EditUserForm(Form):
     nickname = StringField('nickname', validators=[DataRequired()])
     first_name = StringField('first_name', validators=[DataRequired()])
     last_name = StringField('last_name', validators=[DataRequired()])
     about_me = TextAreaField('about_me', validators=[Length(min=0, max=140)])
     receive_emails = BooleanField('receive_emails', default=True)
     upload_file = FileField('upload_file')
+    email = StringField('email', validators=[DataRequired(), Email(message=None)])
 
     def __init__(self, original_nickname, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
@@ -146,13 +147,14 @@ class DeleteSoundForm(Form):
 	name = StringField('name', validators=[DataRequired()])
 
 class AddSoundForm(Form):
-	name = StringField('name', validators=[DataRequired()])
-	description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
-	sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
-	sound_family = SelectField('sound_family', choices=sound_families)
-	upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
-	tags = StringField('tags')
-	rights = StringField('rights')
+    name = StringField('name', validators=[DataRequired()])
+    description = StringField('description', validators=[Optional(), Length(min=0, max=1000)], widget=TextArea())
+    sound_type = RadioField('sound_type', choices=sound_types, default='1', validators=[DataRequired()])
+    sound_family = SelectField('sound_family', choices=sound_families)
+    upload_file = FileField('upload_file', validators=[FileRequired(), FileAllowed(SOUND_ALLOWED_EXTENSIONS, 'Sounds only!')])
+    tags = StringField('tags')
+    rights = StringField('rights')
+    add_more = BooleanField('add_more', default=True)
 
 class EditSoundForm(Form):
     name = StringField('name', validators=[DataRequired()])

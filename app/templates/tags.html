@@ -58,11 +58,13 @@
 	<!-- List of tags -->
 	<div class="row" style="margin-left: 0px">
         <div class="center-block">
-	        {% for tag in tags %}
+	        {% for tag in tags.items %}
 		      {% include 'tag_entry.html' %}
 		    {% endfor %}
         </div>
     </div>
+
+    {{ pagination.links }}
 
 </div>
 {% endblock %}

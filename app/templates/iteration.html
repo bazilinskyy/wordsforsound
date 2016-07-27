@@ -12,7 +12,7 @@
 	<table class="table-responsive">
 	    <tr>
 	        <td width="80px">
-	            <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" /></a>
+	            <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" width="70"/></a>
 	        </td>
 	        <td>
             	<p class="text-left">{% if iteration.description|length != 0 %} <strong>Description</strong> {{ iteration.description }} {% else %} No textual description was given. {% endif %}</p>
@@ -30,11 +30,11 @@
                         height: 50,
                         hideScrollbar: true
                     });
-                    wavesurfer_{{ iteration.id }}.load("{{ attachment_location }}{{ iteration.filename }}");
+                    wavesurfer_{{ iteration.id }}.load("{{ sound_location }}{{ iteration.filename }}");
                 </script>
 	            </td>
 	            <td width="80px">
-	                <a target="_blank" href="{{ attachment_location }}{{ iteration.filename }}">Download</a>
+	                <a target="_blank" href="{{ sound_location }}{{ iteration.filename }}">Download</a>
 	            </td>
 	        {% endif %}
 	    </tr>
