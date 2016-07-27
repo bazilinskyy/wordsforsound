@@ -61,7 +61,7 @@ After the server initializes it will listen on port 5000 waiting for connections
 http://localhost:5000
 ```
 
-Use
+<a name="use"></a>Use
 -------
 User must register to use the application at `register`. All views in the application can be views by logged in users only.
 
