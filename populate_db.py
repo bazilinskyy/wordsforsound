@@ -3,12 +3,12 @@ from datetime import datetime
 import shutil
 
 # Delete old database and create a new one
-try:
-	shutil.rmtree('db_repository')
-	shutil.rmtree('app.db')
-	import db_create
-except:
-	pass
+# try:
+# 	shutil.rmtree('db_repository')
+# 	shutil.rmtree('app.db')
+# 	import db_create
+# except:
+# 	pass
 
 # Add tags
 tag_beep = models.Tag(name="beep")
@@ -179,6 +179,10 @@ tag_modern = models.Tag(name="modern")
 tag_movie = models.Tag(name="movie")
 tag_note = models.Tag(name="note")
 tag_blast = models.Tag(name="blast")
+tag_critical = models.Tag(name="critical")
+tag_directional = models.Tag(name="directional")
+tag_lane_switch = models.Tag(name="lane switch")
+tag_safe = models.Tag(name="safe")
 
 db.session.add(tag_beep)
 db.session.add(tag_honk)
@@ -346,6 +350,10 @@ db.session.add(tag_modern)
 db.session.add(tag_movie)
 db.session.add(tag_note)
 db.session.add(tag_blast)
+db.session.add(tag_critical)
+db.session.add(tag_directional)
+db.session.add(tag_lane_switch)
+db.session.add(tag_safe)
 
 db.session.commit()
 
@@ -937,8 +945,40 @@ sound_user_error_important.tag_add(tag_wrong)
 sound_user_error_important.tag_add(tag_reverb)
 sound_user_error_important.tag_add(tag_negative)
 sound_user_error_important.tag_add(tag_warning)
+sound_nova_63 = models.Sound(name="Nova 6-3",
+			filename="Project_Nova_6_3_A.wav")
+sound_nova_63.tag_add(tag_directional)
+sound_nova_63.tag_add(tag_urgent3)
+sound_nova_63.tag_add(tag_positive)
+sound_nova_63.tag_add(tag_warning)
+sound_nova_63.tag_add(tag_critical)
+sound_uc2_tor_obstacle = models.Sound(name="UC2 TOR obstacle",
+			filename="UC2_TOR_Obstacle_detected.wav")
+sound_uc2_tor_obstacle.tag_add(tag_speech)
+sound_uc2_tor_obstacle.tag_add(tag_urgent3)
+sound_uc2_tor_obstacle.tag_add(tag_tor)
+sound_uc2_tor_obstacle.tag_add(tag_warning)
+sound_uc2_tor_obstacle.tag_add(tag_critical)
+sound_uc2_tor_obstacle.tag_add(tag_worthy)
+sound_uc2_tor_obstacle.tag_add(tag_automated)
+sound_uc4_overtaking = models.Sound(name="UC4 overtaking",
+			filename="UC4_Overtaking.wav")
+sound_uc4_overtaking.tag_add(tag_speech)
+sound_uc4_overtaking.tag_add(tag_urgent2)
+sound_uc4_overtaking.tag_add(tag_notification)
+sound_uc4_overtaking.tag_add(tag_lane_switch)
+sound_uc4_overtaking.tag_add(tag_automated)
+sound_nova_12 = models.Sound(name="Nova 1-2",
+			filename="Project_Nova_1_2.wav")
+sound_nova_12.tag_add(tag_urgent2)
+sound_nova_12.tag_add(tag_notification)
+sound_nova_12.tag_add(tag_calm)
 
 db.session.add(sound_a1)
+db.session.add(sound_nova_63)
+db.session.add(sound_uc2_tor_obstacle)
+db.session.add(sound_uc4_overtaking)
+db.session.add(sound_nova_12)
 db.session.add(sound_a11)
 db.session.add(sound_a18)
 db.session.add(sound_a23)
@@ -995,121 +1035,327 @@ views.update_sounds_json()
 db.session.commit()
 
 # Add users
-pb = models.ClientUser(nickname="Pavlo Bazilinskyy",
+stephan_cieler = models.ClientUser(nickname="stephan_cieler",
+				first_name="Stephan",
+				last_name="Cieler",
+                email="stephan.cieler@continental-corporation.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="ayrton_70.jpg")
+benjamin_mathe = models.ClientUser(nickname="benjamin_mathe",
+				first_name="Benjamin",
+				last_name="Mathe",
+                email="benjamin.mathe@continental-corporation.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="jim_70.jpg")
+joerg_witthaus = models.ClientUser(nickname="joerg_witthaus",
+				first_name="Joerg",
+				last_name="Witthaus",
+                email="joerg.witthaus@continental-corporation.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="michael_70.jpg")
+pavlo_bazilinskyy = models.ClientUser(nickname="pavlo_bazilinskyy",
 				first_name="Pavlo",
 				last_name="Bazilinskyy",
                 email="pavlo.bazilinskyy@gmail.com",
                 password="12345678",
                 last_seen=datetime.now(),
                 receive_emails=True)
-dm = models.ClientUser(nickname="Diego Montoya",
-				first_name="Diego",
-				last_name="Montoya",
-                email="Diego.Montoya@gmail1.com",
+sascha_becker  = models.SupplierUser(nickname="sascha_becker",
+				first_name="Sascha",
+				last_name="Becker",
+                email="Sascha02.Becker@continental-corporation.com",
                 password="12345678",
                 last_seen=datetime.now(),
-                receive_emails=True)
-ase = models.SupplierUser(nickname="Ayrton Senna",
-				first_name="Ayrton",
-				last_name="Senna",
-                email="hollgam@gmail.com",
+                receive_emails=True,
+                avatar_filename="niki_70.jpg")
+johannes_kerkmann  = models.SupplierUser(nickname="johannes_kerkmann",
+				first_name="Johannes",
+				last_name="Kerkmann",
+                email="johannes.kerkmann@conti-engineering.com",
                 password="12345678",
                 last_seen=datetime.now(),
-                receive_emails=True)
-ms = models.SupplierUser(nickname="Michael Schumacher",
-				first_name="Michael",
-				last_name="Schumacher",
-                email="Michael.Schumacher@gmail1.com",
+                receive_emails=True,
+                avatar_filename="bender_128.png")
+christian_bouchard = models.SupplierUser(nickname="christian_bouchard",
+				first_name="Christian",
+				last_name="Bouchard",
+                email="Christian.Bouchard@continental-corporation.com",
                 password="12345678",
                 last_seen=datetime.now(),
-                receive_emails=True)
-md = models.SupplierUser(nickname="Max Designer",
-				first_name="Max",
-				last_name="Designer",
-                email="Max.Designer@gmail1.com",
+                receive_emails=True,
+                avatar_filename="jake_128.png")
+joost_de_winter = models.ClientUser(nickname="joost_de_winter",
+				first_name="Joost",
+				last_name="De Winter",
+                email="jcfdewinter@gmail.com",
                 password="12345678",
                 last_seen=datetime.now(),
-                receive_emails=False)
-db.session.add(pb)
-db.session.add(dm)
-db.session.add(ase)
-db.session.add(ms)
-db.session.add(md)
+                receive_emails=True,
+                avatar_filename="kyle_128.png")
+supplier4 = models.SupplierUser(nickname="supplier4",
+				first_name="Supplier",
+				last_name="Four",
+                email="wordsforsound.michael@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="planet_128.png")
+supplier5 = models.SupplierUser(nickname="supplier5",
+				first_name="Supplier",
+				last_name="Five",
+                email="wordsforsound.ayrton@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="finn_128.png")
+db.session.add(stephan_cieler)
+db.session.add(joerg_witthaus)
+db.session.add(benjamin_mathe)
+db.session.add(pavlo_bazilinskyy)
+db.session.add(joost_de_winter)
+db.session.add(johannes_kerkmann)
+db.session.add(sascha_becker)
+db.session.add(christian_bouchard)
+db.session.add(supplier4)
+db.session.add(supplier5)
 db.session.commit()
 
-# Add projects
-project_auditory_test = models.Project(name="AD overtaking",
-				description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent laoreet in ligula nec bibendum. Etiam bibendum enim sed urna vulputate, vel hendrerit purus tincidunt. In quis dui vitae mi porttitor auctor. Morbi tristique ipsum a orci maximus suscipit. Donec vestibulum sagittis nunc et venenatis. Quisque consectetur, nunc vel egestas condimentum, tellus tellus sagittis eros, sed tempus massa arcu vitae arcu. Praesent a viverra mi. Curabitur nisi sapien, gravida eu massa non, placerat finibus diam. Proin consectetur eget metus vitae placerat. Maecenas ligula lectus, feugiat vestibulum pellentesque ac, sagittis vel tortor.",
-				filename="Description_project1.docx",
-				finished=0,
-				user=pb,
+######## Validation participant 1 ########
+project_auditory_test_1 = models.Project(name="Validation 1",
+				description="In this project we will create two assets to validate the newly developed sound design process.",
+				filename="validation_description.pdf",
+				finished=False,
+				user=benjamin_mathe,
 				timestamp=datetime.now())
-db.session.add(project_auditory_test)
+db.session.add(project_auditory_test_1)
 db.session.commit()
 
 # Add assets
-asset1 = models.Asset(name="Beep for left overtaking",
-				description="Cras lacinia magna nisl. Sed maximus dui eros, eget feugiat ex vehicula a. Duis vestibulum, eros non eleifend venenatis, lorem nisi vehicula diam, sit amet dapibus nulla lacus vel elit.",
+asset1_1 = models.Asset(name="Beep for left overtaking",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
         		status=models.AssetStatus.iteration.value,
-        		project=project_auditory_test,
-        		finished=0,
+        		project=project_auditory_test_1,
+        		finished=False,
         		iteration_number=0,
         		timestamp=datetime.now(),
         		notify_by_email=True)
-asset2 = models.Asset(name="Beep for right overtaking",
-				description="Cras lacinia magna nisl. Sed maximus dui eros, eget feugiat ex vehicula a. Duis vestibulum, eros non eleifend venenatis, lorem nisi vehicula diam, sit amet dapibus nulla lacus vel elit.",
+asset1_2 = models.Asset(name="Beep for right overtaking",
+				description="Not loud and not very intrusive notification for the situation when a highly automated car decides to switch lanes in automated mode. Without speech (similar to UC4_Overtaking.wav, but without speech).",
                 status=models.AssetStatus.iteration.value,
-                project=project_auditory_test,
-                finished=0,
+                project=project_auditory_test_1,
+                finished=False,
                 iteration_number=0,
                 timestamp=datetime.now(),
                 notify_by_email=True)
-description1 = models.Description(duration="200",
-				description="Cras lacinia magna nisl. Sed maximus dui eros, eget feugiat ex vehicula a. Duis vestibulum, eros non eleifend venenatis, lorem nisi vehicula diam, sit amet dapibus nulla lacus vel elit.",
-        		sound_type=1,
+description1_1 = models.Description(duration="200",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
+        		sound_type=3,
                 sound_family=1,
-        		pitch="B#",
-        		user=pb,
+        		user=benjamin_mathe,
         		timestamp=datetime.now())
-description1.tag_add(tag_beep)
-description1.tag_add(tag_urgent4)
-description1.tag_add(tag_warning)
-description1.tag_add(tag_positive)
-description1.tag_add(tag_metallic)
-description1.sound_add(sound_beep_freezman)
-description1.sound_add(sound_uc2_system_error)
-description1.sound_add(sound_b19)
-description2 = models.Description(duration="65",
-				description="Cras lacinia magna nisl. Sed maximus dui eros, eget feugiat ex vehicula a. Duis vestibulum, eros non eleifend venenatis, lorem nisi vehicula diam, sit amet dapibus nulla lacus vel elit.",
+description1_1.tag_add(tag_beep)
+description1_1.tag_add(tag_urgent4)
+description1_1.tag_add(tag_tor)
+description1_1.tag_add(tag_critical)
+description1_1.tag_add(tag_automated)
+description1_1.tag_add(tag_worthy)
+description1_1.tag_add(tag_wooden)
+description1_1.tag_add(tag_directional)
+description1_1.tag_add(tag_safe)
+description1_1.tag_add(tag_warning)
+description1_1.sound_add(sound_nova_63)
+description1_1.sound_add(sound_uc2_tor_obstacle)
+description1_1.sound_add(sound_beep_freezman)
+description1_2 = models.Description(duration="65",
+				description="Not loud and not very intrusive notification for the situation when a highly automated car decides to switch lanes in automated mode. Without speech (similar to UC4_Overtaking.wav, but without speech).",
                 sound_type=1,
-                sound_family=1,
-                pitch="A",
-                user=pb,
+                sound_family=2,
+                user=benjamin_mathe,
                 timestamp=datetime.now())
-description2.tag_add(tag_beep)
-description2.tag_add(tag_urgent2)
-description2.tag_add(tag_warning)
-description2.tag_add(tag_negative)
-description2.tag_add(tag_wooden)
-description2.tag_add(tag_worthy)
-description2.sound_add(sound_beep_freezman)
-description2.sound_add(sound_b13)
-description2.sound_add(sound_a16)
-description2.sound_add(sound_b17)
-db.session.add(asset1)
-db.session.add(asset2)
+description1_2.tag_add(tag_calm)
+description1_2.tag_add(tag_notification)
+description1_2.tag_add(tag_lane_switch)
+description1_2.tag_add(tag_automated)
+description1_2.sound_add(sound_nova_12)
+description1_2.sound_add(sound_uc4_overtaking)
+description1_2.sound_add(sound_drum_tom)
+db.session.add(asset1_1)
+db.session.add(asset1_2)
 
-asset1.description_add(description1)
-asset2.description_add(description2)
-asset1.client_add(pb)
-asset1.client_add(dm)
-asset1.supplier_add(ase)
-asset1.supplier_add(ms)
-asset2.client_add(pb)
-asset2.supplier_add(ase)
-asset1.init_in_hands()
-asset2.init_in_hands()
+asset1_1.description_add(description1_1)
+asset1_2.description_add(description1_2)
 
-project_auditory_test.asset_add(asset1)
-project_auditory_test.asset_add(asset2)
+asset1_1.client_add(benjamin_mathe)
+asset1_1.supplier_add(sascha_becker)
+
+asset1_2.client_add(benjamin_mathe)
+asset1_2.supplier_add(sascha_becker)
+
+asset1_1.init_in_hands()
+asset1_2.init_in_hands()
+
+project_auditory_test_1.asset_add(asset1_1)
+project_auditory_test_1.asset_add(asset1_2)
+db.session.commit()
+
+######## Validation participant 2 ########
+project_auditory_test_2 = models.Project(name="Validation 2",
+				description="In this project we will create two assets to validate the newly developed sound design process.",
+				filename="validation_description.pdf",
+				finished=False,
+				user=benjamin_mathe,
+				timestamp=datetime.now())
+db.session.add(project_auditory_test_2)
+db.session.commit()
+
+# Add assets
+asset2_1 = models.Asset(name="Beep for left overtaking",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
+        		status=models.AssetStatus.iteration.value,
+        		project=project_auditory_test_1,
+        		finished=False,
+        		iteration_number=0,
+        		timestamp=datetime.now(),
+        		notify_by_email=True)
+asset2_2 = models.Asset(name="Beep for right overtaking",
+				description="Not loud and not very intrusive notification for the situation when a highly automated car decides to switch lanes in automated mode. Without speech (similar to UC4_Overtaking.wav, but without speech).",
+                status=models.AssetStatus.iteration.value,
+                project=project_auditory_test_1,
+                finished=False,
+                iteration_number=0,
+                timestamp=datetime.now(),
+                notify_by_email=True)
+description2_1 = models.Description(duration="200",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
+        		sound_type=3,
+                sound_family=1,
+        		user=benjamin_mathe,
+        		timestamp=datetime.now())
+description2_1.tag_add(tag_beep)
+description2_1.tag_add(tag_urgent4)
+description2_1.tag_add(tag_tor)
+description2_1.tag_add(tag_critical)
+description2_1.tag_add(tag_automated)
+description2_1.tag_add(tag_worthy)
+description2_1.tag_add(tag_wooden)
+description2_1.tag_add(tag_directional)
+description2_1.tag_add(tag_safe)
+description2_1.tag_add(tag_warning)
+description2_1.sound_add(sound_nova_63)
+description2_1.sound_add(sound_uc2_tor_obstacle)
+description2_1.sound_add(sound_beep_freezman)
+description2_2 = models.Description(duration="65",
+				description="Not loud and not very intrusive notification for the situation when a highly automated car decides to switch lanes in automated mode. Without speech (similar to UC4_Overtaking.wav, but without speech).",
+                sound_type=1,
+                sound_family=2,
+                user=benjamin_mathe,
+                timestamp=datetime.now())
+description2_2.tag_add(tag_calm)
+description2_2.tag_add(tag_notification)
+description2_2.tag_add(tag_lane_switch)
+description2_2.tag_add(tag_automated)
+description2_2.sound_add(sound_nova_12)
+description2_2.sound_add(sound_uc4_overtaking)
+description2_2.sound_add(sound_drum_tom)
+db.session.add(asset2_1)
+db.session.add(asset2_2)
+
+asset2_1.description_add(description1_1)
+asset2_2.description_add(description1_2)
+
+asset2_1.client_add(benjamin_mathe)
+asset2_1.supplier_add(christian_bouchard)
+
+asset2_2.client_add(benjamin_mathe)
+asset2_2.supplier_add(christian_bouchard)
+
+asset2_1.init_in_hands()
+asset2_2.init_in_hands()
+
+project_auditory_test_2.asset_add(asset2_1)
+project_auditory_test_2.asset_add(asset2_2)
+db.session.commit()
+
+######## Validation participant 3 ########
+project_auditory_test_3 = models.Project(name="Validation 3",
+				description="In this project we will create two assets to validate the newly developed sound design process.",
+				filename="validation_description.pdf",
+				finished=False,
+				user=benjamin_mathe,
+				timestamp=datetime.now())
+db.session.add(project_auditory_test_3)
+db.session.commit()
+
+# Add assets
+asset3_1 = models.Asset(name="Beep for left overtaking",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
+        		status=models.AssetStatus.iteration.value,
+        		project=project_auditory_test_1,
+        		finished=False,
+        		iteration_number=0,
+        		timestamp=datetime.now(),
+        		notify_by_email=True)
+asset3_2 = models.Asset(name="Beep for right overtaking",
+				description="Not loud and not very intrusive notification for the situation when a highly automated car decides to switch lanes in automated mode. Without speech (similar to UC4_Overtaking.wav, but without speech).",
+                status=models.AssetStatus.iteration.value,
+                project=project_auditory_test_1,
+                finished=False,
+                iteration_number=0,
+                timestamp=datetime.now(),
+                notify_by_email=True)
+description3_1 = models.Description(duration="200",
+				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
+        		sound_type=3,
+                sound_family=1,
+        		user=benjamin_mathe,
+        		timestamp=datetime.now())
+description3_1.tag_add(tag_beep)
+description3_1.tag_add(tag_urgent4)
+description3_1.tag_add(tag_tor)
+description3_1.tag_add(tag_critical)
+description3_1.tag_add(tag_automated)
+description3_1.tag_add(tag_worthy)
+description3_1.tag_add(tag_wooden)
+description3_1.tag_add(tag_directional)
+description3_1.tag_add(tag_safe)
+description3_1.tag_add(tag_warning)
+description3_1.sound_add(sound_nova_63)
+description3_1.sound_add(sound_uc2_tor_obstacle)
+description3_1.sound_add(sound_beep_freezman)
+description3_2 = models.Description(duration="65",
+				description="Not loud and not very intrusive notification for the situation when a highly automated car decides to switch lanes in automated mode. Without speech (similar to UC4_Overtaking.wav, but without speech).",
+                sound_type=1,
+                sound_family=2,
+                user=benjamin_mathe,
+                timestamp=datetime.now())
+description3_2.tag_add(tag_calm)
+description3_2.tag_add(tag_notification)
+description3_2.tag_add(tag_lane_switch)
+description3_2.tag_add(tag_automated)
+description3_2.sound_add(sound_nova_12)
+description3_2.sound_add(sound_uc4_overtaking)
+description3_2.sound_add(sound_drum_tom)
+db.session.add(asset3_1)
+db.session.add(asset3_2)
+
+asset3_1.description_add(description1_1)
+asset3_2.description_add(description1_2)
+
+asset3_1.client_add(benjamin_mathe)
+asset3_1.supplier_add(johannes_kerkmann)
+
+asset3_2.client_add(benjamin_mathe)
+asset3_2.supplier_add(johannes_kerkmann)
+
+asset3_1.init_in_hands()
+asset3_2.init_in_hands()
+
+project_auditory_test_3.asset_add(asset3_1)
+project_auditory_test_3.asset_add(asset3_2)
 db.session.commit()

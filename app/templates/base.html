@@ -18,124 +18,124 @@
   </head>
   <body>
     <div class="container">
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand hidden-xs hidden-sm hidden-md" href="{{ url_for('index') }}">wordsforsound</a>
-    </div>
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand hidden-xs hidden-sm hidden-md" href="{{ url_for('index') }}">wordsforsound</a>
+          </div>
 
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-    {% if g.user.is_authenticated %}
-      <ul class="nav navbar-nav">
-        <li {% if request.path=="/index" or request.path=="/" %} class="active"{% endif %}><a href="{{ url_for('index') }}">Home</a></li>
-        
-        <li {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tags <span class="caret"></span></a>
-          <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
-            <li {% if request.path=="/tags" %} class="active"{% endif %}><a href="{{ url_for('tags') }}">All tags</a></li>
-            <li {% if request.path=="/add_tag" %} class="active"{% endif %}><a href="{{ url_for('add_tag') }}">Add tag</a></li>
-            <li {% if request.path=="/delete_tag" %} class="active"{% endif %}><a href="{{ url_for('delete_tag') }}">Delete tag</a></li>
-          </ul>
-        </li>
-
-        <li {% if request.path=="/sounds" or request.path=="/add_sound" or request.path=="/delete_sound"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sounds <span class="caret"></span></a>
-          <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
-            <li {% if request.path=="/sounds" %} class="active"{% endif %}><a href="{{ url_for('sounds') }}">All sounds</a></li>
-            <li {% if request.path=="/add_sound" %} class="active"{% endif %}><a href="{{ url_for('add_sound') }}">Add sound</a></li>
-            <li {% if request.path=="/delete_sound" %} class="active"{% endif %}><a href="{{ url_for('delete_sound') }}">Delete sound</a></li>
-          </ul>
-        </li>
-
-        <li {% if request.path=="/projects" or request.path=="/add_project" or request.path=="/delete_project"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            {% if g.user.type == 'client_user' %}
-              <li {% if request.path=="/add_project" %} class="active"{% endif %}><a href="{{ url_for('add_project') }}">New project <span class="sr-only">(current)</span></a></li>
-              <li class="divider"></li>
-            {% endif %}
-            <li class="dropdown-header">Ongoing projects</li>
-            {% for project in g.projects_ongoing %}
-                <li><a href="{{ url_for('project') }}/{{ project.id }}">{{ project.name }}</a></li>
-            {% endfor %}
-            <li><a href="{{ url_for('projects', projects_type='ongoing') }}">View all</a></li>
-            <li class="divider"></li>
-            <li class="dropdown-header">Finished projects</li>
-            {% for project in g.projects_finished %}
-                <li><a href="{{ url_for('project') }}/{{ project.id }}">{{ project.name }}</a></li>
-            {% endfor %}
-            <li><a href="{{ url_for('projects', projects_type='finished') }}">View all</a></li>
-          </ul>
-        </li>
-
-        <li {% if request.path=="/assets" or request.path=="/add_asset" or request.path=="/delete_asset"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Assets <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            {% if g.user.type == 'client_user' %}
-              <li {% if request.path=="/add_asset" %} class="active"{% endif %}><a href="{{ url_for('add_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
-              <li class="divider"></li>
-            {% endif %}
-            <li class="dropdown-header">Ongoing assets</li>
-            {% for asset in g.assets_ongoing %}
-                <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
-            {% endfor %}
-            <li><a href="{{ url_for('assets', assets_type='ongoing') }}">View all</a></li>
-            <li class="divider"></li>
-            <li class="dropdown-header">Finished assets</li>
-            {% for asset in g.assets_finished %}
-                <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
-            {% endfor %}
-            <li><a href="{{ url_for('assets', assets_type='finished') }}">View all</a></li>
-          </ul>
-        </li>
-
-        {% if g.user.type == 'client_user' %}
-          <a role="button" class="btn btn-default navbar-btn hidden-xs hidden-sm hidden-md" style="margin-left: 5px; margin-right: 5px;" href="{{ url_for('add_asset') }}">New asset</a>
-        {% endif %}
-        </ul>
-
-          <form class="navbar-form navbar-left" role="search" action="{{ url_for('search')}}" method="post">
-            <div class="form-group hidden-xs hidden-sm">
-              {{ g.search_form.hidden_tag() }}
-              {{ g.search_form.search(placeholder='Search', class="form-control", type="text")}}
-            </div>
-          </form>
-          
-
-          <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown navbar-right">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-user"></i> {{ g.user.nickname}} <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    <li>
-                      <a href="{{ url_for('user', nickname=g.user.nickname) }}">Your Profile</a>
-                    </li>
-                    <li>
-                        <a href="{{ url_for('logout') }}"><i class="fa fa-fw fa-power-off"></i> Logout</a>
-                    </li>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          {% if g.user.is_authenticated %}
+            <ul class="nav navbar-nav">
+              <li {% if request.path=="/index" or request.path=="/" %} class="active"{% endif %}><a href="{{ url_for('index') }}">Home</a></li>
+              
+              <li {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tags <span class="caret"></span></a>
+                <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
+                  <li {% if request.path=="/tags" %} class="active"{% endif %}><a href="{{ url_for('tags') }}">All tags</a></li>
+                  <li {% if request.path=="/add_tag" %} class="active"{% endif %}><a href="{{ url_for('add_tag') }}">Add tag</a></li>
+                  <li {% if request.path=="/delete_tag" %} class="active"{% endif %}><a href="{{ url_for('delete_tag') }}">Delete tag</a></li>
                 </ul>
-            </li>
-          </ul>
+              </li>
 
-        {% else %}
+              <li {% if request.path=="/sounds" or request.path=="/add_sound" or request.path=="/delete_sound"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sounds <span class="caret"></span></a>
+                <ul {% if request.path=="/tags" or request.path=="/add_tag" or request.path=="/delete_tag"%} class="dropdown-menu active"{% else %} class="dropdown-menu" {% endif %}>
+                  <li {% if request.path=="/sounds" %} class="active"{% endif %}><a href="{{ url_for('sounds') }}">All sounds</a></li>
+                  <li {% if request.path=="/add_sound" %} class="active"{% endif %}><a href="{{ url_for('add_sound') }}">Add sound</a></li>
+                  <li {% if request.path=="/delete_sound" %} class="active"{% endif %}><a href="{{ url_for('delete_sound') }}">Delete sound</a></li>
+                </ul>
+              </li>
 
-        <ul class="nav navbar-nav">
-          <li {% if request.path=="/login" %} class="active"{% endif %}><a href="{{ url_for('login') }}">Login</a></li>
-          <li {% if request.path=="/register" %} class="active"{% endif %}><a href="{{ url_for('register') }}">Register</a></li>
-        </ul>
+              <li {% if request.path=="/projects" or request.path=="/add_project" or request.path=="/delete_project"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projects <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  {% if g.user.type == 'client_user' %}
+                    <li {% if request.path=="/add_project" %} class="active"{% endif %}><a href="{{ url_for('add_project') }}">New project <span class="sr-only">(current)</span></a></li>
+                    <li class="divider"></li>
+                  {% endif %}
+                  <li class="dropdown-header">Ongoing projects</li>
+                  {% for project in g.projects_ongoing %}
+                      <li><a href="{{ url_for('project') }}/{{ project.id }}">{{ project.name }}</a></li>
+                  {% endfor %}
+                  <li><a href="{{ url_for('projects', projects_type='ongoing') }}">View all</a></li>
+                  <li class="divider"></li>
+                  <li class="dropdown-header">Finished projects</li>
+                  {% for project in g.projects_finished %}
+                      <li><a href="{{ url_for('project') }}/{{ project.id }}">{{ project.name }}</a></li>
+                  {% endfor %}
+                  <li><a href="{{ url_for('projects', projects_type='finished') }}">View all</a></li>
+                </ul>
+              </li>
 
-        {% endif %}
+              <li {% if request.path=="/assets" or request.path=="/add_asset" or request.path=="/delete_asset"%} class="dropdown active"{% else %} class="dropdown" {% endif %}>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Assets <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  {% if g.user.type == 'client_user' %}
+                    <li {% if request.path=="/add_asset" %} class="active"{% endif %}><a href="{{ url_for('add_asset') }}">New asset <span class="sr-only">(current)</span></a></li>
+                    <li class="divider"></li>
+                  {% endif %}
+                  <li class="dropdown-header">Ongoing assets</li>
+                  {% for asset in g.assets_ongoing %}
+                      <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
+                  {% endfor %}
+                  <li><a href="{{ url_for('assets', assets_type='ongoing') }}">View all</a></li>
+                  <li class="divider"></li>
+                  <li class="dropdown-header">Finished assets</li>
+                  {% for asset in g.assets_finished %}
+                      <li><a href="{{ url_for('asset') }}/{{ asset.id }}">{{ asset.name }}</a></li>
+                  {% endfor %}
+                  <li><a href="{{ url_for('assets', assets_type='finished') }}">View all</a></li>
+                </ul>
+              </li>
 
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
+              {% if g.user.type == 'client_user' %}
+                <a role="button" class="btn btn-default navbar-btn hidden-xs hidden-sm hidden-md" style="margin-left: 5px; margin-right: 5px;" href="{{ url_for('add_asset') }}">New asset</a>
+              {% endif %}
+              </ul>
+
+                <form class="navbar-form navbar-left" role="search" action="{{ url_for('search')}}" method="post">
+                  <div class="form-group hidden-xs hidden-sm">
+                    {{ g.search_form.hidden_tag() }}
+                    {{ g.search_form.search(placeholder='Search', class="form-control", type="text")}}
+                  </div>
+                </form>
+                
+
+                <ul class="nav navbar-nav navbar-right">
+                  <li class="dropdown navbar-right">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><i class="fa fa-user"></i> {{ g.user.nickname}} <b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                          <li>
+                            <a href="{{ url_for('user', nickname=g.user.nickname) }}">Your Profile</a>
+                          </li>
+                          <li>
+                              <a href="{{ url_for('logout') }}"><i class="fa fa-fw fa-power-off"></i> Logout</a>
+                          </li>
+                      </ul>
+                  </li>
+                </ul>
+
+              {% else %}
+
+              <ul class="nav navbar-nav">
+                <li {% if request.path=="/login" %} class="active"{% endif %}><a href="{{ url_for('login') }}">Login</a></li>
+                <li {% if request.path=="/register" %} class="active"{% endif %}><a href="{{ url_for('register') }}">Register</a></li>
+              </ul>
+
+              {% endif %}
+
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
       <div class="row">
         <div>
           {% block content %}{% endblock %}
