@@ -6,9 +6,9 @@ import shutil
 try:
 	shutil.rmtree('db_repository')
 	shutil.rmtree('app.db')
+	import db_create
 except:
 	pass
-import db_create
 
 # Add tags
 tag_beep = models.Tag(name="beep")
@@ -164,6 +164,21 @@ tag_weather = models.Tag(name="weather")
 tag_flash = models.Tag(name="flash")
 tag_wakeup = models.Tag(name="wakeup")
 tag_cold = models.Tag(name="cold")
+tag_drum = models.Tag(name="drum")
+tag_voice = models.Tag(name="voice")
+tag_blaster = models.Tag(name="blaster")
+tag_explosion = models.Tag(name="explosion")
+tag_low = models.Tag(name="low")
+tag_bell = models.Tag(name="bell")
+tag_alarm = models.Tag(name="alarm")
+tag_horn = models.Tag(name="horn")
+tag_piano = models.Tag(name="piano")
+tag_bass = models.Tag(name="bass")
+tag_pulse = models.Tag(name="pulse")
+tag_modern = models.Tag(name="modern")
+tag_movie = models.Tag(name="movie")
+tag_note = models.Tag(name="note")
+tag_blast = models.Tag(name="blast")
 
 db.session.add(tag_beep)
 db.session.add(tag_honk)
@@ -316,6 +331,21 @@ db.session.add(tag_weather)
 db.session.add(tag_flash)
 db.session.add(tag_wakeup)
 db.session.add(tag_cold)
+db.session.add(tag_drum)
+db.session.add(tag_voice)
+db.session.add(tag_blaster)
+db.session.add(tag_explosion)
+db.session.add(tag_low)
+db.session.add(tag_bell)
+db.session.add(tag_alarm)
+db.session.add(tag_horn)
+db.session.add(tag_piano)
+db.session.add(tag_bass)
+db.session.add(tag_pulse)
+db.session.add(tag_modern)
+db.session.add(tag_movie)
+db.session.add(tag_note)
+db.session.add(tag_blast)
 
 db.session.commit()
 
@@ -328,6 +358,220 @@ sound_beep_freezman.tag_add(tag_urgent2)
 sound_beep_freezman.tag_add(tag_long)
 sound_beep_freezman.tag_add(tag_worthy)
 db.session.add(sound_beep_freezman)
+
+sound_beep_greencouch = models.Sound(name="Water beep",
+			filename="124905__greencouch__beeps-5.wav",
+			rights="CC Attribution License")
+sound_beep_greencouch.tag_add(tag_water)
+sound_beep_greencouch.tag_add(tag_urgent1)
+db.session.add(sound_beep_greencouch)
+
+sound_beep_alaskarobotics = models.Sound(name="2000 Hz beeps",
+			filename="221086__alaskarobotics__2000-hz-beeps.wav",
+			rights="CC Attribution License")
+sound_beep_alaskarobotics.tag_add(tag_urgent3)
+sound_beep_alaskarobotics.tag_add(tag_beep)
+db.session.add(sound_beep_alaskarobotics)
+
+sound_beep_five_beeps = models.Sound(name="Five beeps",
+			filename="246332__kwahmah-02__five-beeps.wav",
+			rights="CC Attribution License")
+sound_beep_five_beeps.tag_add(tag_beep)
+sound_beep_five_beeps.tag_add(tag_urgent3)
+sound_beep_five_beeps.tag_add(tag_short)
+db.session.add(sound_beep_five_beeps)
+
+sound_beep_train_door = models.Sound(name="Train door beep",
+			filename="346572__inspectorj__train-door-beep-b.wav",
+			rights="CC Attribution License")
+sound_beep_train_door.tag_add(tag_beep)
+sound_beep_train_door.tag_add(tag_urgent2)
+sound_beep_train_door.tag_add(tag_long)
+db.session.add(sound_beep_train_door)
+
+sound_drum_tom = models.Sound(name="Drum",
+			filename="261449__veiler__dw-tom-1.wav",
+			rights="CC Attribution License")
+sound_drum_tom.tag_add(tag_drum)
+sound_drum_tom.tag_add(tag_short)
+db.session.add(sound_drum_tom)
+
+sound_rising_voice = models.Sound(name="Rising voice",
+			filename="262688__iut-paris8__paget-ludovic-2014-2015-skype-connection-sound.wav",
+			rights="CC Attribution License")
+sound_rising_voice.tag_add(tag_looming)
+sound_rising_voice.tag_add(tag_voice)
+db.session.add(sound_rising_voice)
+
+sound_explosion_1 = models.Sound(name="Blaster explosion",
+			filename="320366__n-audioman__explosion3.wav",
+			rights="CC Attribution License")
+sound_explosion_1.tag_add(tag_blaster)
+sound_explosion_1.tag_add(tag_explosion)
+db.session.add(sound_explosion_1)
+
+sound_rising_tone = models.Sound(name="Rising tone",
+			filename="221552__greenrover__rising-tone.wav",
+			rights="CC Attribution License")
+sound_rising_tone.tag_add(tag_looming)
+sound_rising_tone.tag_add(tag_urgent3)
+sound_rising_tone.tag_add(tag_short)
+db.session.add(sound_rising_tone)
+
+sound_russian_clement = models.Sound(name="Russian clement",
+			filename="166663__univ-lyon3__raussin-clement-2012-13-son3.wav",
+			rights="CC Attribution License")
+sound_russian_clement.tag_add(tag_looming)
+sound_russian_clement.tag_add(tag_short)
+db.session.add(sound_russian_clement)
+
+sound_blast = models.Sound(name="Blast",
+			filename="110564__2887679652__emp-blast.wav",
+			rights="CC Attribution License")
+sound_blast.tag_add(tag_low)
+sound_blast.tag_add(tag_blast)
+db.session.add(sound_blast)
+
+sound_drop = models.Sound(name="Drop",
+			filename="106717__nikolino__knall9-1zu8.wav",
+			rights="CC Attribution License")
+sound_drop.tag_add(tag_explosion)
+sound_drop.tag_add(tag_short)
+db.session.add(sound_drop)
+
+sound_alarm_peep = models.Sound(name="Alarm peep",
+			filename="126519__ycdmdj__alarm-peep.wav",
+			rights="CC Attribution License")
+sound_alarm_peep.tag_add(tag_bell)
+sound_alarm_peep.tag_add(tag_alarm)
+db.session.add(sound_alarm_peep)
+
+sound_multiple_pulses = models.Sound(name="Multiple pulses",
+			filename="18504__saternolia__h-01.wav",
+			rights="CC Attribution License")
+sound_multiple_pulses.tag_add(tag_long)
+sound_multiple_pulses.tag_add(tag_instrument)
+sound_multiple_pulses.tag_add(tag_urgent3)
+sound_multiple_pulses.tag_add(tag_danger)
+db.session.add(sound_multiple_pulses)
+
+sound_hunting_horn = models.Sound(name="Hunting horn",
+			filename="72753__benboncan__hunting-horn.wav",
+			rights="CC Attribution License")
+sound_hunting_horn.tag_add(tag_horn)
+sound_hunting_horn.tag_add(tag_danger)
+db.session.add(sound_hunting_horn)
+
+sound_fog_horn = models.Sound(name="Fog horn",
+			filename="324275__reznik-krkovicka__horn-02.mp3",
+			rights="CC Attribution License")
+sound_fog_horn.tag_add(tag_horn)
+sound_fog_horn.tag_add(tag_danger)
+sound_fog_horn.tag_add(tag_urgent4)
+db.session.add(sound_fog_horn)
+
+sound_urgent_impact = models.Sound(name="Urgent impact",
+			filename="223017__speedenza__urgent-impacts-5.wav",
+			rights="CC Attribution License")
+sound_urgent_impact.tag_add(tag_urgent2)
+sound_urgent_impact.tag_add(tag_short)
+db.session.add(sound_urgent_impact)
+
+sound_speed_alarm = models.Sound(name="Speed alarm",
+			filename="24236__soundhead__speed-alarm.wav",
+			rights="CC Attribution License")
+sound_speed_alarm.tag_add(tag_alarm)
+sound_speed_alarm.tag_add(tag_fast)
+sound_speed_alarm.tag_add(tag_urgent4)
+db.session.add(sound_speed_alarm)
+
+sound_power_down = models.Sound(name="Power down",
+			filename="34203__themfish__power-down.wav",
+			rights="CC Attribution License")
+sound_power_down.tag_add(tag_looming)
+sound_power_down.tag_add(tag_urgent1)
+db.session.add(sound_power_down)
+
+sound_scary_piano = models.Sound(name="Scary piano",
+			filename="170593__timpan__scary-piano.wav",
+			rights="CC Attribution License")
+sound_scary_piano.tag_add(tag_instrument)
+sound_scary_piano.tag_add(tag_piano)
+sound_scary_piano.tag_add(tag_mystical)
+db.session.add(sound_scary_piano)
+
+sound_saarde = models.Sound(name="Saarde",
+			filename="330637__troym1__saarde.wav",
+			rights="CC Attribution License")
+sound_saarde.tag_add(tag_complex)
+sound_saarde.tag_add(tag_instrument)
+db.session.add(sound_saarde)
+
+sound_wobble_bass = models.Sound(name="Wobble bass",
+			filename="51254__rutgermuller__wobble-bass-test.wav",
+			rights="CC Attribution License")
+sound_wobble_bass.tag_add(tag_bass)
+sound_wobble_bass.tag_add(tag_pulse)
+db.session.add(sound_wobble_bass)
+
+sound_dnb_kick = models.Sound(name="DNB kick",
+			filename="41155__sandyrb__dnb-kick-008.wav",
+			rights="CC Attribution License")
+sound_dnb_kick.tag_add(tag_short)
+sound_dnb_kick.tag_add(tag_urgent1)
+sound_dnb_kick.tag_add(tag_modern)
+db.session.add(sound_dnb_kick)
+
+sound_cold3 = models.Sound(name="Cold 3",
+			filename="48456__flick3r__cold-3.wav",
+			rights="CC Attribution License")
+sound_cold3.tag_add(tag_complex)
+sound_cold3.tag_add(tag_electronic)
+sound_cold3.tag_add(tag_modern)
+db.session.add(sound_cold3)
+
+sound_dun_dun_dun = models.Sound(name="Dun dun dun",
+			filename="45654__simon-lacelle__dun-dun-dun.wav",
+			rights="CC Attribution License")
+sound_dun_dun_dun.tag_add(tag_movie)
+sound_dun_dun_dun.tag_add(tag_urgent2)
+db.session.add(sound_dun_dun_dun)
+
+sound_Ash3 = models.Sound(name="A#3",
+			filename="203502__tesabob2001__a-3.mp3",
+			rights="CC Attribution License")
+sound_Ash3.tag_add(tag_note)
+db.session.add(sound_Ash3)
+
+sound_G3 = models.Sound(name="G3",
+			filename="203493__tesabob2001__g3.mp3",
+			rights="CC Attribution License")
+sound_G3.tag_add(tag_note)
+db.session.add(sound_G3)
+
+sound_G5 = models.Sound(name="G5",
+			filename="203490__tesabob2001__g-5.mp3",
+			rights="CC Attribution License")
+sound_G5.tag_add(tag_note)
+db.session.add(sound_G5)
+
+sound_G4 = models.Sound(name="G4",
+			filename="203492__tesabob2001__g4.mp3",
+			rights="CC Attribution License")
+sound_G4.tag_add(tag_note)
+db.session.add(sound_G4)
+
+sound_G5 = models.Sound(name="G5",
+			filename="203495__tesabob2001__g5.mp3",
+			rights="CC Attribution License")
+sound_G5.tag_add(tag_note)
+db.session.add(sound_G5)
+
+sound_F3 = models.Sound(name="F3",
+			filename="203501__tesabob2001__f-3.mp3",
+			rights="CC Attribution License")
+sound_F3.tag_add(tag_note)
+db.session.add(sound_F3)
 
 # Add sounds from projects
 sound_a1 = models.Sound(name="A_1",
