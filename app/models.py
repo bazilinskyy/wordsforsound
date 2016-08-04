@@ -282,7 +282,6 @@ class Asset(db.Model):
     def description_add(self, description):
         if description not in self.descriptions.all():
             self.descriptions.append(description)
-            print "description added: " + str(description.id)
             logging.debug("Asset %s added description %s" % (str(self), str(description)))
             return self
         else:
@@ -331,7 +330,6 @@ class Asset(db.Model):
             logging.debug("Asset %s\'s last description is %s" % (str(self), str(description)))
             return description
         else:
-            print "asset: " + str(self.id)
             logging.debug("Asset %s does not have any descriptions to get the last description." % (str(self)))
             return None
 

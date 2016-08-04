@@ -104,5 +104,7 @@ Each asset must be assigned to at least one client and at least one supplier. Co
 #### Tags
 The database contains tags, which can be used for descriptions of assets and tagging sounds. A list of all tags is available at `tags`. These are all tags that were added by users of the system. New tag can be added at `add_tag`. Tags can be deleted at `delete_tag`.
 
+Also preset tags can be added to the database. The urgency is represented by four tags: `urgent-1`, `urgent-2`, `urgent-3`, and `urgent-4`. These tags represent the scale of urgentness, with `urgent-1` being least urgent and `urgent-4` being most urgent.
+
 #### Sounds
 The database contains sounds, which serve as examples for description of assets. A list of all sounds is available at `sounds`. These are all sounds that were added by users of the system. New sound can be added at `add_sound`. Sounds can be tagged with tags in the database. Each sound must be in one of sound families and it need to be of one of sound types. Sounds can be deleted at `delete_sound`.
