@@ -1153,6 +1153,8 @@ asset1_2 = models.Asset(name="Beep for right overtaking",
                 iteration_number=0,
                 timestamp=datetime.now(),
                 notify_by_email=True)
+db.session.add(asset1_1)
+db.session.add(asset1_2)
 description1_1 = models.Description(duration="200",
 				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
         		sound_type=3,
@@ -1185,8 +1187,8 @@ description1_2.tag_add(tag_automated)
 description1_2.sound_add(sound_nova_12)
 description1_2.sound_add(sound_uc4_overtaking)
 description1_2.sound_add(sound_drum_tom)
-db.session.add(asset1_1)
-db.session.add(asset1_2)
+db.session.add(description1_1)
+db.session.add(description1_2)
 
 asset1_1.description_add(description1_1)
 asset1_2.description_add(description1_2)
@@ -1231,6 +1233,8 @@ asset2_2 = models.Asset(name="Beep for right overtaking",
                 iteration_number=0,
                 timestamp=datetime.now(),
                 notify_by_email=True)
+db.session.add(asset2_1)
+db.session.add(asset2_2)
 description2_1 = models.Description(duration="200",
 				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
         		sound_type=3,
@@ -1263,11 +1267,11 @@ description2_2.tag_add(tag_automated)
 description2_2.sound_add(sound_nova_12)
 description2_2.sound_add(sound_uc4_overtaking)
 description2_2.sound_add(sound_drum_tom)
-db.session.add(asset2_1)
-db.session.add(asset2_2)
+db.session.add(description2_1)
+db.session.add(description2_2)
 
-asset2_1.description_add(description1_1)
-asset2_2.description_add(description1_2)
+asset2_1.description_add(description2_1)
+asset2_2.description_add(description2_2)
 
 asset2_1.client_add(benjamin_mathe)
 asset2_1.supplier_add(christian_bouchard)
@@ -1309,6 +1313,8 @@ asset3_2 = models.Asset(name="Beep for right overtaking",
                 iteration_number=0,
                 timestamp=datetime.now(),
                 notify_by_email=True)
+db.session.add(asset3_1)
+db.session.add(asset3_2)
 description3_1 = models.Description(duration="200",
 				description="Beep-like sound for an urgent take-over request in a critical situation with TTC less than or equal 5 sec (e.g. sudden serious traffic accident in the lane of the automated car). It should sound worthy, with a touch of \"wooden\" sound. The sound should be directional: it should point to the the safest maneuver (right/left). It may include speech.",
         		sound_type=3,
@@ -1341,11 +1347,11 @@ description3_2.tag_add(tag_automated)
 description3_2.sound_add(sound_nova_12)
 description3_2.sound_add(sound_uc4_overtaking)
 description3_2.sound_add(sound_drum_tom)
-db.session.add(asset3_1)
-db.session.add(asset3_2)
+db.session.add(description3_1)
+db.session.add(description3_2)
 
-asset3_1.description_add(description1_1)
-asset3_2.description_add(description1_2)
+asset3_1.description_add(description3_1)
+asset3_2.description_add(description3_2)
 
 asset3_1.client_add(benjamin_mathe)
 asset3_1.supplier_add(johannes_kerkmann)

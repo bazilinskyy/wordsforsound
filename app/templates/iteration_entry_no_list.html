@@ -12,7 +12,7 @@
         <td>
             <p class="text-left">{% if iteration.description|length != 0 %} {{ iteration.description }} {% else %} No textual description was given. {% endif %} <strong>Time</strong> <span class="badge">{{ iteration.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
         </td>
-        <td width="80px">
+        <td width="60px">
             <p>Ver. {{ asset.iteration_number }}</p>
         </td>
         {% if iteration.filename != None %}
