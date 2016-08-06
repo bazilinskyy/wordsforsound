@@ -10,9 +10,6 @@
                 {% for tag in description.tags.all() %}
                   {% include 'tag_entry.html' %}
                 {% endfor %} 
-                {% for sound in description.sounds.all() %}
-                  <a href="{{ url_for('sound') }}/{{ sound.id }}">{{ sound.name }}</a> 
-                {% endfor %}
             </p>
         </td>
         {% if description.filename != None %}
