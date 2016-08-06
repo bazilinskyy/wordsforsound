@@ -85,22 +85,24 @@
 
       <script>
         var tags = new Bloodhound({
-          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
           prefetch: {
-              url: '/static/tags.json',
-              cache: false
+            url: 'static/tags_plain.json',
+            filter: function(list) {
+              return $.map(list, function(tagname) {
+                return { name: tagname }; });
+            }
           }
         });
         tags.initialize();
 
-        var elt = $('#tags');
-        elt.tagsinput({
-          itemValue: 'value',
-          itemText: 'text',
+        var elt_tags = $('#tags');
+        elt_tags.tagsinput({
           typeaheadjs: {
             name: 'tags',
-            displayKey: 'text',
+            displayKey: 'name',
+            valueKey: 'name',
             source: tags.ttAdapter()
           }
         });

@@ -57,3 +57,5 @@ else:
 # json files for tags and sounds
 TAGS_FILE = '/static/tags.json'
 SOUNDS_FILE = '/static/sounds.json'
+TAGS_FILE_PLAIN = '/static/tags_plain.json'
+SOUNDS_FILE_PLAIN = '/static/sounds_plain.json'

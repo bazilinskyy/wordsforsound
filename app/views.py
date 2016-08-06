@@ -17,7 +17,7 @@ from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
     TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE, AVATAR_UPLOAD_FOLDER, \
-    ASSETS_PER_PAGE_INDEX
+    ASSETS_PER_PAGE_INDEX, TAGS_FILE_PLAIN, SOUNDS_FILE_PLAIN
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -940,17 +940,33 @@ def add_asset():
             description.filename = form.upload_file.data.filename
 
         # Change tags
-        for tag in form.tags.data:
+        print form.tags.data
+        for tag in form.tags.data.split(","):
             if tag != ',':
-                description.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                tag_query = Tag.query.filter_by(name=tag).first()
+                if tag_query == None:
+                    tag_query = Tag()
+                    tag_query.timestamp = datetime.now()
+                    tag_query.name = tag
+                    db.session.add(tag_query)
+                description.tags.append(tag_query)
 
         # Change sounds
-        for sound in form.sounds.data:
+        for sound in form.sounds.data.split(","):
             if sound != ',':
-                description.sounds.append(Sound.query.filter_by(id=int(sound)).first())
+                sound_query = Sound.query.filter_by(name=sound).first()
+                if sound_query == None:
+                    sound_query = Sound()
+                    sound_query.timestamp = datetime.now()
+                    sound_query.name = sound
+                    db.session.add(sound_query)
+                description.sounds.append(sound_query)
 
         db.session.add(description)
         db.session.commit()
+
+        update_tags_json()
+        update_sounds_json()
         
         description_notification(asset.user_in_hands, asset)
         flash('New asset description created.')
@@ -1087,20 +1103,35 @@ def describe(asset_id):
         else:
             description.filename = form.upload_file.data.filename
 
-        # Add tags
         description.tags = []
-        for tag in form.tags.data:
+        description.sounds = []
+        # Add tags
+        for tag in form.tags.data.split(","):
             if tag != ',':
-                description.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                tag_query = Tag.query.filter_by(name=tag).first()
+                if tag_query == None:
+                    tag_query = Tag()
+                    tag_query.timestamp = datetime.now()
+                    tag_query.name = tag
+                    db.session.add(tag_query)
+                description.tags.append(tag_query)
 
         # Add sounds
-        description.sounds = []
-        for sound in form.sounds.data:
+        for sound in form.sounds.data.split(","):
             if sound != ',':
-                description.sounds.append(Sound.query.filter_by(id=int(sound)).first())
+                sound_query = Sound.query.filter_by(name=sound).first()
+                if sound_query == None:
+                    sound_query = Sound()
+                    sound_query.timestamp = datetime.now()
+                    sound_query.name = sound
+                    db.session.add(sound_query)
+                description.sounds.append(sound_query)
 
         db.session.add(description)
         db.session.commit()
+
+        update_tags_json()
+        update_sounds_json()
         
         description_notification(asset.user_in_hands, asset)
         flash('Description created.')
@@ -1415,6 +1446,7 @@ def readme():
 def update_tags_json():
     tags = Tag.query.all()
     tags_json = []
+    tags_json_plain = []
     if tags is not None:
         for tag in tags:
             tag_id = tag.id
@@ -1426,10 +1458,16 @@ def update_tags_json():
             with open('app/' + TAGS_FILE, 'w') as outfile:
                 json.dump(tags_json, outfile)
 
+            tags_json_plain.append(tag_name)
+            with open('app/' + TAGS_FILE_PLAIN, 'w') as outfile:
+                json.dump(tags_json_plain, outfile)
+
+
 # For autofill for sounds
 def update_sounds_json():
     sounds = Sound.query.all()
     sounds_json = []
+    sounds_json_plain = []
     if sounds is not None:
         for sound in sounds:
             sound_id = sound.id
@@ -1438,6 +1476,10 @@ def update_sounds_json():
             sounds_json.append({'value': sound_id, 'text' : sound_name, 'link' : sound_link})
             with open('app/' + SOUNDS_FILE, 'w') as outfile:
                 json.dump(sounds_json, outfile)
+
+            sounds_json_plain.append(sound_name)
+            with open('app/' + SOUNDS_FILE_PLAIN, 'w') as outfile:
+                json.dump(sounds_json_plain, outfile)
 
 # Listen for GET requests for S3
 @app.route('/sign-s3/<type>')
