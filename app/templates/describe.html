@@ -10,7 +10,7 @@
 {% if verification != None %}
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">Last verification with <a href="{{ url_for('verification', verification_id=verification.id) }}">ID {{ verification.id }}</a></h3>
+      <h3 class="panel-title"><a href="{{ url_for('verification', verification_id=verification.id) }}">Last verification with ID {{ verification.id }}</a></h3>
     </div>
     <div class="panel-body">
       {% include 'verification_entry_no_list.html' %}
@@ -26,20 +26,6 @@
       <h3 class="panel-title">Basic description</h3>
     </div>
     <div class="panel-body">
-      <fieldset class="form-group">
-        <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
-        {{ form.duration(class_='form-control', placeholder='Duration') }}
-        {% for error in form.duration.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
-        {% endfor %}
-      </fieldset>
-      <fieldset class="form-group">
-        <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch"> -->
-        {{ form.pitch(class_='form-control', placeholder='Pitch') }}
-        {% for error in form.pitch.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
-        {% endfor %}
-      </fieldset>
       <fieldset class="form-group">
         {% for radio_item in form.sound_type %}
         <label class="radio-inline">
@@ -179,7 +165,22 @@
         </h3>
       </div>
       <div id="collapse1" class="panel-collapse collapse">
-        <div class="panel-body">Coming soon</div>
+        <div class="panel-body">
+          <fieldset class="form-group">
+            <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
+            {{ form.duration(class_='form-control', placeholder='Duration') }}
+            {% for error in form.duration.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+          <fieldset class="form-group">
+            <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch"> -->
+            {{ form.pitch(class_='form-control', placeholder='Pitch') }}
+            {% for error in form.pitch.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+        </div>
       </div>
     </div>
   </div>

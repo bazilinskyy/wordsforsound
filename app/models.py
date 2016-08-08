@@ -23,6 +23,18 @@ tags_sounds_table = db.Table(
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
 
+tags_descriptions_table = db.Table(
+    'tags_for_descriptions',
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+    db.Column('description_id', db.Integer, db.ForeignKey('description.id'))
+)
+
+sounds_descriptions_table = db.Table(
+    'sounds_for_descriptions',
+    db.Column('sound_id', db.Integer, db.ForeignKey('sound.id')),
+    db.Column('description_id', db.Integer, db.ForeignKey('description.id'))
+)
+
 suppliers_projects_table = db.Table(
     'suppliers_projects',
     db.Column('supplier_id', db.Integer, db.ForeignKey('supplier_user.id')),
@@ -376,10 +388,14 @@ class Description(db.Model):
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     filename = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
-    tags = db.relationship('Tag', backref='asset',
-                            lazy='dynamic')
-    sounds = db.relationship('Sound', backref='description_entity',
-                            lazy='dynamic')
+    tags = db.relationship('Tag',
+                           secondary=tags_descriptions_table,
+                           backref=db.backref('descriptions', lazy='dynamic'),
+                           lazy='dynamic')
+    sounds = db.relationship('Sound',
+                           secondary=sounds_descriptions_table,
+                           backref=db.backref('descriptions', lazy='dynamic'),
+                           lazy='dynamic')
 
     def get_sound_type(self):
         if self.sound_type == '1':

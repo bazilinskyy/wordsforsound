@@ -1368,12 +1368,14 @@ def iterate(asset_id):
         heroku_state = 1
     else:
         heroku_state = 0
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('iterate.html',
                             form=form,
                             asset=asset,
                             description=description,
                             title='Iterate asset',
-                            heroku_state=heroku_state)
+                            heroku_state=heroku_state,
+                            attachment_location=attachment_location)
 
 # Create new project with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_project', methods=['GET', 'POST'])

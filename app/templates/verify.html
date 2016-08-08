@@ -10,7 +10,7 @@
 {% if iteration != None %}
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">Last iteration with <a href="{{ url_for('iteration', iteration_id=iteration.id) }}">ID {{ iteration.id }}</a></h3>
+      <h3 class="panel-title"><a href="{{ url_for('iteration', iteration_id=iteration.id) }}">Last iteration with ID {{ iteration.id }}</a></h3>
     </div>
     <div class="panel-body">
       {% include 'iteration_entry_no_list.html' %}
