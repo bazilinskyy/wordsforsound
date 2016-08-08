@@ -197,16 +197,16 @@ def edit_user():
         g.user.receive_emails = form.receive_emails.data
         g.user.email = form.email.data
 
-        if not os.environ.get('HEROKU'):
-          if form.upload_file.data.filename:
-            filename = secure_filename(form.upload_file.data.filename)
-            if os.path.isfile('app/' + AVATAR_UPLOAD_FOLDER + filename):
-                current_milli_time = lambda: int(round(time.time() * 1000))
-                filename = str(current_milli_time()) + filename
-            form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
-            g.user.avatar_filename = filename
-        else:
-          g.user.avatar_filename = form.upload_file.data.filename
+        if form.upload_file.data.filenam:
+            if not os.environ.get('HEROKU'):
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app/' + AVATAR_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
+                g.user.avatar_filename = filename
+            else:
+              g.user.avatar_filename = form.upload_file.data.filename
 
         db.session.add(g.user)
         db.session.commit()
@@ -543,8 +543,8 @@ def edit_project(project_id):
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
                 # check if tag woth the same name exists
-                project = Project.query.filter_by(name=form.name.data).first()
-                if project is not None:
+                project_check = Project.query.filter_by(name=form.name.data).first()
+                if project_check is not None:
                     flash('Project with the same name already exists.')
                     return render_template('edit_project.html',
                                     form=form,
@@ -555,16 +555,16 @@ def edit_project(project_id):
                 project.description = form.description.data
 
                 # Upload file
-                if not os.environ.get('HEROKU'):
-                  if form.upload_file.data.filename:
-                    filename = secure_filename(form.upload_file.data.filename)
-                    if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
-                        current_milli_time = lambda: int(round(time.time() * 1000))
-                        filename = str(current_milli_time()) + filename
-                    form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
-                    project.filename = filename
-                else:
-                  project.filename = form.upload_file.data.filename
+                if form.upload_file.data.filename:
+                    if not os.environ.get('HEROKU'):
+                        filename = secure_filename(form.upload_file.data.filename)
+                        if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
+                            current_milli_time = lambda: int(round(time.time() * 1000))
+                            filename = str(current_milli_time()) + filename
+                        form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
+                        project.filename = filename
+                    else:
+                      project.filename = form.upload_file.data.filename
 
                 flash('Project was edited successfully.')
 
@@ -809,14 +809,15 @@ def sound(sound_id=0):
     if sound.description == '':
         sound.description = 'N/A'
 
-    if request.method == 'POST' and request.form['submit'] == 'delete':
-        return delete_sound(sound.id)
 
     form = EmailForm()
     if form.validate_on_submit():
-        share_sound(g.user, sound, form.email.data)
-        flash('Sound was shared by email.')
-
+        print request.form['submit']
+        if request.form['submit'] == 'delete':
+            return delete_sound(sound.id)
+        elif request.form['submit'] == 'share':
+            share_sound(g.user, sound, form.email.data)
+            flash('Sound was shared by email.')
     return render_template('sound.html',
                            sound=sound,
                            sound_location=SOUND_UPLOAD_FOLDER,

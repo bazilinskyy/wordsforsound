@@ -12,3 +12,7 @@ app/static/*.json
 app/static/tags_plain.json
 
 app/static/tags.json
+
+app/static/sounds_plain.json
+
+app/static/sounds.json

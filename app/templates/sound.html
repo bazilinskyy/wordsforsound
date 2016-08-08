@@ -10,7 +10,7 @@
 	<p>
 		<h4>ID <span class="badge">{{ sound.id }}</span> Name <span class="badge">{{ sound.name }}</span>
 
-		<a href="{{ sound_location }}{{ sound.filename }}" target="_blank" type="button" class="btn btn-success btn-xs">Download</a> <a href="{{ url_for('edit_sound', sound_id=sound.id) }}"  type="button" class="btn btn-warning btn-xs">Edit</a> <a href="{{ url_for('delete_sound', sound_id=sound.id) }}" type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#myModal1">Delete</a> <a type="button" type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">Share</a>
+		<a href="{{ sound_location }}{{ sound.filename }}" target="_blank" type="button" class="btn btn-success btn-xs">Download</a> <a href="{{ url_for('edit_sound', sound_id=sound.id) }}"  type="button" class="btn btn-warning btn-xs">Edit</a> <a type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#myModal1">Delete</a> <a type="button" type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal">Share</a>
 	</p>
 
 	<p>
@@ -76,8 +76,7 @@
 	                {% endfor %}
 	              {% endif %}
 	            </span>
-			<button type="submit" class="btn btn-primary btn-block" >Send</button>
-		</form>
+			<button type="submit" name="submit" class="btn btn-primary btn-block" value="share">Send</button>
 		    	
 
       </div>
@@ -100,12 +99,12 @@
         </button>
         <h4 class="modal-title" id="myModalLabel">Are you sure you want to delete?</h4>
       </div>
-
       <div class="modal-body">
        <div class="text-center">
           <button type="submit" name="submit" style="width:49%" class="btn btn-danger" value="delete">Delete</button>
           <button type="button" data-dismiss="modal" style="width:49%" class="btn" class="btn">Cancel</button>
         </div>
+        </form>
         
           
       </form>
