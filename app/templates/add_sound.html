@@ -65,28 +65,30 @@
 
     </fieldset>
 
-    <script>
-      var tags = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: {
-              url: '/static/tags.json',
-              cache: false
+   <script>
+        var tags = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          prefetch: {
+            url: 'static/tags_plain.json',
+            filter: function(list) {
+              return $.map(list, function(tagname) {
+                return { name: tagname }; });
+            }
           }
-      });
-      tags.initialize();
+        });
+        tags.initialize();
 
-      var elt = $('#tags');
-      elt.tagsinput({
-        itemValue: 'value',
-        itemText: 'text',
-        typeaheadjs: {
-          name: 'tags',
-          displayKey: 'text',
-          source: tags.ttAdapter()
-        }
-      });
-    </script>
+        var elt_tags = $('#tags');
+        elt_tags.tagsinput({
+          typeaheadjs: {
+            name: 'tags',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: tags.ttAdapter()
+          }
+        });
+      </script>
     <input type="hidden" id="file-url" name="file-url">
     <fieldset class="form-group">
       <label for="upload_file">Upload file</label>

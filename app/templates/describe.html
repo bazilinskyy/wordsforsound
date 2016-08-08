@@ -76,7 +76,7 @@
 
       <fieldset class="form-group">
 
-        {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
+        {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', value=tags_value, **{'data-role':'tagsinput'}) }}
         {% for error in form.tags.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
@@ -88,7 +88,7 @@
           datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
           prefetch: {
-            url: 'static/tags_plain.json',
+            url: '/static/tags_plain.json',
             filter: function(list) {
               return $.map(list, function(tagname) {
                 return { name: tagname }; });
@@ -119,7 +119,7 @@
 
       <fieldset class="form-group">
 
-        {{ form.sounds(class_='form-control', id='sounds', placeholder='Add sounds', **{'data-role':'soundsinput'}) }}
+        {{ form.sounds(class_='form-control', id='sounds', placeholder='Add sounds', value=sounds_value, **{'data-role':'soundsinput'}) }}
         {% for error in form.sounds.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
@@ -128,24 +128,27 @@
 
       <script>
         var sounds = new Bloodhound({
-          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
           prefetch: {
-              url: '/static/sounds.json',
-              cache: false
+            url: '/static/sounds_plain.json',
+            filter: function(list) {
+              return $.map(list, function(soundname) {
+                return { name: soundname }; });
+            }
           }
         });
         sounds.initialize();
 
         var elt_sounds = $('#sounds');
         elt_sounds.tagsinput({
-          itemValue: 'value',
-          itemText: 'text',
           typeaheadjs: {
             name: 'sounds',
-            displayKey: 'text',
+            displayKey: 'name',
+            valueKey: 'name',
             source: sounds.ttAdapter()
-          }
+          },
+          freeInput: false
         });
       </script>
       

@@ -209,7 +209,7 @@ def edit_user():
         g.user.receive_emails = form.receive_emails.data
         g.user.email = form.email.data
 
-        if form.upload_file.data.filenam:
+        if form.upload_file.data.filename:
             if not os.environ.get('HEROKU'):
                 filename = secure_filename(form.upload_file.data.filename)
                 if os.path.isfile('app/' + AVATAR_UPLOAD_FOLDER + filename):
@@ -702,10 +702,16 @@ def add_sound():
         sound.sound_family = form.sound_family.data
         sound.rights = form.rights.data
 
-        # add tags
-        for tag in form.tags.data:
+        # Add tags
+        for tag in form.tags.data.split(","):
             if tag != ',':
-                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                tag_query = Tag.query.filter_by(name=tag).first()
+            if tag_query == None:
+                tag_query = Tag()
+                tag_query.timestamp = datetime.now()
+                tag_query.name = tag
+                db.session.add(tag_query)
+            sound.tags.append(tag_query)
 
         update_sounds_json()  # for autofill for sounds
         update_tags_json()  # for autofill for sounds
@@ -863,11 +869,17 @@ def edit_sound(sound_id):
         sound.sound_family = form.sound_family.data
         sound.rights = form.rights.data
 
-        # add tags
-        sound.ags = []
-        for tag in form.tags.data:
+        # Add tags
+        sound.tags = []
+        for tag in form.tags.data.split(","):
             if tag != ',':
-                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                tag_query = Tag.query.filter_by(name=tag).first()
+            if tag_query == None:
+                tag_query = Tag()
+                tag_query.timestamp = datetime.now()
+                tag_query.name = tag
+                db.session.add(tag_query)
+            sound.tags.append(tag_query)
 
         # Upload file
         if form.upload_file.data.filename:
@@ -894,11 +906,15 @@ def edit_sound(sound_id):
             form.sound_family.data = sound.sound_family
             form.rights.data = sound.rights
             form.upload_file.data = sound.filename
+            tags_value = ""
+            for tag in sound.tags:
+                tags_value = tags_value + ',' + tag.name
     return render_template('edit_sound.html',
                            form=form,
                            title='Edit sound',
                            sound=sound,
-                           heroku_state=heroku_state)
+                           heroku_state=heroku_state,
+                           tags_value=tags_value)
 
 # Create new asset with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_asset', methods=['GET', 'POST'])
@@ -982,7 +998,6 @@ def add_asset():
             description.filename = form.upload_file.data.filename
 
         # Change tags
-        print form.tags.data
         for tag in form.tags.data.split(","):
             if tag != ',':
                 tag_query = Tag.query.filter_by(name=tag).first()
@@ -996,12 +1011,7 @@ def add_asset():
         # Change sounds
         for sound in form.sounds.data.split(","):
             if sound != ',':
-                sound_query = Sound.query.filter_by(name=sound).first()
-                if sound_query == None:
-                    sound_query = Sound()
-                    sound_query.timestamp = datetime.now()
-                    sound_query.name = sound
-                    db.session.add(sound_query)
+                sound_query = Sound.query.filter_by(id=sound).first()
                 description.sounds.append(sound_query)
 
         db.session.add(description)
@@ -1073,8 +1083,8 @@ def edit_asset(asset_id):
 
     elif request.method != "POST":
         if asset is not None:
-          form.name.data = asset.name
-          form.description.data = asset.description
+            form.name.data = asset.name
+            form.description.data = asset.description
 
     if os.environ.get('HEROKU'):
         heroku_state = 1
@@ -1099,6 +1109,8 @@ def describe(asset_id):
         return redirect(url_for('index'))
 
     form = DescriptionForm()
+    tags_value = ""
+    sounds_value = ""
     if form.validate_on_submit():
         # get asset similar to project_id 
         description = Description()
@@ -1147,6 +1159,7 @@ def describe(asset_id):
 
         description.tags = []
         description.sounds = []
+
         # Add tags
         for tag in form.tags.data.split(","):
             if tag != ',':
@@ -1162,11 +1175,6 @@ def describe(asset_id):
         for sound in form.sounds.data.split(","):
             if sound != ',':
                 sound_query = Sound.query.filter_by(name=sound).first()
-                if sound_query == None:
-                    sound_query = Sound()
-                    sound_query.timestamp = datetime.now()
-                    sound_query.name = sound
-                    db.session.add(sound_query)
                 description.sounds.append(sound_query)
 
         db.session.add(description)
@@ -1180,12 +1188,17 @@ def describe(asset_id):
         return redirect(url_for('index'))
     elif request.method != "POST":
         if asset.descriptions.count() > 0 is not None:
-            description = asset.descriptions.first()
+            description = asset.get_last_description()
             form.description.data = description.description
             form.duration.data = description.duration
             form.pitch.data = description.pitch
             form.sound_type.data = description.sound_type
             form.sound_family.data = description.sound_family
+            for tag in description.tags.all():
+                tags_value = tags_value + ',' + tag.name
+            for sound in description.sounds.all():
+                sounds_value = sounds_value + ',' + sound.name
+                print sounds_value
 
     if os.environ.get('HEROKU'):
         heroku_state = 1
@@ -1196,7 +1209,9 @@ def describe(asset_id):
                             asset=asset,
                             verification=asset.get_last_verification(),
                             title='Describe asset',
-                            heroku_state=heroku_state)
+                            heroku_state=heroku_state,
+                            tags_value=tags_value,
+                            sounds_value=sounds_value)
 
 @app.route('/verify', methods=['GET', 'POST'])
 @app.route('/verify/<int:asset_id>/', methods=['GET', 'POST'])

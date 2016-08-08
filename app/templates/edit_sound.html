@@ -58,7 +58,7 @@
 
     <fieldset class="form-group">
 
-      {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
+      {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', value=tags_value, **{'data-role':'tagsinput'}) }}
       {% for error in form.tags.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
       {% endfor %}
@@ -66,26 +66,28 @@
     </fieldset>
 
     <script>
-      var tags = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        prefetch: '/static/tags.json'
-      });
-      tags.initialize();
+        var tags = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          prefetch: {
+            url: 'static/tags_plain.json',
+            filter: function(list) {
+              return $.map(list, function(tagname) {
+                return { name: tagname }; });
+            }
+          }
+        });
+        tags.initialize();
 
-      var elt = $('#tags');
-      elt.tagsinput({
-        itemValue: 'value',
-        itemText: 'text',
-        typeaheadjs: {
-          name: 'tags',
-          displayKey: 'text',
-          source: tags.ttAdapter()
-        }
-      });
-      {% for tag in sound.tags %}
-          elt.tagsinput('add', { "value": {{ tag.id }}, "text": "{{ tag.name }}"});
-      {% endfor %}
+        var elt_tags = $('#tags');
+        elt_tags.tagsinput({
+          typeaheadjs: {
+            name: 'tags',
+            displayKey: 'name',
+            valueKey: 'name',
+            source: tags.ttAdapter()
+          }
+        });
     </script>
 
     <input type="hidden" id="file-url" name="file-url">
