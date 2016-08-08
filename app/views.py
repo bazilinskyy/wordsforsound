@@ -331,7 +331,7 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
 #                            pagination_verification=pagination_verification,
 #                            pagination_otherhands=pagination_otherhands)
 
-@app.route('/tags', methods=['GET', 'OPST'])
+@app.route('/tags', methods=['GET', 'POST'])
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tags(page=1):
@@ -352,21 +352,38 @@ def tags(page=1):
                             tags=tags,
                             pagination=pagination)
 
-@app.route('/tag')
-@app.route('/tag/<int:tag_id>/')
+@app.route('/tag', methods=['GET', 'POST'])
+@app.route('/tag/<int:tag_id>', methods=['GET', 'POST'])
+@app.route('/tag/<int:tag_id>/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tag(tag_id=0, page=1):
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
     tag = Tag.query.filter_by(id=tag_id).first()
     if tag is None:
         flash('Tag not found.')
         return redirect(url_for('index'))
-    sounds = tag.sounds.paginate(page, SOUNDS_PER_PAGE, False)
+
+    if request.method == 'POST' and request.form['submit'] == 'delete':
+        return delete_tag(tag.id)
+
+    total_count = len(tag.sounds.all())
+    sounds = tag.sounds.order_by(Sound.timestamp.desc()).paginate(page, SOUNDS_PER_PAGE, False)
+    pagination = Pagination(page=page,
+                            per_page=SOUNDS_PER_PAGE,
+                            total=total_count,
+                            search=search,
+                            css_framework='foundation')
     return render_template('tag.html',
                            title='Tag',
                            tag=tag,
                            page=page,
                            sounds=sounds,
-                           sound_location=SOUND_UPLOAD_FOLDER)
+                           sound_location=SOUND_UPLOAD_FOLDER,
+                           pagination=pagination)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 @login_required
@@ -446,8 +463,10 @@ def delete_tag(tag_id=0):
         db.session.commit()
 
         update_tags_json()  # for autofill for tags
-        
-        flash('Tag ' +  tag.name + ' was deleted.')
+        if tag.name:
+            flash('Tag ' +  tag.name + ' was deleted.')
+        else:
+            flash('Tag with ID ' +  str(tag.id) + ' was deleted.')
         return redirect(url_for('tags'))
     return render_template('delete_tag.html',
                             form=form,
@@ -729,7 +748,7 @@ def delete_sound(sound_id=0):
             try:
                 # Removed file stored locally
                 os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
-            except OSError:
+            except:
                 app.logger.error("Could not delete file %s." % str(sound.filename))
         else:
             # Remove file stored in Heroku
@@ -745,7 +764,10 @@ def delete_sound(sound_id=0):
         update_sounds_json()  # for autofill for sounds
         update_tags_json()  # for autofill for sounds
 
-        flash('Sound ' +  sound.name + ' was deleted.')
+        if sound.name:
+            flash('Sound ' +  sound.name + ' was deleted.')
+        else:
+            flash('Sound with ID ' +  str(sound.id) + ' was deleted.')
         return redirect(url_for('sounds'))
     return render_template('delete_sound.html',
                             form=form,
@@ -777,12 +799,14 @@ def sounds(page=1):
 @login_required
 def sound(sound_id=0):
     sound = Sound.query.filter_by(id=sound_id).first()
-    print sound_id
     if sound is None:
         flash('Sound not found.')
         return redirect(url_for('index'))
     if sound.description == '':
         sound.description = 'N/A'
+
+    if request.method == 'POST' and request.form['submit'] == 'delete':
+        return delete_sound(sound.id)
 
     form = EmailForm()
     if form.validate_on_submit():
