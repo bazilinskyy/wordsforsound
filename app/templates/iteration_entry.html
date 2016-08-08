@@ -1,7 +1,7 @@
 <table class="table table-hover">
     <tr>
-        <td width="20px">
-        	<a href="{{ url_for('iteration', iteration_id=iteration.id) }}">ID:{{ iteration.id }}</a>
+        <td width="70px">
+            <a href="{{ url_for('user', nickname=iteration.user.nickname) }}"><img src="{{ iteration.user.avatar(70) }}" width="70"/></a>
         </td>
         <td>
             <p class="text-left">
@@ -28,5 +28,8 @@
                 <a target="_blank" href="{{ sound_location }}{{ iteration.filename }}">Download</a>
             </td>
         {% endif %}
+        <td width="10px">
+            <a type="button" class="btn btn-block btn-xs btn-info" href="{{ url_for('iteration', iteration_id=iteration.id) }}">View</a>
+        </td>
     </tr>
 </table>
