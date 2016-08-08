@@ -170,20 +170,32 @@ def reset_with_token(token):
 
     return render_template('reset_with_token.html', form=form, token=token)
 
-@app.route('/user/<nickname>')
-@app.route('/user/<nickname>/<int:page>')
+@app.route('/user/<nickname>', methods=["GET", "POST"])
+@app.route('/user/<nickname>/<int:page>', methods=["GET", "POST"])
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
+
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
     user_assets = Asset.query.filter_by(in_hands_id = user.id).paginate(page, ASSETS_PER_PAGE, False)
+    total_count = len(Asset.query.filter_by(in_hands_id = user.id).all())
+    pagination = Pagination(page=page,
+                            per_page=ASSETS_PER_PAGE,
+                            total=total_count,
+                            search=search,
+                            css_framework='foundation')
     return render_template('user.html',
                            page=page,
                            user=user,
-                           user_assets=user_assets)
-
+                           user_assets=user_assets,
+                           pagination=pagination)
 
 @app.route('/user/edit', methods=['GET', 'POST'])
 @login_required
