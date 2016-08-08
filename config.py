@@ -21,6 +21,9 @@ DATABASE_QUERY_TIMEOUT = 0.5
 # Whoosh does not work on Heroku
 WHOOSH_ENABLED = os.environ.get('HEROKU') is None
 
+# Email system to use. "YAG" / "SMTP"
+EMAIL_SYSTEM = 'YAG'
+
 # pagination
 TAGS_PER_PAGE = 200
 SOUNDS_PER_PAGE = 10
