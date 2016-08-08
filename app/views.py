@@ -415,16 +415,20 @@ def add_tag():
 @login_required
 def edit_tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
+
+    if tag is None:
+        flash('Tag not found.')
+        return redirect(url_for('index'))
+
     form = EditTagForm()
     if form.validate_on_submit():
         # check if tag woth the same name exists
-        tag = Tag.query.filter_by(name=form.name.data).first()
-        if tag is not None:
+        tag_check = Tag.query.filter_by(name=form.name.data).first()
+        if tag_check is not None:
             flash('Tag with the same name already exists.')
             return render_template('edit_tag.html',
                             form=form,
                             title='Edit tag')
-        tag = Tag()
         tag.name = form.name.data
         tag.timestamp = datetime.now()
         db.session.add(tag)
@@ -831,8 +835,8 @@ def edit_sound(sound_id):
 
     if form.validate_on_submit():
         # check if sound woth the same name exists
-        sound = Sound.query.filter_by(name=form.name.data).first()
-        if sound is not None:
+        sound_check = Sound.query.filter_by(name=form.name.data).first()
+        if sound_check is not None:
             flash('Sound with the same name already exists.')
             return render_template('edit_sound.html',
                             form=form,
@@ -853,15 +857,16 @@ def edit_sound(sound_id):
                 sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
 
         # Upload file
-        if not os.environ.get('HEROKU'):
-            filename = secure_filename(form.upload_file.data.filename)
-            if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
-                current_milli_time = lambda: int(round(time.time() * 1000))
-                filename = str(current_milli_time()) + filename
-            form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
-            sound.filename = filename
-        else:
-            sound.filename = form.upload_file.data.filename
+        if form.upload_file.data.filename:
+            if not os.environ.get('HEROKU'):
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app' + SOUND_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app' + SOUND_UPLOAD_FOLDER + filename)
+                sound.filename = filename
+            else:
+                sound.filename = form.upload_file.data.filename
 
         db.session.commit()
         
