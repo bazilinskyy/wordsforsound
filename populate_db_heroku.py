@@ -3,16 +3,16 @@ from datetime import datetime
 import shutil, os
 
 #
-# try:
-# 	shutil.rmtree('db_repository')
-# except:
-# 	pass
-# try:
-# 	os.remove('app.db')
-# except:
-# 	pass
+try:
+	shutil.rmtree('db_repository')
+except:
+	pass
+try:
+	os.remove('app.db')
+except:
+	pass
 
-# import db_create
+import db_create
 
 # Add tags
 tag_beep = models.Tag(name="beep")
