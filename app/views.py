@@ -1016,7 +1016,6 @@ def add_asset():
                     sound_query = Sound.query.filter_by(id=sound).first()
                     description.sounds.append(sound_query)
 
-        import ipdb; ipdb.set_trace();
         db.session.add(description)
         asset.description_add(description)
         db.session.commit()
