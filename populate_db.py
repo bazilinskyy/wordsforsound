@@ -1163,10 +1163,10 @@ sascha_becker  = models.SupplierUser(nickname="sascha_becker",
                 last_seen=datetime.now(),
                 receive_emails=True,
                 avatar_filename="niki_70.jpg")
-johannes_kerkmann  = models.SupplierUser(nickname="johannes_kerkmann",
-				first_name="Johannes",
-				last_name="Kerkmann",
-                email="johannes.kerkmann@conti-engineering.com",
+johannes_kerkmann  = models.SupplierUser(nickname="jeremy_ondrey",
+				first_name="Jeremy",
+				last_name="Ondrey",
+                email="Jeremy.Ondrey@continental-corporation.com",
                 password="12345678",
                 last_seen=datetime.now(),
                 receive_emails=True,
@@ -1187,10 +1187,10 @@ joost_de_winter = models.ClientUser(nickname="joost_de_winter",
                 last_seen=datetime.now(),
                 receive_emails=True,
                 avatar_filename="kyle_128.png")
-supplier4 = models.SupplierUser(nickname="jeremy_ondrey",
+supplier4 = models.SupplierUser(nickname="supplier4",
 				first_name="Supplier",
 				last_name="Four",
-                email="Jeremy.Ondrey@continental-corporation.com",
+                email="wordsforsound.michael@gmail.com",
                 password="12345678",
                 last_seen=datetime.now(),
                 receive_emails=True,
@@ -1199,6 +1199,14 @@ supplier5 = models.SupplierUser(nickname="supplier5",
 				first_name="Supplier",
 				last_name="Five",
                 email="wordsforsound.ayrton@gmail.com",
+                password="12345678",
+                last_seen=datetime.now(),
+                receive_emails=True,
+                avatar_filename="finn_128.png")
+joost_de_winter = models.ClientUser(nickname="markus_groh",
+				first_name="Markus",
+				last_name="Groh",
+                email="Markus.Groh@continental-corporation.com",
                 password="12345678",
                 last_seen=datetime.now(),
                 receive_emails=True,
@@ -1213,6 +1221,7 @@ db.session.add(sascha_becker)
 db.session.add(christian_bouchard)
 db.session.add(supplier4)
 db.session.add(supplier5)
+db.session.add(markus_groh)
 db.session.commit()
 
 ######## Validation participant 1 ########

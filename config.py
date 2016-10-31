@@ -22,7 +22,7 @@ DATABASE_QUERY_TIMEOUT = 0.5
 WHOOSH_ENABLED = os.environ.get('HEROKU') is None
 
 # Email system to use. "YAG" / "SMTP"
-EMAIL_SYSTEM = 'YAG'
+EMAIL_SYSTEM = 'SMTP'
 
 # pagination
 TAGS_PER_PAGE = 200

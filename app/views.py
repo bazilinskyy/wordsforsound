@@ -1164,21 +1164,23 @@ def describe(asset_id):
         description.sounds = []
 
         # Add tags
-        for tag in form.tags.data.split(","):
-            if tag != ',':
-                tag_query = Tag.query.filter_by(name=tag).first()
-                if tag_query == None:
-                    tag_query = Tag()
-                    tag_query.timestamp = datetime.now()
-                    tag_query.name = tag
-                    db.session.add(tag_query)
-                description.tags.append(tag_query)
+        if form.tags.data:
+            for tag in form.tags.data.split(","):
+                if tag != ',':
+                    tag_query = Tag.query.filter_by(name=tag).first()
+                    if tag_query == None:
+                        tag_query = Tag()
+                        tag_query.timestamp = datetime.now()
+                        tag_query.name = tag
+                        db.session.add(tag_query)
+                    description.tags.append(tag_query)
 
         # Add sounds
-        for sound in form.sounds.data.split(","):
-            if sound != ',':
-                sound_query = Sound.query.filter_by(name=sound).first()
-                description.sounds.append(sound_query)
+        if form.sounds.data:
+            for sound in form.sounds.data.split(","):
+                if sound != ',':
+                    sound_query = Sound.query.filter_by(name=sound).first()
+                    description.sounds.append(sound_query)
 
         db.session.add(description)
         db.session.commit()
