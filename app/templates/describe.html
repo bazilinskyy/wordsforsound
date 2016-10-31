@@ -10,7 +10,7 @@
 {% if verification != None %}
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">Last verification with <a href="{{ url_for('verification', verification_id=verification.id) }}">ID {{ verification.id }}</a></h3>
+      <h3 class="panel-title"><a href="{{ url_for('verification', verification_id=verification.id) }}">Last verification with ID {{ verification.id }}</a></h3>
     </div>
     <div class="panel-body">
       {% include 'verification_entry_no_list.html' %}
@@ -26,20 +26,6 @@
       <h3 class="panel-title">Basic description</h3>
     </div>
     <div class="panel-body">
-      <fieldset class="form-group">
-        <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
-        {{ form.duration(class_='form-control', placeholder='Duration') }}
-        {% for error in form.duration.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
-        {% endfor %}
-      </fieldset>
-      <fieldset class="form-group">
-        <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch"> -->
-        {{ form.pitch(class_='form-control', placeholder='Pitch') }}
-        {% for error in form.pitch.errors %}
-        <span class="help-inline">[{{ error }}]</span><br>
-        {% endfor %}
-      </fieldset>
       <fieldset class="form-group">
         {% for radio_item in form.sound_type %}
         <label class="radio-inline">
@@ -76,7 +62,7 @@
 
       <fieldset class="form-group">
 
-        {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', **{'data-role':'tagsinput'}) }}
+        {{ form.tags(class_='form-control', id='tags', placeholder='Add tags', value=tags_value, **{'data-role':'tagsinput'}) }}
         {% for error in form.tags.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
@@ -85,22 +71,24 @@
 
       <script>
         var tags = new Bloodhound({
-          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
           prefetch: {
-              url: '/static/tags.json',
-              cache: false
+            url: '/static/tags_plain.json',
+            filter: function(list) {
+              return $.map(list, function(tagname) {
+                return { name: tagname }; });
+            }
           }
         });
         tags.initialize();
 
-        var elt = $('#tags');
-        elt.tagsinput({
-          itemValue: 'value',
-          itemText: 'text',
+        var elt_tags = $('#tags');
+        elt_tags.tagsinput({
           typeaheadjs: {
             name: 'tags',
-            displayKey: 'text',
+            displayKey: 'name',
+            valueKey: 'name',
             source: tags.ttAdapter()
           }
         });
@@ -117,7 +105,7 @@
 
       <fieldset class="form-group">
 
-        {{ form.sounds(class_='form-control', id='sounds', placeholder='Add sounds', **{'data-role':'soundsinput'}) }}
+        {{ form.sounds(class_='form-control', id='sounds', placeholder='Add sounds', value=sounds_value, **{'data-role':'soundsinput'}) }}
         {% for error in form.sounds.errors %}
         <span class="help-inline">[{{ error }}]</span><br>
         {% endfor %}
@@ -126,24 +114,27 @@
 
       <script>
         var sounds = new Bloodhound({
-          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('text'),
+          datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
           queryTokenizer: Bloodhound.tokenizers.whitespace,
           prefetch: {
-              url: '/static/sounds.json',
-              cache: false
+            url: '/static/sounds_plain.json',
+            filter: function(list) {
+              return $.map(list, function(soundname) {
+                return { name: soundname }; });
+            }
           }
         });
         sounds.initialize();
 
         var elt_sounds = $('#sounds');
         elt_sounds.tagsinput({
-          itemValue: 'value',
-          itemText: 'text',
           typeaheadjs: {
             name: 'sounds',
-            displayKey: 'text',
+            displayKey: 'name',
+            valueKey: 'name',
             source: sounds.ttAdapter()
-          }
+          },
+          freeInput: false
         });
       </script>
       
@@ -174,7 +165,22 @@
         </h3>
       </div>
       <div id="collapse1" class="panel-collapse collapse">
-        <div class="panel-body">Coming soon</div>
+        <div class="panel-body">
+          <fieldset class="form-group">
+            <!--  <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Duration"> -->
+            {{ form.duration(class_='form-control', placeholder='Duration') }}
+            {% for error in form.duration.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+          <fieldset class="form-group">
+            <!-- <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Pitch"> -->
+            {{ form.pitch(class_='form-control', placeholder='Pitch') }}
+            {% for error in form.pitch.errors %}
+            <span class="help-inline">[{{ error }}]</span><br>
+            {% endfor %}
+          </fieldset>
+        </div>
       </div>
     </div>
   </div>

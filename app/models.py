@@ -23,6 +23,18 @@ tags_sounds_table = db.Table(
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
 
+tags_descriptions_table = db.Table(
+    'tags_for_descriptions',
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
+    db.Column('description_id', db.Integer, db.ForeignKey('description.id'))
+)
+
+sounds_descriptions_table = db.Table(
+    'sounds_for_descriptions',
+    db.Column('sound_id', db.Integer, db.ForeignKey('sound.id')),
+    db.Column('description_id', db.Integer, db.ForeignKey('description.id'))
+)
+
 suppliers_projects_table = db.Table(
     'suppliers_projects',
     db.Column('supplier_id', db.Integer, db.ForeignKey('supplier_user.id')),
@@ -252,103 +264,103 @@ class Asset(db.Model):
     def supplier_add(self, supplier):
         if supplier not in self.suppliers.all():
             self.suppliers.append(supplier)
-            logging.debug("Project %s added supplier %s" % (str(self), str(supplier)))
+            logging.debug("Asset %s added supplier %s" % (str(self), str(supplier)))
             return self
         else:
-            logging.debug("Project %s already has supplier %s: " % (str(self), str(supplier)))
+            logging.debug("Asset %s already has supplier %s: " % (str(self), str(supplier)))
 
     def supplier_remove(self, supplier):
         if supplier in self.suppliers.all():
             self.suppliers.remove(supplier)
-            logging.debug("Project %s removed supplier %s" % (str(self), str(supplier)))
+            logging.debug("Asset %s removed supplier %s" % (str(self), str(supplier)))
         else:
-            logging.debug("Project %s does not have supplier %s: " % (str(self), str(supplier)))
+            logging.debug("Asset %s does not have supplier %s: " % (str(self), str(supplier)))
 
     def client_add(self, client):
         if client not in self.clients.all():
             self.clients.append(client)
-            logging.debug("Project %s added client %s" % (str(self), str(client)))
+            logging.debug("Asset %s added client %s" % (str(self), str(client)))
             return self
         else:
-            logging.debug("Project %s already has client %s: " % (str(self), str(client)))
+            logging.debug("Asset %s already has client %s: " % (str(self), str(client)))
 
     def client_remove(self, client):
         if client in self.clients.all():
             self.clients.remove(client)
-            logging.debug("Project %s removed client %s" % (str(self), str(client)))
+            logging.debug("Asset %s removed client %s" % (str(self), str(client)))
         else:
-            logging.debug("Project %s does not have client %s: " % (str(self), str(client)))
+            logging.debug("Asset %s does not have client %s: " % (str(self), str(client)))
 
     def description_add(self, description):
         if description not in self.descriptions.all():
             self.descriptions.append(description)
-            logging.debug("Project %s added description %s" % (str(self), str(description)))
+            logging.debug("Asset %s added description %s" % (str(self), str(description)))
             return self
         else:
-            logging.debug("Project %s already has description %s: " % (str(self), str(description)))
+            logging.debug("Asset %s already has description %s: " % (str(self), str(description)))
 
     def description_remove(self, description):
         if description in self.descriptions.all():
             self.descriptions.remove(description)
-            logging.debug("Project %s removed description %s" % (str(self), str(description)))
+            logging.debug("Asset %s removed description %s" % (str(self), str(description)))
         else:
-            logging.debug("Project %s does not have description %s: " % (str(self), str(description)))
+            logging.debug("Asset %s does not have description %s: " % (str(self), str(description)))
 
     def iteration_add(self, iteration):
         if iteration not in self.iterations.all():
             self.iterations.append(iteration)
-            logging.debug("Project %s added iteration %s" % (str(self), str(iteration)))
+            logging.debug("Asset %s added iteration %s" % (str(self), str(iteration)))
             return self
         else:
-            logging.debug("Project %s already has iteration %s: " % (str(self), str(iteration)))
+            logging.debug("Asset %s already has iteration %s: " % (str(self), str(iteration)))
 
     def iteration_remove(self, iteration):
         if iteration in self.iterations.all():
             self.iterations.remove(iteration)
-            logging.debug("Project %s removed iteration %s" % (str(self), str(iteration)))
+            logging.debug("Asset %s removed iteration %s" % (str(self), str(iteration)))
         else:
-            logging.debug("Project %s does not have iteration %s: " % (str(self), str(iteration)))
+            logging.debug("Asset %s does not have iteration %s: " % (str(self), str(iteration)))
 
     def verification_add(self, verification):
         if verification not in self.verifications.all():
             self.verifications.append(verification)
-            logging.debug("Project %s added verification %s" % (str(self), str(verification)))
+            logging.debug("Asset %s added verification %s" % (str(self), str(verification)))
             return self
         else:
-            logging.debug("Project %s already has verification %s: " % (str(self), str(verification)))
+            logging.debug("Asset %s already has verification %s: " % (str(self), str(verification)))
 
     def verification_remove(self, verification):
         if verification in self.verifications.all():
             self.verifications.remove(verification)
-            logging.debug("Project %s removed verification %s" % (str(self), str(verification)))
+            logging.debug("Asset %s removed verification %s" % (str(self), str(verification)))
         else:
-            logging.debug("Project %s does not have verification %s: " % (str(self), str(verification)))
+            logging.debug("Asset %s does not have verification %s: " % (str(self), str(verification)))
 
     def get_last_description(self):
         if self.descriptions.count() != 0:
             description = self.descriptions[-1]
-            logging.debug("Project %s\'s last description is %s" % (str(self), str(description)))
+            logging.debug("Asset %s\'s last description is %s" % (str(self), str(description)))
             return description
         else:
-            logging.debug("Project %s does not have any descriptions to get the last description." % (str(self)))
+            logging.debug("Asset %s does not have any descriptions to get the last description." % (str(self)))
             return None
 
     def get_last_iteration(self):
         if self.iterations.count() != 0:
             iteration = self.iterations[-1]
-            logging.debug("Project %s\'s last iteration is %s" % (str(self), str(iteration)))
+            logging.debug("Asset %s\'s last iteration is %s" % (str(self), str(iteration)))
             return iteration
         else:
-            logging.debug("Project %s does not have any iterations to get the last iteration." % (str(self)))
+            logging.debug("Asset %s does not have any iterations to get the last iteration." % (str(self)))
             return None
 
     def get_last_verification(self):
         if self.verifications.count() != 0:
             verification = self.verifications[-1]
-            logging.debug("Project %s\'s last verification is %s" % (str(self), str(verification)))
+            logging.debug("Asset %s\'s last verification is %s" % (str(self), str(verification)))
             return verification
         else:
-            logging.debug("Project %s does not have any verifications to get the last verification." % (str(self)))
+            logging.debug("Asset %s does not have any verifications to get the last verification." % (str(self)))
             return None
 
     def init_in_hands(self):
@@ -376,10 +388,14 @@ class Description(db.Model):
     asset_id = db.Column(db.Integer, db.ForeignKey('asset.id'))
     filename = db.Column(db.String(200))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # last edit by
-    tags = db.relationship('Tag', backref='asset',
-                            lazy='dynamic')
-    sounds = db.relationship('Sound', backref='description_entity',
-                            lazy='dynamic')
+    tags = db.relationship('Tag',
+                           secondary=tags_descriptions_table,
+                           backref=db.backref('descriptions', lazy='dynamic'),
+                           lazy='dynamic')
+    sounds = db.relationship('Sound',
+                           secondary=sounds_descriptions_table,
+                           backref=db.backref('descriptions', lazy='dynamic'),
+                           lazy='dynamic')
 
     def get_sound_type(self):
         if self.sound_type == '1':
@@ -404,7 +420,9 @@ class Description(db.Model):
              return 'Unkonwn family'
 
     def get_pitch(self):
-        if len(self.pitch) != 0:
+        if self.pitch == None:
+            return 'N/A'
+        elif len(self.pitch) != 0:
             return self.pitch
         else:
             return 'N/A'

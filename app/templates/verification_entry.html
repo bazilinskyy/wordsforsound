@@ -1,7 +1,7 @@
 <table class="table table-hover">
     <tr>
-        <td width="20px">
-        	<a href="{{ url_for('verification', verification_id=verification.id) }}">ID:{{ verification.id }}</a>
+        <td width="70px">
+            <a href="{{ url_for('user', nickname=verification.user.nickname) }}"><img src="{{ verification.user.avatar(70) }}" width="70"/></a>
         </td>
         <td>
             <p class="text-left">
@@ -13,5 +13,8 @@
                 <a target="_blank" href="{{ attachment_location }}{{ verification.filename }}">{{ verification.filename }}</a>
             </td>
         {% endif %}
+        <td width="10px">
+            <a type="button" class="btn btn-block btn-xs btn-info" href="{{ url_for('verification', verification_id=verification.id) }}">View</a>
+        </td>
     </tr>
 </table>

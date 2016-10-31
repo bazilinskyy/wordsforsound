@@ -21,6 +21,9 @@ DATABASE_QUERY_TIMEOUT = 0.5
 # Whoosh does not work on Heroku
 WHOOSH_ENABLED = os.environ.get('HEROKU') is None
 
+# Email system to use. "YAG" / "SMTP"
+EMAIL_SYSTEM = 'YAG'
+
 # pagination
 TAGS_PER_PAGE = 200
 SOUNDS_PER_PAGE = 10
@@ -57,3 +60,5 @@ else:
 # json files for tags and sounds
 TAGS_FILE = '/static/tags.json'
 SOUNDS_FILE = '/static/sounds.json'
+TAGS_FILE_PLAIN = '/static/tags_plain.json'
+SOUNDS_FILE_PLAIN = '/static/sounds_plain.json'

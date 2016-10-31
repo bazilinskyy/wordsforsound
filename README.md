@@ -85,11 +85,13 @@ After logging in the user it redirected to the home page at `index`. This page c
 [sound_design_img]: /static/img/sound_design_process.png "Sound design process"
 <p align="center">*Figure 1*. Sound design process.</p>
 
-Please refer to Fig. 2 for an example of the homepage as seen by a client that requests four assets to be made: 1) The asset **Spearcon for activation 01** requires a new descriptions, since the iteration of version 1 was not accepted as final; 2) The asset **Beep for right overtaking** needs to be verified, because the supplier working on the asset provided the first iteration; 3-4) The assets **Earcon for TOR** abd **Beep for left overtaking** are **In other hands**, meaning that the client, who’s homepage you may see on the figure, does not have to take any actions for the assets in question at the moment, i.e. in this case these two assets need to be supplied with iterations by assigned suppliers.
+Please refer to Fig. 2 for an example of the homepage as seen by a client that requests four assets to be made: 1) The asset **Spearcon for activation 01** requires a new descriptions, since the iteration of version 1 was not accepted as final; 2) The asset **Beep for right overtaking** needs to be verified, because the supplier working on the asset provided the first iteration; 3-4) The assets **Earcon for TOR** abd **Beep for left overtaking** are **In other hands**, meaning that the client, who's homepage you may see on the figure, does not have to take any actions for the assets in question at the moment, i.e. in this case these two assets need to be supplied with iterations by assigned suppliers.
 
 ![alt text][index_img]
 [index_img]: /static/img/screenshot_index.png "Homepage of client"
 <p align="center">*Figure 2*. Example of homepage of client.</p>
+
+The horizontal menu contains the search input field. The input becomes hidden on small window sizes.
 
 #### Projects
 New projects can be added at `add_project`. Project cannot be deleted.
@@ -101,6 +103,8 @@ Each asset must be assigned to at least one client and at least one supplier. Co
 
 #### Tags
 The database contains tags, which can be used for descriptions of assets and tagging sounds. A list of all tags is available at `tags`. These are all tags that were added by users of the system. New tag can be added at `add_tag`. Tags can be deleted at `delete_tag`.
+
+Also preset tags can be added to the database. The urgency is represented by four tags: `urgent-1`, `urgent-2`, `urgent-3`, and `urgent-4`. These tags represent the scale of urgentness, with `urgent-1` being least urgent and `urgent-4` being most urgent.
 
 #### Sounds
 The database contains sounds, which serve as examples for description of assets. A list of all sounds is available at `sounds`. These are all sounds that were added by users of the system. New sound can be added at `add_sound`. Sounds can be tagged with tags in the database. Each sound must be in one of sound families and it need to be of one of sound types. Sounds can be deleted at `delete_sound`.

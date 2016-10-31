@@ -49,12 +49,40 @@
   </div>
   <div class="text-center">
     <button type="submit" name="submit" class="btn btn btn-primary" style="width:49%; float: left" value="edit">Edit</button>
-    <button type="submit" name="submit" class="btn btn btn-danger" style="width:49%; float: right" value="finalise">Finalise</button>
+    <button type="button" name="button" class="btn btn btn-danger" style="width:49%; float: right" value="finalise" data-toggle="modal" data-target="#myModal">Finalise</button>
   </div>
-</form>
 
 {% if heroku_state %}
   <script src="/static/js/upload_file.js"></script>
 {% endif %}
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Are you sure you want to finalise?</h4>
+      </div>
+
+      <div class="modal-body">
+       <div class="text-center">
+          <button type="submit" name="submit" style="width:49%" class="btn btn-danger" value="finalise">Finalise</button>
+          <button type="button" data-dismiss="modal" style="width:49%" class="btn" class="btn">Cancel</button>
+        </div>
+        
+          
+      </form>
+      </div>
+      
+      <div class="modal-footer">
+
+      </div>
+    </div>
+    
+  </div>
+</div>
 
 {% endblock %}

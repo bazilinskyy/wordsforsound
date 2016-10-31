@@ -17,7 +17,7 @@ from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
     TAGS_PER_PAGE, ASSETS_PER_PAGE, DATABASE_QUERY_TIMEOUT, PROJECTS_PER_PAGE, SOUNDS_FILE, AVATAR_UPLOAD_FOLDER, \
-    ASSETS_PER_PAGE_INDEX
+    ASSETS_PER_PAGE_INDEX, TAGS_FILE_PLAIN, SOUNDS_FILE_PLAIN
 from werkzeug import secure_filename
 from flask_wtf.file import FileField
 import os
@@ -170,20 +170,32 @@ def reset_with_token(token):
 
     return render_template('reset_with_token.html', form=form, token=token)
 
-@app.route('/user/<nickname>')
-@app.route('/user/<nickname>/<int:page>')
+@app.route('/user/<nickname>', methods=["GET", "POST"])
+@app.route('/user/<nickname>/<int:page>', methods=["GET", "POST"])
 @login_required
 def user(nickname, page=1):
     user = User.query.filter_by(nickname=nickname).first()
     if user is None:
         flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
+
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
     user_assets = Asset.query.filter_by(in_hands_id = user.id).paginate(page, ASSETS_PER_PAGE, False)
+    total_count = len(Asset.query.filter_by(in_hands_id = user.id).all())
+    pagination = Pagination(page=page,
+                            per_page=ASSETS_PER_PAGE,
+                            total=total_count,
+                            search=search,
+                            css_framework='foundation')
     return render_template('user.html',
                            page=page,
                            user=user,
-                           user_assets=user_assets)
-
+                           user_assets=user_assets,
+                           pagination=pagination)
 
 @app.route('/user/edit', methods=['GET', 'POST'])
 @login_required
@@ -197,16 +209,16 @@ def edit_user():
         g.user.receive_emails = form.receive_emails.data
         g.user.email = form.email.data
 
-        if not os.environ.get('HEROKU'):
-          if form.upload_file.data.filename:
-            filename = secure_filename(form.upload_file.data.filename)
-            if os.path.isfile('app/' + AVATAR_UPLOAD_FOLDER + filename):
-                current_milli_time = lambda: int(round(time.time() * 1000))
-                filename = str(current_milli_time()) + filename
-            form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
-            g.user.avatar_filename = filename
-        else:
-          g.user.avatar_filename = form.upload_file.data.filename
+        if form.upload_file.data.filename:
+            if not os.environ.get('HEROKU'):
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app/' + AVATAR_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app/' + AVATAR_UPLOAD_FOLDER + filename)
+                g.user.avatar_filename = filename
+            else:
+              g.user.avatar_filename = form.upload_file.data.filename
 
         db.session.add(g.user)
         db.session.commit()
@@ -331,7 +343,7 @@ def index(page_description=1, page_iteration=1, page_verification=1, page_otherh
 #                            pagination_verification=pagination_verification,
 #                            pagination_otherhands=pagination_otherhands)
 
-@app.route('/tags', methods=['GET', 'OPST'])
+@app.route('/tags', methods=['GET', 'POST'])
 @app.route('/tags/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tags(page=1):
@@ -352,21 +364,38 @@ def tags(page=1):
                             tags=tags,
                             pagination=pagination)
 
-@app.route('/tag')
-@app.route('/tag/<int:tag_id>/')
+@app.route('/tag', methods=['GET', 'POST'])
+@app.route('/tag/<int:tag_id>', methods=['GET', 'POST'])
+@app.route('/tag/<int:tag_id>/<int:page>', methods=['GET', 'POST'])
 @login_required
 def tag(tag_id=0, page=1):
+    search = False
+    q = request.args.get('q')
+    if q:
+        search = True
+
     tag = Tag.query.filter_by(id=tag_id).first()
     if tag is None:
         flash('Tag not found.')
         return redirect(url_for('index'))
-    sounds = tag.sounds.paginate(page, SOUNDS_PER_PAGE, False)
+
+    if request.method == 'POST' and request.form['submit'] == 'delete':
+        return delete_tag(tag.id)
+
+    total_count = len(tag.sounds.all())
+    sounds = tag.sounds.order_by(Sound.timestamp.desc()).paginate(page, SOUNDS_PER_PAGE, False)
+    pagination = Pagination(page=page,
+                            per_page=SOUNDS_PER_PAGE,
+                            total=total_count,
+                            search=search,
+                            css_framework='foundation')
     return render_template('tag.html',
                            title='Tag',
                            tag=tag,
                            page=page,
                            sounds=sounds,
-                           sound_location=SOUND_UPLOAD_FOLDER)
+                           sound_location=SOUND_UPLOAD_FOLDER,
+                           pagination=pagination)
 
 @app.route('/add_tag', methods=['GET', 'POST'])
 @login_required
@@ -398,16 +427,20 @@ def add_tag():
 @login_required
 def edit_tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
+
+    if tag is None:
+        flash('Tag not found.')
+        return redirect(url_for('index'))
+
     form = EditTagForm()
     if form.validate_on_submit():
         # check if tag woth the same name exists
-        tag = Tag.query.filter_by(name=form.name.data).first()
-        if tag is not None:
+        tag_check = Tag.query.filter_by(name=form.name.data).first()
+        if tag_check is not None:
             flash('Tag with the same name already exists.')
             return render_template('edit_tag.html',
                             form=form,
                             title='Edit tag')
-        tag = Tag()
         tag.name = form.name.data
         tag.timestamp = datetime.now()
         db.session.add(tag)
@@ -446,8 +479,10 @@ def delete_tag(tag_id=0):
         db.session.commit()
 
         update_tags_json()  # for autofill for tags
-        
-        flash('Tag ' +  tag.name + ' was deleted.')
+        if tag.name:
+            flash('Tag ' +  tag.name + ' was deleted.')
+        else:
+            flash('Tag with ID ' +  str(tag.id) + ' was deleted.')
         return redirect(url_for('tags'))
     return render_template('delete_tag.html',
                             form=form,
@@ -520,8 +555,8 @@ def edit_project(project_id):
         if request.method == 'POST':
             if request.form['submit'] == 'edit':
                 # check if tag woth the same name exists
-                project = Project.query.filter_by(name=form.name.data).first()
-                if project is not None:
+                project_check = Project.query.filter_by(name=form.name.data).first()
+                if project_check is not None:
                     flash('Project with the same name already exists.')
                     return render_template('edit_project.html',
                                     form=form,
@@ -532,16 +567,16 @@ def edit_project(project_id):
                 project.description = form.description.data
 
                 # Upload file
-                if not os.environ.get('HEROKU'):
-                  if form.upload_file.data.filename:
-                    filename = secure_filename(form.upload_file.data.filename)
-                    if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
-                        current_milli_time = lambda: int(round(time.time() * 1000))
-                        filename = str(current_milli_time()) + filename
-                    form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
-                    project.filename = filename
-                else:
-                  project.filename = form.upload_file.data.filename
+                if form.upload_file.data.filename:
+                    if not os.environ.get('HEROKU'):
+                        filename = secure_filename(form.upload_file.data.filename)
+                        if os.path.isfile('app/' + ATTACHMENT_UPLOAD_FOLDER + filename):
+                            current_milli_time = lambda: int(round(time.time() * 1000))
+                            filename = str(current_milli_time()) + filename
+                        form.upload_file.data.save('app/' + ATTACHMENT_UPLOAD_FOLDER + filename)
+                        project.filename = filename
+                    else:
+                      project.filename = form.upload_file.data.filename
 
                 flash('Project was edited successfully.')
 
@@ -667,10 +702,16 @@ def add_sound():
         sound.sound_family = form.sound_family.data
         sound.rights = form.rights.data
 
-        # add tags
-        for tag in form.tags.data:
+        # Add tags
+        for tag in form.tags.data.split(","):
             if tag != ',':
-                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                tag_query = Tag.query.filter_by(name=tag).first()
+            if tag_query == None:
+                tag_query = Tag()
+                tag_query.timestamp = datetime.now()
+                tag_query.name = tag
+                db.session.add(tag_query)
+            sound.tags.append(tag_query)
 
         update_sounds_json()  # for autofill for sounds
         update_tags_json()  # for autofill for sounds
@@ -729,7 +770,7 @@ def delete_sound(sound_id=0):
             try:
                 # Removed file stored locally
                 os.remove(os.path.join(SOUND_UPLOAD_FOLDER, sound.filename)) # delete uploaded file
-            except OSError:
+            except:
                 app.logger.error("Could not delete file %s." % str(sound.filename))
         else:
             # Remove file stored in Heroku
@@ -745,7 +786,10 @@ def delete_sound(sound_id=0):
         update_sounds_json()  # for autofill for sounds
         update_tags_json()  # for autofill for sounds
 
-        flash('Sound ' +  sound.name + ' was deleted.')
+        if sound.name:
+            flash('Sound ' +  sound.name + ' was deleted.')
+        else:
+            flash('Sound with ID ' +  str(sound.id) + ' was deleted.')
         return redirect(url_for('sounds'))
     return render_template('delete_sound.html',
                             form=form,
@@ -777,18 +821,21 @@ def sounds(page=1):
 @login_required
 def sound(sound_id=0):
     sound = Sound.query.filter_by(id=sound_id).first()
-    print sound_id
     if sound is None:
         flash('Sound not found.')
         return redirect(url_for('index'))
     if sound.description == '':
         sound.description = 'N/A'
 
+
     form = EmailForm()
     if form.validate_on_submit():
-        share_sound(g.user, sound, form.email.data)
-        flash('Sound was shared by email.')
-
+        print request.form['submit']
+        if request.form['submit'] == 'delete':
+            return delete_sound(sound.id)
+        elif request.form['submit'] == 'share':
+            share_sound(g.user, sound, form.email.data)
+            flash('Sound was shared by email.')
     return render_template('sound.html',
                            sound=sound,
                            sound_location=SOUND_UPLOAD_FOLDER,
@@ -807,8 +854,8 @@ def edit_sound(sound_id):
 
     if form.validate_on_submit():
         # check if sound woth the same name exists
-        sound = Sound.query.filter_by(name=form.name.data).first()
-        if sound is not None:
+        sound_check = Sound.query.filter_by(name=form.name.data).first()
+        if sound_check is not None:
             flash('Sound with the same name already exists.')
             return render_template('edit_sound.html',
                             form=form,
@@ -822,22 +869,29 @@ def edit_sound(sound_id):
         sound.sound_family = form.sound_family.data
         sound.rights = form.rights.data
 
-        # add tags
-        sound.ags = []
-        for tag in form.tags.data:
+        # Add tags
+        sound.tags = []
+        for tag in form.tags.data.split(","):
             if tag != ',':
-                sound.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                tag_query = Tag.query.filter_by(name=tag).first()
+            if tag_query == None:
+                tag_query = Tag()
+                tag_query.timestamp = datetime.now()
+                tag_query.name = tag
+                db.session.add(tag_query)
+            sound.tags.append(tag_query)
 
         # Upload file
-        if not os.environ.get('HEROKU'):
-            filename = secure_filename(form.upload_file.data.filename)
-            if os.path.isfile('app/' + SOUND_UPLOAD_FOLDER + filename):
-                current_milli_time = lambda: int(round(time.time() * 1000))
-                filename = str(current_milli_time()) + filename
-            form.upload_file.data.save('app/' + SOUND_UPLOAD_FOLDER + filename)
-            sound.filename = filename
-        else:
-            sound.filename = form.upload_file.data.filename
+        if form.upload_file.data.filename:
+            if not os.environ.get('HEROKU'):
+                filename = secure_filename(form.upload_file.data.filename)
+                if os.path.isfile('app' + SOUND_UPLOAD_FOLDER + filename):
+                    current_milli_time = lambda: int(round(time.time() * 1000))
+                    filename = str(current_milli_time()) + filename
+                form.upload_file.data.save('app' + SOUND_UPLOAD_FOLDER + filename)
+                sound.filename = filename
+            else:
+                sound.filename = form.upload_file.data.filename
 
         db.session.commit()
         
@@ -852,11 +906,15 @@ def edit_sound(sound_id):
             form.sound_family.data = sound.sound_family
             form.rights.data = sound.rights
             form.upload_file.data = sound.filename
+            tags_value = ""
+            for tag in sound.tags:
+                tags_value = tags_value + ',' + tag.name
     return render_template('edit_sound.html',
                            form=form,
                            title='Edit sound',
                            sound=sound,
-                           heroku_state=heroku_state)
+                           heroku_state=heroku_state,
+                           tags_value=tags_value)
 
 # Create new asset with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_asset', methods=['GET', 'POST'])
@@ -940,17 +998,30 @@ def add_asset():
             description.filename = form.upload_file.data.filename
 
         # Change tags
-        for tag in form.tags.data:
-            if tag != ',':
-                description.tags.append(Tag.query.filter_by(id=int(tag)).first())
+        if form.tags.data:
+            for tag in form.tags.data.split(","):
+                if tag != ',':
+                    tag_query = Tag.query.filter_by(name=tag).first()
+                    if tag_query == None:
+                        tag_query = Tag()
+                        tag_query.timestamp = datetime.now()
+                        tag_query.name = tag
+                        db.session.add(tag_query)
+                    description.tags.append(tag_query)
 
         # Change sounds
-        for sound in form.sounds.data:
-            if sound != ',':
-                description.sounds.append(Sound.query.filter_by(id=int(sound)).first())
+        if form.sounds.data:
+            for sound in form.sounds.data.split(","):
+                if sound != ',':
+                    sound_query = Sound.query.filter_by(id=sound).first()
+                    description.sounds.append(sound_query)
 
         db.session.add(description)
+        asset.description_add(description)
         db.session.commit()
+
+        update_tags_json()
+        update_sounds_json()
         
         description_notification(asset.user_in_hands, asset)
         flash('New asset description created.')
@@ -1015,8 +1086,8 @@ def edit_asset(asset_id):
 
     elif request.method != "POST":
         if asset is not None:
-          form.name.data = asset.name
-          form.description.data = asset.description
+            form.name.data = asset.name
+            form.description.data = asset.description
 
     if os.environ.get('HEROKU'):
         heroku_state = 1
@@ -1041,6 +1112,8 @@ def describe(asset_id):
         return redirect(url_for('index'))
 
     form = DescriptionForm()
+    tags_value = ""
+    sounds_value = ""
     if form.validate_on_submit():
         # get asset similar to project_id 
         description = Description()
@@ -1087,32 +1160,48 @@ def describe(asset_id):
         else:
             description.filename = form.upload_file.data.filename
 
-        # Add tags
         description.tags = []
-        for tag in form.tags.data:
+        description.sounds = []
+
+        # Add tags
+        for tag in form.tags.data.split(","):
             if tag != ',':
-                description.tags.append(Tag.query.filter_by(id=int(tag)).first())
+                tag_query = Tag.query.filter_by(name=tag).first()
+                if tag_query == None:
+                    tag_query = Tag()
+                    tag_query.timestamp = datetime.now()
+                    tag_query.name = tag
+                    db.session.add(tag_query)
+                description.tags.append(tag_query)
 
         # Add sounds
-        description.sounds = []
-        for sound in form.sounds.data:
+        for sound in form.sounds.data.split(","):
             if sound != ',':
-                description.sounds.append(Sound.query.filter_by(id=int(sound)).first())
+                sound_query = Sound.query.filter_by(name=sound).first()
+                description.sounds.append(sound_query)
 
         db.session.add(description)
         db.session.commit()
+
+        update_tags_json()
+        update_sounds_json()
         
         description_notification(asset.user_in_hands, asset)
         flash('Description created.')
         return redirect(url_for('index'))
     elif request.method != "POST":
         if asset.descriptions.count() > 0 is not None:
-            description = asset.descriptions.first()
+            description = asset.get_last_description()
             form.description.data = description.description
             form.duration.data = description.duration
             form.pitch.data = description.pitch
             form.sound_type.data = description.sound_type
             form.sound_family.data = description.sound_family
+            for tag in description.tags.all():
+                tags_value = tags_value + ',' + tag.name
+            for sound in description.sounds.all():
+                sounds_value = sounds_value + ',' + sound.name
+                print sounds_value
 
     if os.environ.get('HEROKU'):
         heroku_state = 1
@@ -1123,7 +1212,9 @@ def describe(asset_id):
                             asset=asset,
                             verification=asset.get_last_verification(),
                             title='Describe asset',
-                            heroku_state=heroku_state)
+                            heroku_state=heroku_state,
+                            tags_value=tags_value,
+                            sounds_value=sounds_value)
 
 @app.route('/verify', methods=['GET', 'POST'])
 @app.route('/verify/<int:asset_id>/', methods=['GET', 'POST'])
@@ -1280,12 +1371,14 @@ def iterate(asset_id):
         heroku_state = 1
     else:
         heroku_state = 0
+    attachment_location = ATTACHMENT_UPLOAD_FOLDER
     return render_template('iterate.html',
                             form=form,
                             asset=asset,
                             description=description,
                             title='Iterate asset',
-                            heroku_state=heroku_state)
+                            heroku_state=heroku_state,
+                            attachment_location=attachment_location)
 
 # Create new project with status = iteration. Creation process also includes the first description stage.
 @app.route('/add_project', methods=['GET', 'POST'])
@@ -1415,6 +1508,7 @@ def readme():
 def update_tags_json():
     tags = Tag.query.all()
     tags_json = []
+    tags_json_plain = []
     if tags is not None:
         for tag in tags:
             tag_id = tag.id
@@ -1426,10 +1520,16 @@ def update_tags_json():
             with open('app/' + TAGS_FILE, 'w') as outfile:
                 json.dump(tags_json, outfile)
 
+            tags_json_plain.append(tag_name)
+            with open('app/' + TAGS_FILE_PLAIN, 'w') as outfile:
+                json.dump(tags_json_plain, outfile)
+
+
 # For autofill for sounds
 def update_sounds_json():
     sounds = Sound.query.all()
     sounds_json = []
+    sounds_json_plain = []
     if sounds is not None:
         for sound in sounds:
             sound_id = sound.id
@@ -1438,6 +1538,10 @@ def update_sounds_json():
             sounds_json.append({'value': sound_id, 'text' : sound_name, 'link' : sound_link})
             with open('app/' + SOUNDS_FILE, 'w') as outfile:
                 json.dump(sounds_json, outfile)
+
+            sounds_json_plain.append(sound_name)
+            with open('app/' + SOUNDS_FILE_PLAIN, 'w') as outfile:
+                json.dump(sounds_json_plain, outfile)
 
 # Listen for GET requests for S3
 @app.route('/sign-s3/<type>')

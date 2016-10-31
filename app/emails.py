@@ -3,8 +3,9 @@ from flask.ext.mail import Message
 from app import mail
 import os
 from .decorators import async
+from config import EMAIL_SYSTEM
 if not os.environ.get('HEROKU'): 
-  from config_secret import GMAIL_USERNAME, GMAIL_PASSWORD
+  from config_secret import GMAIL_USERNAME, GMAIL_PASSWORD, ADMINS
 else:
   GMAIL_USERNAME=os.environ.get('GMAIL_USERNAME')
   GMAIL_PASSWORD=os.environ.get('GMAIL_PASSWORD')
@@ -12,17 +13,19 @@ from app import app
 import yagmail
 from models import ClientUser, SupplierUser, AssetStatus
 
-# @async
-# def send_async_email(app, msg):
-#     with app.app_context():
-#         mail.send(msg)
-
+@async
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
 
 def send_email(subject, recipient, body):
-    # msg = Message(subject, sender=sender, recipients=recipients)
-    # msg.body = text_body
-    # msg.html = html_body
-    # send_async_email(app, msg)
+
+  if EMAIL_SYSTEM == 'SMTP':
+    msg = Message(subject, sender=ADMINS[0], recipients=recipient)
+    msg.html = body
+    send_async_email(app, msg)
+
+  elif EMAIL_SYSTEM == 'YAG':
     try:
       yag = yagmail.SMTP(GMAIL_USERNAME, GMAIL_PASSWORD)
       yag.send(str(recipient), subject, body)

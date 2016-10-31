@@ -4,7 +4,10 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 from flask.ext.mail import Mail
-from config import basedir
+from config import basedir, EMAIL_SYSTEM
+if not os.environ.get('HEROKU'):
+	from config_secret import ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, \
+    MAIL_PASSWORD
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -26,6 +29,17 @@ if not app.debug and os.environ.get('HEROKU') is None:
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('wordsforsound')
+
+    # Configuaration for SMTP server, if used
+    if EMAIL_SYSTEM == 'SMTP':
+        from logging.handlers import SMTPHandler
+        credentials = None
+        if MAIL_USERNAME or MAIL_PASSWORD:
+            credentials = (MAIL_USERNAME, MAIL_PASSWORD)
+        mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT),
+                                   'wordsforsound@' + MAIL_SERVER, ADMINS,
+                                   'wordsforsound', credentials)
+        mail_handler.setLevel(logging.ERROR)
 
 if os.environ.get('HEROKU') is not None:
     import logging

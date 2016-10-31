@@ -10,9 +10,9 @@
             <a href="{{ url_for('user', nickname=description.user.nickname) }}"><img src="{{ description.user.avatar(70) }}" width="70"/></a>
         </td>
         <td>
-            <p class="text-left">{% if description.description|length != 0 %} {{ description.description }} {% else %} No textual description was given. {% endif %} <strong>Duration</strong> <span class="badge">{{ description.get_duration() }}</span> <strong>Pitch</strong> <span class="badge">{{ description.get_pitch() }}</span> <strong>Type</strong> <span class="badge">{{ description.get_sound_type() }}</span> <strong>Family</strong> <span class="badge">{{ description.get_sound_family() }}</span> <strong>Time</strong> <span class="badge">{{ description.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></p>
+            <p class="text-left">{% if description.description|length != 0 %} {{ description.description }} {% else %} No textual description was given. {% endif %} <strong>Duration</strong> <span class="badge">{{ description.get_duration() }}</span> <strong>Pitch</strong> <span class="badge">{{ description.get_pitch() }}</span> <strong>Type</strong> <span class="badge">{{ description.get_sound_type() }}</span> <strong>Family</strong> <span class="badge">{{ description.get_sound_family() }}</span> <strong>Time</strong> <span class="badge">{{ description.timestamp.strftime('%Y-%m-%d %H:%M') }}</span> {% for tag in description.tags.all() %} {% include 'tag_entry.html' %} {% endfor %}</p>
         </td>
-        <td>
+        <td width="60px">
             <p>Ver. {{ asset.iteration_number }}</p>
         </td>
         {% if description.filename != None %}
