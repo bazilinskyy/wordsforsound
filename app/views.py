@@ -998,23 +998,27 @@ def add_asset():
             description.filename = form.upload_file.data.filename
 
         # Change tags
-        for tag in form.tags.data.split(","):
-            if tag != ',':
-                tag_query = Tag.query.filter_by(name=tag).first()
-                if tag_query == None:
-                    tag_query = Tag()
-                    tag_query.timestamp = datetime.now()
-                    tag_query.name = tag
-                    db.session.add(tag_query)
-                description.tags.append(tag_query)
+        if form.tags.data:
+            for tag in form.tags.data.split(","):
+                if tag != ',':
+                    tag_query = Tag.query.filter_by(name=tag).first()
+                    if tag_query == None:
+                        tag_query = Tag()
+                        tag_query.timestamp = datetime.now()
+                        tag_query.name = tag
+                        db.session.add(tag_query)
+                    description.tags.append(tag_query)
 
         # Change sounds
-        for sound in form.sounds.data.split(","):
-            if sound != ',':
-                sound_query = Sound.query.filter_by(id=sound).first()
-                description.sounds.append(sound_query)
+        if form.sounds.data:
+            for sound in form.sounds.data.split(","):
+                if sound != ',':
+                    sound_query = Sound.query.filter_by(id=sound).first()
+                    description.sounds.append(sound_query)
 
+        import ipdb; ipdb.set_trace();
         db.session.add(description)
+        asset.description_add(description)
         db.session.commit()
 
         update_tags_json()
