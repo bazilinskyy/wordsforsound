@@ -54,7 +54,6 @@ class TestCase(unittest.TestCase):
 			db.session.commit()
 
 			email="Markus.Groh@continental-corporation.com"
-			# email="hollgam@gmail.com"
 
 			assert send_email("Test email", email, "Test email. Move on.")
 

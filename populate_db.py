@@ -1203,7 +1203,7 @@ supplier5 = models.SupplierUser(nickname="supplier5",
                 last_seen=datetime.now(),
                 receive_emails=True,
                 avatar_filename="finn_128.png")
-joost_de_winter = models.ClientUser(nickname="markus_groh",
+markus_groh = models.ClientUser(nickname="markus_groh",
 				first_name="Markus",
 				last_name="Groh",
                 email="Markus.Groh@continental-corporation.com",
