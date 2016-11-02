@@ -41,7 +41,6 @@ def description_notification(user, asset):
       user_type = "supplier"
     else:
       user_type = "N/A"
-    import ipdb; ipdb.set_trace();
     return send_email("Description for asset " + asset.name + " is ready",
                user.email,
                str(render_template("description_email.html",
