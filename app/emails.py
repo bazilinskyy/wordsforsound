@@ -1,5 +1,6 @@
 from flask import render_template, flash
-from flask.ext.mail import Message
+# from flask.ext.mail import Message
+from flask.ext.emails import Message
 from app import mail, app
 import os
 from .decorators import async
@@ -20,10 +21,22 @@ def send_async_email(app, msg):
 def send_email(subject, recipient, body):
 
   if EMAIL_SYSTEM == 'SMTP':
-    msg = Message(subject, sender=ADMINS[0], recipients=recipient)
-    msg.html = body
-    send_async_email(app, msg)
-    return 1
+    # msg = Message(subject, sender=ADMINS[0], recipients=recipient)
+    # msg.html = body
+    # send_async_email(app, msg)
+    # return 1
+
+    message = Message(html=body,
+                      subject=subject,
+                      mail_from=ADMINS[0],
+                      mail_to=recipient)
+
+    r = message.send()
+
+    if r.status_code not in [250, ]:
+      return 0
+    else:
+      return 1
 
   elif EMAIL_SYSTEM == 'YAG':
     try:
@@ -32,6 +45,21 @@ def send_email(subject, recipient, body):
       return 1
     except:
       flash('The email notification could not be sent.', 'error')
+
+def send_email_flask_emails(subject, recipient, body):
+  from flask.ext.emails import Message
+
+  message = Message(html=body,
+                    subject=subject,
+                    mail_from=ADMINS[0],
+                    mail_to=recipient)
+
+  r = message.send()
+
+  if r.status_code not in [250, ]:
+    return 0
+  else:
+    return 1
 
 def description_notification(user, asset):
   if user.receive_emails and asset.notify_by_email:

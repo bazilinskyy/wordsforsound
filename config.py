@@ -23,6 +23,9 @@ WHOOSH_ENABLED = os.environ.get('HEROKU') is None
 
 # Email system to use. "YAG" / "SMTP"
 EMAIL_SYSTEM = 'SMTP'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
+EMAIL_TIMEOUT = 100
 
 # pagination
 TAGS_PER_PAGE = 200

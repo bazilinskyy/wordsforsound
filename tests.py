@@ -6,7 +6,7 @@ from config import basedir
 from app import app, db
 from datetime import datetime
 
-from app.emails import send_email
+from app.emails import send_email, send_email_flask_emails
 from app.models import Asset, User, Project, ClientUser, AssetStatus
 
 
@@ -53,9 +53,9 @@ class TestCase(unittest.TestCase):
 			db.session.add(asset)
 			db.session.commit()
 
-			email="Markus.Groh@continental-corporation.com"
-
-			assert send_email("Test email", email, "Test email. Move on.")
+			email="pavlo.bazilinskyy@gmail.com"
+			with app.app_context():
+				assert send_email_flask_emails("Test email", email, "Test email. Move on.")
 
 if __name__ == '__main__':
     unittest.main()
