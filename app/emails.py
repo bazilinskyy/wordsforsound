@@ -21,16 +21,29 @@ def send_async_email(app, msg):
 def send_email(subject, recipient, body):
 
   if EMAIL_SYSTEM == 'SMTP':
+    
     # msg = Message(subject, sender=ADMINS[0], recipients=recipient)
     # msg.html = body
     # send_async_email(app, msg)
     # return 1
 
+    # message = Message(html=body,
+    #                   subject=subject,
+    #                   mail_from=ADMINS[0],
+    #                   mail_to=recipient)
+
+    # r = message.send()
+
+    # if r.status_code not in [250, ]:
+    #   return 0
+    # else:
+    #   return 1
+
+    from flask.ext.emails import Message
     message = Message(html=body,
                       subject=subject,
                       mail_from=ADMINS[0],
                       mail_to=recipient)
-
     r = message.send()
 
     if r.status_code not in [250, ]:
@@ -45,6 +58,7 @@ def send_email(subject, recipient, body):
       return 1
     except:
       flash('The email notification could not be sent.', 'error')
+      return 0
 
 def send_email_flask_emails(subject, recipient, body):
   from flask.ext.emails import Message

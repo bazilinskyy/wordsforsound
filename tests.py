@@ -53,9 +53,9 @@ class TestCase(unittest.TestCase):
 			db.session.add(asset)
 			db.session.commit()
 
-			email="pavlo.bazilinskyy@gmail.com"
+			email="dummy_email@gmail.com"
 			with app.app_context():
-				assert send_email_flask_emails("Test email", email, "Test email. Move on.")
+				assert send_email("Test email", email, "Test email. Move on.")
 
 if __name__ == '__main__':
     unittest.main()

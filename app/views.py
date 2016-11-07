@@ -12,7 +12,8 @@ from .forms import DescriptionForm, NewAssetForm, AddTagForm, AddSoundForm, Dele
     RegisterForm, SearchForm, EditUserForm, EditAssetForm, EditTagForm
 from .models import Description, Asset, Tag, Sound, AssetStatus, Iteration, Verification, Project, User, \
     SupplierUser, ClientUser
-from .emails import description_notification, iteration_notification, verification_notification, share_sound
+from .emails import description_notification, iteration_notification, verification_notification, share_sound, \
+	send_email
 from .util import ts
 from config import SOUNDS_PER_PAGE, MAX_SEARCH_RESULTS, ONGOING_PROJECTS_MENU, FINISHED_PROJECTS_MENU, \
     ONGOING_ASSETS_MENU, FINISHED_ASSETS_MENU, SOUND_UPLOAD_FOLDER, ATTACHMENT_UPLOAD_FOLDER, TAGS_FILE, \
@@ -142,13 +143,11 @@ def reset():
                 _external=True)
 
             subject="Password reset requested"
-            sender="wordsforsound@gmail.com"
             recipients=user.email
             txt = "Please click on {{ recover_url }} to recover your password. Thank you!"
             html = "Please click on {{ recover_url }} to recover your password. Thank you!"
 
-            send_email(subject, sender, recipients, txt, html)
-
+            send_email(subject, recipients, html)
             return redirect(url_for('index'))
     return render_template('reset.html', form=form)
 
