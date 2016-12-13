@@ -7,6 +7,17 @@
 
 <h1>Iteration for asset <a href="{{ url_for('asset', asset_id=asset.id) }}">{{ asset.name }}</a></h1>
 
+{% if verification != None %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title"><a href="{{ url_for('verification', verification_id=verification.id) }}">Last verification with ID {{ verification.id }}</a></h3>
+    </div>
+    <div class="panel-body">
+      {% include 'verification_entry_no_list.html' %}
+    </div>
+  </div>
+{% endif %}
+
 {% if description != None %}
   <div class="panel panel-default">
     <div class="panel-heading">

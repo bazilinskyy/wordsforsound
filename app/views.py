@@ -1368,6 +1368,7 @@ def iterate(asset_id):
         flash('Iteration created.')
         return redirect(url_for('index'))
     description = asset.get_last_description()
+    verification = asset.get_last_verification()
     if os.environ.get('HEROKU'):
         heroku_state = 1
     else:
@@ -1377,6 +1378,7 @@ def iterate(asset_id):
                             form=form,
                             asset=asset,
                             description=description,
+                            verification=verification,
                             title='Iterate asset',
                             heroku_state=heroku_state,
                             attachment_location=attachment_location)
