@@ -3,8 +3,7 @@ wordsforsound
 
 This application is meant to support the process of creation/design of auditory assets. The traditional approach in making such assets is following and unstructured and undocumented process of communication between persons that need the sound to be made and persons that design/create the sound. This solution offers the iterative workflow supported by tags and tagged audible examples of auditory assets and sounds.
 
-<a name="installation"></a>Installation
-------------
+# Installation
 
 Whith pip install virtual environment in the project folder: 
 ```
