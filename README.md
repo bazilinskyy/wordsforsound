@@ -1,10 +1,7 @@
-wordsforsound
-=========
-
+# wordsforsound
 This application is meant to support the process of creation/design of auditory assets. The traditional approach in making such assets is following and unstructured and undocumented process of communication between persons that need the sound to be made and persons that design/create the sound. This solution offers the iterative workflow supported by tags and tagged audible examples of auditory assets and sounds.
 
-# Installation
-
+## Installation
 Whith pip install virtual environment in the project folder: 
 ```
 pip install virtualenv
@@ -40,8 +37,7 @@ On Windows:
 $ flask\Scripts\python.exe db_create.py
 ```
 
-<a name="running"></a>Running
--------
+## Running
 To run the application, after initial setup as explained in the section above, simply run the command (on Unix-based system):
 
 ```
@@ -60,12 +56,10 @@ After the server initializes it will listen on port 5000 waiting for connections
 http://localhost:5000
 ```
 
-<a name="configuration"></a>Configuration
--------
+## Configuration
 Parameters of the application can be adjusted in the file `config.py`. Families of sounds can be managed in `sound_families.py`. Types of sounds can be managed in `sound_types.py`.
 
-<a name="use"></a>Use
--------
+## Use
 Unless a user was provided with an account for the application, user must register to use the application at `register`. All views in the application can be views by logged in users only. Users can be of two types: `clients` and `suppliers`:
 
 * **Clients** are those participants in the process that need auditory assets to be be designed, i.e. they describe such assets and ask suppliers to make them. Clients then also verify if provided iterations of needed assets satisfy requirements and needs of the clients.
@@ -80,14 +74,12 @@ In order to create an asset one needs to add a project at `add_project`. After a
 #### Homepage
 After logging in the user it redirected to the home page at `index`. This page contains a list of active assets, which are in one of three stages of the workflow `description`, `iteration`, `verification`, refer to Fig. 1 below. If an asset that the user is working on is not "in hands" of the user, i.e. another user needs to send the asset further along the workflow process, the asset is shown in the list `In other hands`.
 
-![alt text][sound_design_img]
-[sound_design_img]: /static/img/sound_design_process.png "Sound design process"
+![](app/static/img/sound_design_process.png)
 <p align="center">*Figure 1*. Sound design process.</p>
 
 Please refer to Fig. 2 for an example of the homepage as seen by a client that requests four assets to be made: 1) The asset **Spearcon for activation 01** requires a new descriptions, since the iteration of version 1 was not accepted as final; 2) The asset **Beep for right overtaking** needs to be verified, because the supplier working on the asset provided the first iteration; 3-4) The assets **Earcon for TOR** abd **Beep for left overtaking** are **In other hands**, meaning that the client, who's homepage you may see on the figure, does not have to take any actions for the assets in question at the moment, i.e. in this case these two assets need to be supplied with iterations by assigned suppliers.
 
-![alt text][index_img]
-[index_img]: /static/img/screenshot_index.png "Homepage of client"
+![](app/static/img/screenshot_index.png)
 <p align="center">*Figure 2*. Example of homepage of client.</p>
 
 The horizontal menu contains the search input field. The input becomes hidden on small window sizes.
