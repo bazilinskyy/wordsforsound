@@ -1,6 +1,10 @@
 # wordsforsound
 This application is meant to support the process of creation/design of auditory assets. The traditional approach in making such assets is following and unstructured and undocumented process of communication between persons that need the sound to be made and persons that design/create the sound. This solution offers the iterative workflow supported by tags and tagged audible examples of auditory assets and sounds.
 
+## Paper
+A preprint of a paper describing the tool may be found at:
+> Bazilinskyy, P., Cieler, S., & De Winter, J. C. F. (2020). Sound design process for automotive industry. Under review. https://www.researchgate.net/publication/325846614_Sound_design_process_for_the_automotive_industry
+
 ## Installation
 Whith pip install virtual environment in the project folder: 
 ```
