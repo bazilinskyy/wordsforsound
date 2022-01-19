@@ -3,7 +3,7 @@ This application is meant to support the process of creation/design of auditory 
 
 ## Paper
 A preprint of a paper describing the tool may be found at:
-> Bazilinskyy, P., Cieler, S., & De Winter, J. C. F. (2018). Sound design process for automotive industry. Under review. https://www.researchgate.net/publication/325846614_Sound_design_process_for_the_automotive_industry
+> Bazilinskyy, P., Cieler, S., & De Winter, J. C. F. (2018). Sound design process for automotive industry. https://www.researchgate.net/publication/325846614_Sound_design_process_for_the_automotive_industry
 
 ## Installation
 Whith pip install virtual environment in the project folder: 
